@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "txv"
+version = "0.1.0"
+description = "Design and QC of IVT mRNA constructs for multi-antigen cancer vaccines, with Benchling registration"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+benchling = ["benchling-sdk>=1.15"]
+dev = ["pytest>=7.4"]
+
+[project.scripts]
+txv = "txv.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,9 @@
+name,sequence,kind,hla,mutation_offset,note
+KRAS_G12D_25mer,LVVVGADGVGKSALTIQLIQNHFVD,neoepitope,HLA-A*11:01,6,"Shared driver neoantigen; 25-mer centred on the G12D substitution so native flanks are retained for processing"
+TP53_R175H_25mer,SSCMGGMNRRPILTIITLEDSSGNL,neoepitope,HLA-A*02:01,12,"Shared hotspot neoantigen centred on R175H"
+NYESO1_157_165,SLLMWITQC,tumor_associated,HLA-A*02:01,,"Cancer-testis antigen; canonical A2-restricted epitope"
+MAGEA3_112_120,KVAELVHFL,tumor_associated,HLA-A*02:01,,"Cancer-testis antigen"
+PRAME_425_433,SLYSFPEPEA,tumor_associated,HLA-A*02:01,,"Widely expressed cancer-testis antigen"
+PADRE_helper,AKFVAAWTLKAAA,helper,HLA-DR,,"Pan-DR universal CD4 helper epitope; drives CD4 help for the class I responses"
+PRIVATE_NEO_01,GSTQKMDPAVLRLIFQY,neoepitope,HLA-B*07:02,8,"Example patient-private neoantigen"
+PRIVATE_NEO_02,RTFYNLPVEMLKAQTHL,neoepitope,HLA-A*24:02,8,"Example patient-private neoantigen"
