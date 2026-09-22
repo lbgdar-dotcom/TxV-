@@ -239,6 +239,60 @@ def cmd_series(args) -> int:
     return 1 if failures else 0
 
 
+def cmd_plasmids(args) -> int:
+    """Assemble the finished plasmid maps against a real backbone."""
+    from .genbank_io import read_genbank, write_genbank
+    from .plasmid import build_plasmid, verify_plasmid
+    from .pvax1_ag import PANEL, build_panel_construct
+
+    backbone = read_genbank(args.backbone)
+    names = args.only or [p.name for p in PANEL]
+    registry = _registry(args)
+    failures = 0
+    rows = []
+
+    for name in names:
+        construct = build_panel_construct(
+            name, spec=ConstructSpec(name=name), registry=registry
+        )
+        build = build_plasmid(backbone, construct, f"{args.prefix}{name}")
+        checks = verify_plasmid(build, construct, backbone)
+        bad = [c for c in checks if not c.ok]
+        failures += len(bad)
+        rows.append((name, build, checks))
+        print(f"{args.prefix}{name:<4} {len(build):>6} bp  insert "
+              f"{build.insert_start + 1}-{build.insert_end} "
+              f"({build.insert_end - build.insert_start} bp)  "
+              f"{len(checks) - len(bad)}/{len(checks)} checks"
+              f"{'' if not bad else '  FAILED: ' + ', '.join(c.name for c in bad)}")
+        for check in bad:
+            print(f"     ! {check.name}: {check.detail}")
+
+    if rows:
+        dropped = rows[0][1].dropped_features
+        print("\n  eGFP-specific annotations dropped from every map: "
+              + ", ".join(dropped))
+        removed = len(rows[0][1].removed_sequence)
+        print(f"  backbone {backbone.name}: {len(backbone.sequence)} bp; "
+              f"removed ORF {removed} bp; "
+              f"PCR-linearised product {len(backbone.sequence) - removed} bp")
+
+    if args.out:
+        out = Path(args.out)
+        out.mkdir(parents=True, exist_ok=True)
+        for name, build, checks in rows:
+            (out / f"{build.record.name}.gb").write_text(write_genbank(build.record))
+        summary = ["plasmid,total_bp,insert_start,insert_end,insert_bp,checks_passed"]
+        summary += [
+            f"{b.record.name},{len(b)},{b.insert_start + 1},{b.insert_end},"
+            f"{b.insert_end - b.insert_start},{sum(c.ok for c in ch)}/{len(ch)}"
+            for _, b, ch in rows
+        ]
+        (out / "plasmid_summary.csv").write_text("\n".join(summary) + "\n")
+        print(f"\nwrote {len(rows)} plasmid map(s) and plasmid_summary.csv to {out}/")
+    return 1 if failures else 0
+
+
 def cmd_compositions(args) -> int:
     for name, comp in COMPOSITIONS.items():
         ratios = " : ".join(f"{k} {v}" for k, v in comp.molar_ratios.items())
@@ -346,6 +400,16 @@ def build_parser() -> argparse.ArgumentParser:
     series.add_argument("--sizes", help="multiplex only, e.g. 1,2,4,6,8")
     series.add_argument("--out", help="output directory")
     series.set_defaults(func=cmd_series)
+
+    plasmids = sub.add_parser(
+        "plasmids", help="assemble finished plasmid maps against a backbone"
+    )
+    plasmids.add_argument("backbone", help="parent vector GenBank file")
+    plasmids.add_argument("--only", nargs="*", help="subset, e.g. --only P3 P7")
+    plasmids.add_argument("--prefix", default="pVax1_AG_")
+    plasmids.add_argument("--out", help="output directory")
+    plasmids.add_argument("--parts", help="JSON parts file overriding the built-ins")
+    plasmids.set_defaults(func=cmd_plasmids)
 
     comps = sub.add_parser("compositions", help="list LNP lipid compositions")
     comps.set_defaults(func=cmd_compositions)

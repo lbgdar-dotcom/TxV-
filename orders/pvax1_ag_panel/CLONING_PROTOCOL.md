@@ -46,17 +46,18 @@ each to assemble.
 
 ## Cloning
 
-**1. Linearise the backbone by PCR.** Template: pVax1_AG_eGFP. This amplifies
-the backbone *outward* from the eGFP site, so the product is the whole vector
-minus eGFP, with the UTR rails at its ends.
+**1. Linearise the backbone by PCR.** Template: pVax1_AG_eGFP (3855 bp). This
+amplifies the backbone *outward* from the eGFP site, so the product is the whole
+vector minus eGFP, with the UTR rails at its ends.
 
-| Primer | Sequence 5'→3' |
-|---|---|
-| Backbone F | `GCTGCCTTCTGCGGGGCTTG` |
-| Backbone R | `GGTGGCTCTTATATTTCTTCTTACT` |
+| Primer | Sequence 5'→3' | Anneals |
+|---|---|---|
+| Backbone F | `GCTGCCTTCTGCGGGGCTTG` | 1419–1438, forward (3' UTR start) |
+| Backbone R | `GGTGGCTCTTATATTTCTTCTTACT` | 674–698, reverse (5' UTR end + Kozak) |
 
-Use a high-fidelity polymerase (Q5, Phusion). Expected product = your plasmid
-size minus the eGFP ORF — confirm against your own map before you commit.
+High-fidelity polymerase (Q5, Phusion). **Expected product: 3135 bp**
+(3855 − 720 for the eGFP CDS). It runs through the plasmid origin, which is
+normal for an outward-facing pair.
 
 **2. Destroy the template.** `DpnI`, 1 µL into the finished PCR, 37 °C for
 15–30 min. Skipping this is the single most common reason a "cloning" plate
@@ -80,7 +81,18 @@ will give you a clean lawn of nothing).
 with a reverse primer inside the insert. Pick 4–8 colonies per construct;
 these assemblies are usually efficient enough that 4 is plenty.
 
-**6. Sequence before you trust anything.** Sanger across both junctions, or
+**6. Sequence before you trust anything.** Expected final plasmid sizes:
+
+| | plasmid | insert | | | plasmid | insert |
+|---|---|---|---|---|---|---|
+| P0 | 3474 bp | 339 bp | | P5 | 3441 bp | 306 bp |
+| P1 | 3576 bp | 441 bp | | P6 | 3567 bp | 432 bp |
+| P2 | 3576 bp | 441 bp | | P7 | 3726 bp | 591 bp |
+| P3 | 3678 bp | 543 bp | | P8 | 3726 bp | 591 bp |
+| P4 | 3678 bp | 543 bp | | | | |
+
+The insert always occupies 699–(699 + insert length − 1), replacing the eGFP CDS
+at 699–1418. Sanger across both junctions, or
 whole-plasmid nanopore, which now costs about the same and catches backbone
 rearrangements that two Sanger reads miss. Check specifically:
 
@@ -127,18 +139,50 @@ them — but that moves the primer-annealing rails, so the IVT primers must be
 re-designed. Run it as its own arm (same ORF, old UTR vs new UTR) rather than
 changing two things at once.
 
-## Verifying the assembly in silico
+## The finished plasmid maps
 
-Benchling will simulate the Gibson/HiFi assembly directly, which is the better
-check since the backbone lives there. If you would rather have it here, drop
-`pvax1_ag_egfp.gb` into the repo and:
+`plasmids/pVax1_AG_P0.gb` … `P8.gb` are the assembled vectors, built against
+your real `pvax1_ag_egfp.gb` and regenerable with:
 
-```python
-from txv.order import assemble_into_backbone, synthesis_fragment
-from txv.pvax1_ag import build_panel_construct
-
-construct = build_panel_construct("P3")
-plasmid = assemble_into_backbone(backbone_sequence, construct.orf, "pVax1_AG_P3")
+```bash
+txv plasmids backbone/pvax1_ag_egfp.gb --out orders/pvax1_ag_panel/plasmids
 ```
 
-It refuses rather than guessing if either rail is not unique in the backbone.
+Each map is **verified from its own sequence** rather than trusted — 16 checks
+per plasmid, all passing:
+
+- the ORF translates to the designed protein, starts at ATG, is in frame and
+  carries its own stop;
+- the 5' junction reads exactly `GCCACC`**`ATG`**;
+- the T7 element is intact and the transcript still begins **AGG**;
+- the 44-nt 5' UTR still has no upstream AUG;
+- exactly **two** BsaI sites remain, and neither is inside the insert;
+- the 120-nt poly(A) tract is intact;
+- no `AATAAA` anywhere in the ORF;
+- CMV promoter, NeoR/KanR and the origin are unchanged;
+- the size arithmetic closes.
+
+The eGFP-specific annotations (`eGFP`, `eGFP_qPCR_F/R`, `ivtGFP_HiFi_F/R`) are
+**deleted** from every map rather than left in place. A primer annotation that
+no longer anneals to anything is a map that lies to you six months later.
+
+## Two things about your vector worth knowing explicitly
+
+**The "AG" in pVax1_AG is the transcription start.** The T7 element is
+`TAATACGACTCACTATA`, and the transcript begins `AGG` at position 652 — not the
+`G` of a textbook `…CACTATAG` promoter. That AG start is what **CleanCap AG**
+requires. Nothing in this build touches it, but if you ever swap the 5' UTR,
+preserving the AGG start is the constraint that matters most.
+
+**BsaI is your IVT linearisation strategy.** There are exactly two `GGTCTC`
+sites in the vector, at 585 (before the T7 promoter) and 1639 (just after the
+poly(A)). They bracket the whole transcription unit, so a BsaI digest releases
+`T7 → 5'UTR → ORF → 3'UTR → A120` as a clean linear template. **This is why
+none of the nine ORFs may contain a BsaI site** — one inside the insert would
+cut the template in half. All nine were screened and are clean, as are BamHI
+(single site at 1512) and `AATAAA`.
+
+Because this vector also drives the same ORF from its **CMV promoter**, the
+`AATAAA` screen is not academic: in a nuclear transcript a cryptic
+polyadenylation signal inside the ORF would truncate the mRNA. The codon
+optimiser avoids it, and the plasmid check re-confirms it per construct.
