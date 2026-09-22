@@ -35,6 +35,12 @@ FEATURES             Location/Qualifiers
                      /ApEinfo_revcolor="#f8d3a9"
                      /ApEinfo_fwdcolor="#f8d3a9"
                      /note="ApEinfo_revcolor: #f8d3a9"
+     misc_RNA        652..1460
+                     /label="transcript (T7 run-off)"
+                     /note="IVT product: 809 nt from T7 +1
+                     (begins AGG) through the encoded
+                     poly(A). Cap chemistry requiring an
+                     AG start is compatible with this +1."
      misc_feature    655..698
                      /label="5' UTR"
                      /ApEinfo_revcolor="#f58a5e"
@@ -70,16 +76,28 @@ FEATURES             Location/Qualifiers
      misc_feature    1236..1241
                      /label="stop"
                      /note="Tandem stop"
-     misc_feature    1242..1295
+     misc_feature    1242..1340
                      /label="3' UTR"
                      /ApEinfo_revcolor="#b7e6d7"
                      /ApEinfo_fwdcolor="#b7e6d7"
-                     /note="ApEinfo_revcolor: #b7e6d7"
+                     /note="Corrected to the full
+                     transcribed 3' UTR: stop codon to
+                     poly(A). Previously annotated
+                     1242..1295, which stopped short and
+                     left part of the UTR -- including its
+                     poly(A) signal -- unlabelled."
      misc_feature    complement(1315..1340)
                      /label="GRS-primer"
                      /ApEinfo_revcolor="#d6b295"
                      /ApEinfo_fwdcolor="#d6b295"
                      /note="ApEinfo_revcolor: #d6b295"
+     polyA_signal    1315..1320
+                     /label="AATAAA (in the 3' UTR)"
+                     /note="Native poly(A) signal of the
+                     untranslated region. Acts only on
+                     nuclear transcripts (i.e. the CMV
+                     route); inert for a cytoplasmically
+                     delivered IVT mRNA."
      misc_feature    1335..1340
                      /label="BamHi"
                      /ApEinfo_revcolor="#f8d3a9"

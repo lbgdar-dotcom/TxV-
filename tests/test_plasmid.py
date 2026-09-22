@@ -154,3 +154,86 @@ def test_assembly_refuses_a_backbone_without_unique_rails(backbone):
     doubled.sequence = backbone.sequence + backbone.sequence
     with pytest.raises(ValueError, match="occurs 2 times"):
         build_plasmid(doubled, build_panel_construct("P0"), "x")
+
+
+# --- annotation repair ----------------------------------------------------
+
+def _repaired(backbone, name="P3"):
+    from txv.plasmid import annotate_transcription_unit
+
+    construct = build_panel_construct(name)
+    build = build_plasmid(backbone, construct, f"pVax1_AG_{name}")
+    changes = annotate_transcription_unit(
+        build.record, build.insert_start, build.insert_end
+    )
+    return build, changes
+
+
+def test_utr3_is_extended_to_the_polya(backbone):
+    build, changes = _repaired(backbone)
+    utr3 = build.record.find("3' UTR")
+    polya = build.record.find("poly(A) 120")
+    assert utr3.start == build.insert_end, "3' UTR must begin at the stop codon"
+    assert utr3.end == polya.start, "3' UTR must run to the poly(A)"
+    assert len(utr3) == 99, "the true transcribed 3' UTR is 99 nt, not the 54 annotated"
+    assert any("3' UTR" in c for c in changes)
+
+
+def test_repaired_utr3_contains_the_signal_the_old_annotation_hid(backbone):
+    build, _ = _repaired(backbone)
+    utr3 = build.record.find("3' UTR").slice(build.record.sequence)
+    assert "AATAAA" in utr3
+    assert utr3.startswith("GCTGCCTTCTGCGGGGCTTG")
+    assert utr3.endswith("GGATCC"), "the BamHI scar sits at the 3' UTR / poly(A) join"
+
+
+def test_transcript_feature_spans_plus_one_to_polya(backbone):
+    build, _ = _repaired(backbone)
+    transcript = build.record.find("transcript (T7 run-off)")
+    polya = build.record.find("poly(A) 120")
+    assert transcript.end == polya.end
+    body = transcript.slice(build.record.sequence)
+    assert body.startswith("AGG")
+    assert body.endswith("A" * 120)
+    # The transcript must contain the whole ORF.
+    assert build.insert in body
+
+
+def test_polya_signal_is_labelled_with_its_context(backbone):
+    build, _ = _repaired(backbone)
+    signals = [f for f in build.record.features if f.key == "polyA_signal"
+               and f.label.startswith("AATAAA")]
+    assert len(signals) == 1
+    assert "3' UTR" in signals[0].label
+    assert "inert" in signals[0].qualifiers["note"]
+
+
+def test_no_polya_signal_is_ever_labelled_inside_an_orf(backbone):
+    """If this fires, the optimiser let a cryptic signal into a coding region."""
+    for name in [p.name for p in PANEL]:
+        build, _ = _repaired(backbone, name)
+        assert not [
+            f for f in build.record.features
+            if f.key == "polyA_signal" and "INSIDE THE ORF" in f.label
+        ], name
+
+
+def test_repair_is_idempotent(backbone):
+    from txv.plasmid import annotate_transcription_unit
+
+    build, first = _repaired(backbone)
+    second = annotate_transcription_unit(
+        build.record, build.insert_start, build.insert_end
+    )
+    assert first and not second, "a second pass must change nothing"
+
+
+def test_repaired_record_still_verifies_and_round_trips(backbone):
+    from txv.plasmid import verify_plasmid
+
+    construct = build_panel_construct("P3")
+    build, _ = _repaired(backbone)
+    assert all(c.ok for c in verify_plasmid(build, construct, backbone))
+    again = parse_genbank(write_genbank(build.record))
+    assert again.sequence == build.record.sequence
+    assert again.find("3' UTR").end == build.record.find("3' UTR").end

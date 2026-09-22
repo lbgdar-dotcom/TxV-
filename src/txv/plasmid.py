@@ -240,4 +240,119 @@ def _a_runs(sequence: str):
     return [m.group(0) for m in re.finditer(r"A+", sequence)]
 
 
-__all__ = ["PlasmidBuild", "PlasmidCheck", "build_plasmid", "verify_plasmid"]
+
+
+
+# ---------------------------------------------------------------------------
+# Annotation repair
+# ---------------------------------------------------------------------------
+
+def annotate_transcription_unit(
+    record: GenBankRecord,
+    orf_start: int,
+    orf_end: int,
+    t7_core: str = "TAATACGACTCACTATA",
+    polya_label: str = "poly(A) 120",
+    utr3_label: str = "3' UTR",
+) -> list[str]:
+    """Re-derive the transcription unit's annotation from the sequence.
+
+    Inherited vector maps tend to under-label the untranslated regions, because
+    a feature gets drawn once around whatever was being worked on and never
+    revisited. That is harmless until someone reads the map to answer a
+    question it was never annotated to answer -- "does this transcript contain
+    a poly(A) signal?" being exactly such a question.
+
+    This corrects three things in place and returns a list of what it changed:
+
+    * the **3' UTR** feature is extended to its true extent -- from the stop
+      codon to the start of the encoded poly(A) tract -- rather than wherever
+      the original annotation happened to stop;
+    * a **transcript** feature is added spanning T7 +1 to the end of the
+      poly(A), so the map shows what the IVT product actually is;
+    * any **AAUAAA** inside the transcript is labelled, with its context, since
+      whether one is native and harmless or cryptic and damaging depends
+      entirely on where it sits.
+    """
+    changes: list[str] = []
+    sequence = record.sequence
+
+    try:
+        polya = record.find(polya_label)
+    except KeyError:
+        return changes
+
+    # -- 3' UTR: stop codon to poly(A) ------------------------------------
+    try:
+        utr3 = record.find(utr3_label)
+    except KeyError:
+        utr3 = None
+    if utr3 is not None and (utr3.start != orf_end or utr3.end != polya.start):
+        old = (utr3.start + 1, utr3.end)
+        utr3.start, utr3.end = orf_end, polya.start
+        utr3.qualifiers["note"] = (
+            "Corrected to the full transcribed 3' UTR: stop codon to poly(A). "
+            f"Previously annotated {old[0]}..{old[1]}, which stopped short and "
+            "left part of the UTR -- including its poly(A) signal -- unlabelled."
+        )
+        changes.append(
+            f"3' UTR {old[0]}..{old[1]} -> {utr3.start + 1}..{utr3.end} "
+            f"({utr3.end - utr3.start} nt)"
+        )
+
+    # -- the transcript itself --------------------------------------------
+    hits = find_all(sequence, t7_core)
+    if len(hits) == 1 and not record.find_all("transcript (T7 run-off)"):
+        plus_one = hits[0] + len(t7_core)
+        record.features.append(GenBankFeature(
+            "misc_RNA", plus_one, polya.end, 1,
+            {
+                "label": "transcript (T7 run-off)",
+                "note": (
+                    f"IVT product: {polya.end - plus_one} nt from T7 +1 "
+                    f"(begins {sequence[plus_one:plus_one + 3]}) through the "
+                    "encoded poly(A). Cap chemistry requiring an AG start is "
+                    "compatible with this +1."
+                ),
+            },
+        ))
+        changes.append(
+            f"added transcript (T7 run-off) {plus_one + 1}..{polya.end} "
+            f"({polya.end - plus_one} nt)"
+        )
+
+    # -- poly(A) signals, labelled with their context ----------------------
+    for position in find_all(sequence, "AATAAA"):
+        if not (hits and hits[0] + len(t7_core) <= position < polya.end):
+            continue
+        if any(f.start == position and f.key == "polyA_signal"
+               for f in record.features):
+            continue
+        in_orf = orf_start <= position < orf_end
+        where = "INSIDE THE ORF" if in_orf else (
+            "in the 3' UTR" if position >= orf_end else "in the 5' UTR/leader"
+        )
+        record.features.append(GenBankFeature(
+            "polyA_signal", position, position + 6, 1,
+            {
+                "label": f"AATAAA ({where})",
+                "note": (
+                    "Cryptic poly(A) signal in the coding sequence -- would "
+                    "truncate the mRNA when this ORF is transcribed in the "
+                    "nucleus from the CMV promoter. This should not be here."
+                    if in_orf else
+                    "Native poly(A) signal of the untranslated region. Acts "
+                    "only on nuclear transcripts (i.e. the CMV route); inert "
+                    "for a cytoplasmically delivered IVT mRNA."
+                ),
+            },
+        ))
+        changes.append(f"labelled AAUAAA at {position + 1} ({where})")
+
+    return changes
+
+
+__all__ = [
+    "PlasmidBuild", "PlasmidCheck",
+    "build_plasmid", "verify_plasmid", "annotate_transcription_unit",
+]

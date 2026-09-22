@@ -166,6 +166,26 @@ The eGFP-specific annotations (`eGFP`, `eGFP_qPCR_F/R`, `ivtGFP_HiFi_F/R`) are
 **deleted** from every map rather than left in place. A primer annotation that
 no longer anneals to anything is a map that lies to you six months later.
 
+## One annotation corrected in every map
+
+The parent vector labels its `3' UTR` as 1419–1472 (54 nt), but the transcribed
+3' UTR actually runs from the stop codon to the poly(A) — **99 nt**. The 45 nt
+the old label left out contain the UTR's **native `AATAAA`** and the BamHI scar.
+
+That is harmless to the molecule — it is transcribed either way — but it is a
+map that cannot answer "does this transcript contain a poly(A) signal?", which
+is a question you will eventually ask. Every generated map therefore:
+
+- extends `3' UTR` to its true 1038..1136-style extent (99 nt, stop → poly(A));
+- adds a `transcript (T7 run-off)` feature spanning T7 +1 to the end of the
+  poly(A), so the map shows what the IVT product actually is;
+- labels each `AATAAA` **with its context** — native-and-inert in a UTR, or
+  cryptic-and-damaging inside an ORF. None of the nine has one in its ORF.
+
+The 3' UTR is globin-family (the `…GGUCUUUGAAUAAAG…` 3' end is the α-globin
+signature). Worth confirming the exact paralog against your construction
+records if you ever publish the map; nothing in the build depends on it.
+
 ## Two things about your vector worth knowing explicitly
 
 **The "AG" in pVax1_AG is the transcription start.** The T7 element is

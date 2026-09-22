@@ -242,7 +242,7 @@ def cmd_series(args) -> int:
 def cmd_plasmids(args) -> int:
     """Assemble the finished plasmid maps against a real backbone."""
     from .genbank_io import read_genbank, write_genbank
-    from .plasmid import build_plasmid, verify_plasmid
+    from .plasmid import annotate_transcription_unit, build_plasmid, verify_plasmid
     from .pvax1_ag import PANEL, build_panel_construct
 
     backbone = read_genbank(args.backbone)
@@ -256,10 +256,13 @@ def cmd_plasmids(args) -> int:
             name, spec=ConstructSpec(name=name), registry=registry
         )
         build = build_plasmid(backbone, construct, f"{args.prefix}{name}")
+        repairs = annotate_transcription_unit(
+            build.record, build.insert_start, build.insert_end
+        )
         checks = verify_plasmid(build, construct, backbone)
         bad = [c for c in checks if not c.ok]
         failures += len(bad)
-        rows.append((name, build, checks))
+        rows.append((name, build, checks, repairs))
         print(f"{args.prefix}{name:<4} {len(build):>6} bp  insert "
               f"{build.insert_start + 1}-{build.insert_end} "
               f"({build.insert_end - build.insert_start} bp)  "
@@ -269,6 +272,9 @@ def cmd_plasmids(args) -> int:
             print(f"     ! {check.name}: {check.detail}")
 
     if rows:
+        print("\n  annotation corrections applied to every map:")
+        for repair in rows[0][3]:
+            print(f"    - {repair}")
         dropped = rows[0][1].dropped_features
         print("\n  eGFP-specific annotations dropped from every map: "
               + ", ".join(dropped))
@@ -280,13 +286,13 @@ def cmd_plasmids(args) -> int:
     if args.out:
         out = Path(args.out)
         out.mkdir(parents=True, exist_ok=True)
-        for name, build, checks in rows:
+        for name, build, checks, _ in rows:
             (out / f"{build.record.name}.gb").write_text(write_genbank(build.record))
         summary = ["plasmid,total_bp,insert_start,insert_end,insert_bp,checks_passed"]
         summary += [
             f"{b.record.name},{len(b)},{b.insert_start + 1},{b.insert_end},"
             f"{b.insert_end - b.insert_start},{sum(c.ok for c in ch)}/{len(ch)}"
-            for _, b, ch in rows
+            for _, b, ch, _r in rows
         ]
         (out / "plasmid_summary.csv").write_text("\n".join(summary) + "\n")
         print(f"\nwrote {len(rows)} plasmid map(s) and plasmid_summary.csv to {out}/")
