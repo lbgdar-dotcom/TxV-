@@ -407,7 +407,8 @@ ORF length, GC, uridine fraction, CAI, linker, placeholder list and QC status.
 ## Tests
 
 ```bash
-python -m pytest        # 201 tests
+python -m pytest        # 268 tests
+python audit/audit_panel.py  # independent pre-order audit, 545 checks
 ```
 
 The suite encodes the invariants that matter: codon optimisation never changes

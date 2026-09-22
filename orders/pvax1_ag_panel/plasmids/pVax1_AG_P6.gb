@@ -177,14 +177,14 @@ ORIGIN
       481 ggcaccaaaa tcaacgggac tttccaaaat gtcgtaacaa ctccgcccca ttgacgcaaa
       541 tgggcggtag gcgtgtacgg tgggaggtct atataagcag agctggtctc ctctggctaa
       601 ctagagaacc cactgcttac tggcttatcg aaattaatac gactcactat aaggaaataa
-      661 gagagaaaag aagagtaaga agaaatataa gagccaccat ggccgcccca ggcgccagaa
-      721 gaccactgct gctgctgctg ctggccggcc tggcccatgg agcaagcgca tacccatacg
-      781 atgtgccaga ctacgccgga ggaggaggca gcgaagtgag cggactggag cagctggaga
-      841 gcatcatcaa cttcgagaag ctgaccgagt ggaccagcag caacgtgatg gaggagagag
-      901 gcggcggagg cagcgaagag ttcgccaaat tcgccagctt cgaagcccag ggagccctgg
-      961 caaacatcgc cgtggacaaa gccaacctgg acgtgatgaa gggaggcggc ggaagcatgc
-     1021 tgatcccaat cgccgtggga ggcgccctgg caggactggt gctgatcgtg ctgatcgcct
-     1081 acctgatcgg cagaaagaga agccacgccg gctaccagac catctgagct gccttctgcg
+      661 gagagaaaag aagagtaaga agaaatataa gagccaccat ggccgcaccc ggcgccagaa
+      721 ggccactgct cctgctcctg ctcgccggcc tggcccatgg agcaagcgcc tacccctacg
+      781 acgtgcccga ctacgccgga ggcggaggca gcgaggtgag cggcctggag cagctggaga
+      841 gcatcattaa cttcgagaag ctgaccgagt ggaccagctc caacgtgatg gaggaacggg
+      901 gcggaggcgg gtccgaagag ttcgccaagt tcgccagctt cgaagcccag ggagccctgg
+      961 ccaacatcgc cgtggacaaa gccaacctgg acgtgatgaa gggcggtggc ggaagtatgc
+     1021 tgatcccaat cgccgtgggc ggagccctgg ccggactggt gctgatcgtg ctgatcgcat
+     1081 acctgatcgg cagaaagagg agccacgccg gctaccagac catctgagct gccttctgcg
      1141 gggcttgcct tctggccatg cccttcttct ctcccttgca cctgtacctc ttggtctttg
      1201 aataaagcct gagtaggaag ggatccaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa
      1261 aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa

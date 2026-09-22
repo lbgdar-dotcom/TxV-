@@ -230,20 +230,69 @@ def test_e5_has_a_free_c_terminus_only_where_it_can_work():
     assert "weak" in PANEL_BY_NAME["P7"].question
 
 
-def test_e5_codons_are_pinned_against_their_own_repetitiveness():
-    from txv.pvax1_ag import PINNED_DNA
+def test_e5_encoding_is_derived_against_the_assembled_panel():
+    """E5's encoding is chosen, not copied: it must clear the junctions it sits in."""
+    from txv.pvax1_ag import canonical_encodings
 
-    assert PINNED_DNA["E5"] == "GAAGAGGAAGAGGAG"
+    e5 = canonical_encodings()["E5"]
+    assert len(e5) == 15
+    assert all(e5[i:i + 3] in ("GAA", "GAG") for i in range(0, 15, 3))
     construct = build_panel_construct("P5")
-    assert construct.feature("E5").slice(construct.template) == PINNED_DNA["E5"]
-    # The pin exists to break periodicity: no 12-nt repeat anywhere in the ORF.
-    orf, seen, repeats = construct.orf, {}, []
-    for i in range(len(orf) - 12 + 1):
-        kmer = orf[i : i + 12]
+    assert construct.feature("E5").slice(construct.template) == e5
+
+
+def test_linker_variants_differ_at_their_ends_not_just_their_middles():
+    """A shared 3' hexamer recreates the repeat one junction later."""
+    from txv.pvax1_ag import linker_variants
+    from txv.seqops import translate
+
+    variants = linker_variants()
+    assert len(variants) >= 2
+    assert all(translate(v, stop_at_stop=False) == "GGGGS" for v in variants)
+    assert len({v[-6:] for v in variants}) == len(variants), "3' ends collide"
+    assert len({v[:6] for v in variants}) == len(variants), "5' ends collide"
+
+
+@pytest.mark.parametrize("name", [p.name for p in PANEL])
+def test_no_long_direct_repeat_in_any_orf(name):
+    """15 nt is the actionable threshold: shorter repeats are inherent to
+    peptides like the LAMP1 hexa-leucine and are not a synthesis concern."""
+    orf, seen, repeats = build_panel_construct(name).orf, set(), []
+    for i in range(len(orf) - 15 + 1):
+        kmer = orf[i : i + 15]
         if kmer in seen:
-            repeats.append(kmer)
-        seen[kmer] = i
+            repeats.append((kmer, i))
+        seen.add(kmer)
     assert not repeats, repeats
+
+
+def test_modules_have_one_encoding_across_the_whole_panel():
+    """The confound that makes routing and codon usage indistinguishable."""
+    from collections import defaultdict
+
+    encodings = defaultdict(set)
+    for panel in PANEL:
+        construct = build_panel_construct(panel.name)
+        for feature in construct.features:
+            if feature.kind in ("orf", "promoter", "utr5", "utr3", "kozak",
+                                "polya", "linearization", "stop"):
+                continue
+            base = feature.name.rsplit("_", 1)[0] if feature.name[-1].isdigit() \
+                else feature.name
+            if base == "L":
+                continue                      # deliberately multi-variant
+            encodings[base].add(feature.slice(construct.template))
+    offenders = {m: len(e) for m, e in encodings.items() if len(e) != 1}
+    assert not offenders, offenders
+
+
+def test_no_identical_codon_run_anywhere_in_the_panel():
+    import re
+
+    for panel in PANEL:
+        orf = build_panel_construct(panel.name).orf
+        runs = [(m.group(0), m.start()) for m in re.finditer(r"(...)\1{2,}", orf)]
+        assert not runs, (panel.name, runs)
 
 
 @pytest.mark.parametrize("name", sorted(REFERENCE_ORF_NT))

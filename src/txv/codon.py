@@ -124,6 +124,13 @@ class OptimizerConfig:
     #: and sequencing-assembly risk in the plasmid template).
     repeat_k: int = 14
     w_repeat: float = 25.0
+    #: Penalty for reusing the codon immediately preceding, scaled by how long
+    #: the run already is. A stretch of identical residues -- poly-Leu in a
+    #: signal peptide, poly-Glu in an acidic degron -- otherwise collects the
+    #: single most frequent codon and produces a perfect period-3 tandem
+    #: repeat, which the k-mer repeat term above does not see reliably and
+    #: which synthesis vendors reject.
+    w_codon_run: float = 14.0
     forbidden: tuple[str, ...] = DEFAULT_FORBIDDEN
     beam_width: int = 40
     seed: int = 0
@@ -324,6 +331,12 @@ class CodonOptimizer:
         for motif, rx in self._forbidden_rc_res:
             if rx.search(tail):
                 cost += cfg.w_forbidden
+
+        run_length = 0
+        while prefix.endswith(codon * (run_length + 1)):
+            run_length += 1
+        if run_length:
+            cost += cfg.w_codon_run * run_length
 
         run_tail = seq[-(cfg.max_homopolymer + 3) :]
         if re.search(r"(A|C|G|T)\1{%d,}" % (cfg.max_homopolymer - 1), run_tail):

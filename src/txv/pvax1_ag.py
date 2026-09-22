@@ -37,6 +37,7 @@ worked** -- only the class II readout separates the routes.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from .parts import Part, PartKind, PartRegistry, Provenance, default_registry
@@ -78,9 +79,157 @@ MODULES: dict[str, str] = {
 #: start of antigen B and produced a 12-nt direct repeat at the linker
 #: junctions, and a naive run of GAG codons produces an internal tandem repeat
 #: of its own. Alternating GAA/GAG breaks the periodicity.
-PINNED_DNA: dict[str, str] = {
-    "E5": "GAAGAGGAAGAGGAG",
-}
+#: Encodings fixed by hand rather than derived. Empty by default: E5, which
+#: used to live here, is now chosen against the assembled panel instead of
+#: copied from a build whose other modules were encoded differently.
+PINNED_DNA: dict[str, str] = {}
+
+#: How many distinct GGGGS linker encodings to derive.
+#:
+#: The linker is the one module that must NOT be single-variant. A cassette
+#: carries up to four, and encoding them identically would put exact 15-nt
+#: direct repeats through the ORF. Cycling several encodings keeps every linker
+#: synonymous while leaving no repeat -- but only if the encodings differ at
+#: their *ends* too, since a shared 3' hexamer recreates the same repeat one
+#: junction later.
+N_LINKER_VARIANTS = 4
+
+#: Length at which a direct repeat is treated as a defect.
+REPEAT_K = 12
+
+_CANON_CACHE: dict[str, str] = {}
+_LINKER_CACHE: list[str] = []
+
+
+def _linker_variants(optimizer) -> list[str]:
+    """Derive linker encodings that differ from each other end to end."""
+    from itertools import product
+
+    from .codon import HUMAN_CODON_USAGE
+    from .seqops import AA_TO_CODONS
+
+    gly = [c for c in AA_TO_CODONS["G"] if HUMAN_CODON_USAGE[c] >= 0.10]
+    ser = [c for c in AA_TO_CODONS["S"] if HUMAN_CODON_USAGE[c] >= 0.10]
+    candidates = []
+    for combo in product(gly, gly, gly, gly, ser):
+        dna = "".join(combo)
+        if any(combo[i] == combo[i + 1] for i in range(3)):
+            continue                      # no identical adjacent codons
+        if re.search(r"(A|C|G|T)\1{3,}", dna):
+            continue                      # no 4+ homopolymer run
+        if optimizer.find_forbidden(dna):
+            continue
+        score = sum(HUMAN_CODON_USAGE[c] for c in combo)
+        candidates.append((-score, dna))
+    candidates.sort()
+
+    chosen: list[str] = []
+    for _, dna in candidates:
+        if any(dna[-6:] == c[-6:] or dna[:6] == c[:6] for c in chosen):
+            continue                      # distinct ends, not just middles
+        if any(sum(a != b for a, b in zip(dna, c)) < 5 for c in chosen):
+            continue                      # and distinct overall
+        chosen.append(dna)
+        if len(chosen) == N_LINKER_VARIANTS:
+            break
+    if len(chosen) < N_LINKER_VARIANTS:
+        raise RuntimeError("could not derive enough distinct linker encodings")
+    return chosen
+
+
+def _repeat_count(dna: str, k: int = REPEAT_K) -> int:
+    seen: set[str] = set()
+    repeats = 0
+    for i in range(len(dna) - k + 1):
+        kmer = dna[i : i + k]
+        if kmer in seen:
+            repeats += 1
+        seen.add(kmer)
+    return repeats
+
+
+def _assemble(name: str, canon: dict[str, str], linkers: list[str], e5: str) -> str:
+    out, linker_index = [], 0
+    for module in PANEL_BY_NAME[name].modules:
+        if module == "L":
+            out.append(linkers[linker_index % len(linkers)])
+            linker_index += 1
+        elif module == "E5":
+            out.append(e5)
+        else:
+            out.append(canon[module])
+    return "".join(out)
+
+
+def _choose_e5(canon: dict[str, str], linkers: list[str]) -> str:
+    """Pick the E5 encoding that leaves no direct repeat anywhere in the panel.
+
+    Glutamate has exactly two codons, so EEEEE has 32 encodings. They are not
+    interchangeable: E5 abuts a linker on one side, and antigen B happens to
+    begin with the same two residues, so a careless choice reproduces the
+    linker->B junction as a direct repeat. This enumerates all 32 against the
+    assembled panel rather than trusting a value derived for other encodings.
+    """
+    from itertools import product
+
+    from .codon import HUMAN_CODON_USAGE
+
+    best = None
+    for combo in product(("GAA", "GAG"), repeat=5):
+        dna = "".join(combo)
+        if any(combo[i] == combo[i + 1] == combo[i + 2] for i in range(3)):
+            continue                      # no three identical codons in a row
+        repeats = sum(
+            _repeat_count(_assemble(p.name, canon, linkers, dna))
+            for p in PANEL if "E5" in p.modules
+        )
+        usage = sum(HUMAN_CODON_USAGE[c] for c in combo)
+        key = (repeats, -usage)
+        if best is None or key < best[0]:
+            best = (key, dna)
+    return best[1]
+
+
+def canonical_encodings(optimizer=None) -> dict[str, str]:
+    """One DNA encoding per module, used in every construct that carries it.
+
+    This is a **scientific** requirement, not a tidiness one. The panel exists
+    to compare routing; if antigen A were encoded differently in P1 than in P3,
+    a difference between those arms could be codon usage, translation rate or
+    local mRNA structure rather than the route -- and nothing in the readout
+    would separate the two. Optimising each ORF independently produces exactly
+    that confound, so every module is fixed once and reused.
+
+    The linker is the deliberate exception (see :data:`N_LINKER_VARIANTS`), and
+    E5 is chosen against the assembled panel (see :func:`_choose_e5`).
+    """
+    from .codon import CodonOptimizer, OptimizerConfig
+
+    if _CANON_CACHE:
+        return dict(_CANON_CACHE)
+
+    # A tighter repeat window than the default is worth it here: these
+    # encodings are reused in every construct, so a repeat inside one is a
+    # repeat in eight plasmids.
+    optimizer = optimizer or CodonOptimizer(
+        OptimizerConfig(repeat_k=REPEAT_K, w_repeat=60.0)
+    )
+    for name, protein in MODULES.items():
+        if name in ("L", "E5"):
+            continue
+        _CANON_CACHE[name] = optimizer.optimize(protein, add_stop=None).dna
+
+    _LINKER_CACHE.extend(_linker_variants(optimizer))
+    _CANON_CACHE["E5"] = _choose_e5(_CANON_CACHE, _LINKER_CACHE)
+    return dict(_CANON_CACHE)
+
+
+def linker_variants(optimizer=None) -> list[str]:
+    """The derived GGGGS encodings, cycled by position within a cassette."""
+    if not _LINKER_CACHE:
+        canonical_encodings(optimizer)
+    return list(_LINKER_CACHE)
+
 
 MODULE_NOTES: dict[str, str] = {
     "M": "Bare initiator methionine, as the audited architecture has it on "
@@ -366,17 +515,25 @@ def panel_cassette(name: str) -> "Cassette":
     from .epitopes import Antigen, Cassette
 
     panel = PANEL_BY_NAME[name]
+    canon = canonical_encodings()
     beads = []
+    linker_index = 0
     for index, module in enumerate(panel.modules):
         # Module names repeat within a construct (several GGGGS linkers, two
         # tags); suffix them so features stay distinguishable.
         label = f"{module}_{index}" if panel.modules.count(module) > 1 else module
+        if module == "L":
+            variants = linker_variants()
+            pinned = variants[linker_index % len(variants)]
+            linker_index += 1
+        else:
+            pinned = PINNED_DNA.get(module, canon[module])
         beads.append(
             Antigen(
                 name=label,
                 sequence=MODULES[module],
                 kind=MODULE_KIND.get(module, "full_length"),
-                pinned_dna=PINNED_DNA.get(module),
+                pinned_dna=pinned,
                 note=MODULE_NOTES.get(module, ""),
             )
         )
@@ -488,7 +645,9 @@ def build_panel(
 
 
 __all__ = [
-    "MODULES", "MODULE_NOTES", "MODULE_KIND", "PINNED_DNA", "BACKBONE_OLIGOS",
+    "MODULES", "MODULE_NOTES", "MODULE_KIND", "PINNED_DNA",
+    "N_LINKER_VARIANTS", "REPEAT_K", "canonical_encodings", "linker_variants",
+    "BACKBONE_OLIGOS",
     "OPEN_DECISIONS", "PANEL", "PANEL_BY_NAME", "PanelConstruct", "SOURCE",
     "ROUTES", "routed_spec",
     "panel_proteins", "module_registry", "panel_cassette",

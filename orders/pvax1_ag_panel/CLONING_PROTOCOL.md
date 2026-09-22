@@ -8,17 +8,17 @@ reproducible from the repo.
 
 | | bp | GC | min/max GC in any 100-nt window | Route |
 |---|---|---|---|---|
-| P0 | 391 | 60.1% | 58 / 64% | CTLA-4 (AP-2, via surface) |
-| P1 | 493 | 60.0% | 58 / 64% | CTLA-4 (AP-2, via surface) |
-| P2 | 493 | 60.7% | 58 / 65% | CTLA-4 (AP-2, via surface) |
-| P3 | 595 | 60.5% | 58 / 64% | CTLA-4 (AP-2, via surface) |
-| P4 | 595 | 60.5% | 59 / 64% | CTLA-4 (AP-2, via surface) |
-| P5 | 307 | 61.2% | 58 / 64% | cytosolic (+E5 degron, free C-terminus) |
-| P6 | 469 | 62.1% | 58 / 67% | LAMP1 (AP-3, direct to lysosome) |
-| P7 | 592 | 62.7% | 59 / 68% | dual: A cytosolic + B lysosomal |
-| P8 | 592 | 62.8% | 59 / 68% | dual: B cytosolic + A lysosomal |
+| P0 | 391 | 60.4% | 57 / 65% | CTLA-4 (AP-2, via surface) |
+| P1 | 493 | 60.9% | 57 / 67% | CTLA-4 (AP-2, via surface) |
+| P2 | 493 | 61.1% | 57 / 67% | CTLA-4 (AP-2, via surface) |
+| P3 | 595 | 61.0% | 57 / 67% | CTLA-4 (AP-2, via surface) |
+| P4 | 595 | 61.0% | 57 / 67% | CTLA-4 (AP-2, via surface) |
+| P5 | 307 | 61.9% | 59 / 66% | cytosolic (+E5 degron, free C-terminus) |
+| P6 | 469 | 64.2% | 59 / 73% | LAMP1 (AP-3, direct to lysosome) |
+| P7 | 592 | 63.8% | 60 / 73% | dual: A cytosolic + B lysosomal |
+| P8 | 592 | 63.8% | 57 / 73% | dual: B cytosolic + A lysosomal |
 
-All nine carry the **E5 acidic C-degron (EEEEE)** as CVGBM does, with its codons pinned to `GAAGAGGAAGAGGAG`. All are inside standard gene-fragment limits: 125–3000 bp, overall and
+All nine carry the **E5 acidic C-degron (EEEEE)** as CVGBM does. Every module has a single DNA encoding across the whole panel, so a difference between arms cannot be codon usage. All are inside standard gene-fragment limits: 125–3000 bp, overall and
 windowed GC within 25–75%, no homopolymer ≥ 6 nt, no repeated 20-mer, longest
 perfect hairpin stem 9 bp. Order as **dsDNA gene fragments** (IDT gBlocks,
 Twist Gene Fragments, GenScript — any equivalent).
@@ -206,3 +206,36 @@ Because this vector also drives the same ORF from its **CMV promoter**, the
 `AATAAA` screen is not academic: in a nuclear transcript a cryptic
 polyadenylation signal inside the ORF would truncate the mRNA. The codon
 optimiser avoids it, and the plasmid check re-confirms it per construct.
+
+## Pre-order audit
+
+Run before spending anything:
+
+```bash
+python audit/audit_panel.py          # 545 checks; exit 1 blocks ordering
+python -m pytest audit/              # 15 negative controls
+```
+
+`audit/audit_panel.py` imports nothing from the design library. It reads the
+files a vendor would actually receive — `gblocks.fasta`, `ordering_table.csv`,
+the nine `.gb` maps and the parent vector — restates the audited architecture
+from scratch, and compares. A bug in `txv` cannot cancel itself out.
+
+It re-derives, per construct: the reading frame and translated protein; every
+module intact at its expected position; SIINFEKL and the class II core present;
+`GYQTI` terminal on LAMP1 constructs; E5 terminal in P0–P5 and internal in
+P7/P8; homology arms exact and unique in both fragment and backbone; no BsaI,
+BamHI or other listed site inside an insert; no `AATAAA` or cryptic splice
+donor in the ORF; GC overall and windowed; homopolymers and long repeats; and —
+the one that matters most — that the shipped plasmid map is byte-for-byte what
+that gBlock would actually assemble into.
+
+It also checks across constructs that **every module has exactly one DNA
+encoding**. Without that, a difference between arms could be codon usage rather
+than routing, and no readout would separate the two.
+
+`audit/test_audit_catches.py` is the proof the audit works: it copies the real
+artifacts, introduces one realistic defect at a time — a single-base deletion, a
+premature stop, a damaged SIINFEKL, residues appended after `GYQTI`, a BsaI site
+in the insert, a silent re-synonymisation of antigen A in one construct — and
+asserts the audit blocks on each.
