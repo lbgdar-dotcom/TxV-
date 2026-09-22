@@ -1,12 +1,12 @@
-LOCUS       P0               379 bp    DNA     linear   SYN 22-SEP-2026
-DEFINITION  P0 synthesis fragment (orf mode), 379 bp, for homology assembly into the pVax1_AG backbone.
+LOCUS       P0               391 bp    DNA     linear   SYN 22-SEP-2026
+DEFINITION  P0 synthesis fragment (orf mode), 391 bp, for homology assembly into the pVax1_AG backbone.
 ACCESSION   P0
 VERSION     .
 KEYWORDS    gene fragment; homology assembly; IVT mRNA.
 SOURCE      synthetic construct
   ORGANISM  synthetic construct
 FEATURES             Location/Qualifiers
-     source          1..379
+     source          1..391
                      /organism="synthetic construct"
                      /mol_type="other DNA"
      misc_feature    1..20
@@ -14,13 +14,13 @@ FEATURES             Location/Qualifiers
                      /note="20-bp homology to the
                      linearised backbone; ends in the
                      Kozak."
-     CDS             21..359
+     CDS             21..371
                      /label="ORF"
                      /codon_start="1"
                      /translation="MACLGLRRYKAQLQLPSRTWPFV
                      ALLTLLFIPVFSYPYDVPDYAGGGGSFLLWILVAVSL
                      GLFFYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEP
-                     ECEKQFQPYFIPIN"
+                     ECEKQFQPYFIPINEEEEE"
                      /note="Codon-optimised in a single
                      pass."
      sig_peptide     21..125
@@ -31,10 +31,11 @@ FEATURES             Location/Qualifiers
                      /label="L"
      misc_feature    168..353
                      /label="CTLA4_TMT"
-     terminator      354..359
+     misc_feature    354..368
+                     /label="E5"
+     terminator      369..371
                      /label="stop"
-                     /note="Tandem stop"
-     misc_feature    360..379
+     misc_feature    372..391
                      /label="right_homology_arm"
                      /note="20-bp homology to the
                      linearised backbone (3' UTR start)."
@@ -50,6 +51,6 @@ ORIGIN
       121 tcagctaccc ctacgacgtg ccagactacg ccggaggcgg aggcagcttc ctgctgtgga
       181 ttctggtggc agtgagcctg ggcctgttct tctacagctt cctggtgagc gccgtgagcc
       241 tgagcaagat gctgaagaag cggagcccac tgaccacagg cgtgtacgtg aagatgccac
-      301 ccaccgagcc agagtgcgag aagcagttcc agccctactt catccccatc aactgataag
-      361 ctgccttctg cggggcttg
+      301 ccaccgagcc cgagtgcgag aagcagttcc agccctactt catccccatc aacgaagagg
+      361 aagaggagtg agctgccttc tgcggggctt g
 //

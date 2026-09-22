@@ -167,32 +167,50 @@ class ConstructBuilder:
         linearizer = part(spec.linearization_site)
 
         # ---- protein-level ORF layout ---------------------------------------
-        segments: list[tuple[str, str, str]] = []  # (name, protein, kind)
+        # (name, protein, kind, pinned_dna)
+        segments: list[tuple[str, str, str, str | None]] = []
         if sp:
-            segments.append((sp.name, sp.protein or "", "signal_peptide"))
+            segments.append((sp.name, sp.protein or "", "signal_peptide", None))
             if sp_spacer:
-                segments.append((sp_spacer.name, sp_spacer.protein or "", "linker"))
+                segments.append((sp_spacer.name, sp_spacer.protein or "", "linker", None))
         for index, antigen in enumerate(cassette.antigens):
             if index:
                 link = cassette.linker_at(index - 1)
-                segments.append((f"linker_{index - 1}", link, "linker"))
-            segments.append((antigen.name, antigen.sequence, antigen.kind))
+                segments.append((f"linker_{index - 1}", link, "linker", None))
+            segments.append((antigen.name, antigen.sequence, antigen.kind,
+                             antigen.pinned_dna))
         if traffic:
             if traffic_spacer:
-                segments.append((traffic_spacer.name, traffic_spacer.protein or "", "linker"))
-            segments.append((traffic.name, traffic.protein or "", "trafficking"))
+                segments.append((traffic_spacer.name, traffic_spacer.protein or "",
+                                 "linker", None))
+            segments.append((traffic.name, traffic.protein or "", "trafficking", None))
 
-        orf_protein = "".join(seg for _, seg, _ in segments)
+        orf_protein = "".join(seg for _, seg, _, _ in segments)
         if not orf_protein.startswith("M"):
             orf_protein = "M" + orf_protein
-            segments.insert(0, ("start_Met", "M", "start"))
+            segments.insert(0, ("start_Met", "M", "start", None))
             notes.append("Prepended an initiator methionine: no element supplied one.")
+
+        # Residue-level codon pins, resolved after any initiator insertion so
+        # the indices line up with the protein actually being optimised.
+        pinned: dict[int, str] = {}
+        cursor = 0
+        for _, seg_protein, _, seg_pinned in segments:
+            if seg_pinned:
+                for offset in range(len(seg_protein)):
+                    pinned[cursor + offset] = seg_pinned[offset * 3 : offset * 3 + 3]
+            cursor += len(seg_protein)
+        if pinned:
+            notes.append(
+                f"{len(pinned)} codon(s) pinned to a deliberately chosen encoding; "
+                "the rest of the ORF was optimised around them."
+            )
 
         # ---- one-pass codon optimisation ------------------------------------
         stop = clean(spec.stop_codon)
         if stop not in ("TAA", "TAG", "TGA"):
             raise ValueError(f"not a stop codon: {spec.stop_codon}")
-        result = self.optimizer.optimize(orf_protein, add_stop=stop)
+        result = self.optimizer.optimize(orf_protein, add_stop=stop, pinned=pinned)
         orf_dna = result.dna
         if spec.tandem_stop:
             orf_dna += "TAA" if stop != "TAA" else "TGA"
@@ -201,7 +219,7 @@ class ConstructBuilder:
         # Map protein segment boundaries onto ORF nucleotide coordinates.
         orf_segment_spans: list[tuple[str, int, int, str]] = []
         aa_cursor = 0
-        for seg_name, seg_protein, seg_kind in segments:
+        for seg_name, seg_protein, seg_kind, _ in segments:
             if not seg_protein:
                 continue
             start = aa_cursor * 3

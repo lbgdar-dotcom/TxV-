@@ -1,12 +1,12 @@
-LOCUS       P2               481 bp    DNA     linear   SYN 22-SEP-2026
-DEFINITION  P2 synthesis fragment (orf mode), 481 bp, for homology assembly into the pVax1_AG backbone.
+LOCUS       P2               493 bp    DNA     linear   SYN 22-SEP-2026
+DEFINITION  P2 synthesis fragment (orf mode), 493 bp, for homology assembly into the pVax1_AG backbone.
 ACCESSION   P2
 VERSION     .
 KEYWORDS    gene fragment; homology assembly; IVT mRNA.
 SOURCE      synthetic construct
   ORGANISM  synthetic construct
 FEATURES             Location/Qualifiers
-     source          1..481
+     source          1..493
                      /organism="synthetic construct"
                      /mol_type="other DNA"
      misc_feature    1..20
@@ -14,14 +14,14 @@ FEATURES             Location/Qualifiers
                      /note="20-bp homology to the
                      linearised backbone; ends in the
                      Kozak."
-     CDS             21..461
+     CDS             21..473
                      /label="ORF"
                      /codon_start="1"
                      /translation="MACLGLRRYKAQLQLPSRTWPFV
                      ALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEA
                      QGALANIAVDKANLDVMKGGGGSFLLWILVAVSLGLF
                      FYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECE
-                     KQFQPYFIPIN"
+                     KQFQPYFIPINEEEEE"
                      /note="Codon-optimised in a single
                      pass."
      sig_peptide     21..125
@@ -36,10 +36,11 @@ FEATURES             Location/Qualifiers
                      /label="L_4"
      misc_feature    270..455
                      /label="CTLA4_TMT"
-     terminator      456..461
+     misc_feature    456..470
+                     /label="E5"
+     terminator      471..473
                      /label="stop"
-                     /note="Tandem stop"
-     misc_feature    462..481
+     misc_feature    474..493
                      /label="right_homology_arm"
                      /note="20-bp homology to the
                      linearised backbone (3' UTR start)."
@@ -56,7 +57,7 @@ ORIGIN
       181 aattcgccag cttcgaagcc cagggagcac tggccaacat cgccgtggac aaggccaacc
       241 tggacgtgat gaagggagga ggcggcagct tcctgctgtg gattctggtg gccgtgagcc
       301 tgggcctgtt cttctacagc ttcctggtga gcgccgtgag cctgagcaag atgctgaaga
-      361 agcggagccc actgaccaca ggcgtgtacg tgaagatgcc acccaccgag ccagagtgcg
-      421 agaagcagtt ccagccctac ttcatcccca tcaactgata agctgccttc tgcggggctt
-      481 g
+      361 agcggagccc actgaccaca ggcgtgtacg tgaagatgcc acccaccgag cccgagtgcg
+      421 agaagcagtt ccagccctac ttcatcccca tcaacgaaga ggaagaggag tgagctgcct
+      481 tctgcggggc ttg
 //

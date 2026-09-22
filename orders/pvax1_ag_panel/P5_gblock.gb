@@ -1,12 +1,12 @@
-LOCUS       P5               346 bp    DNA     linear   SYN 22-SEP-2026
-DEFINITION  P5 synthesis fragment (orf mode), 346 bp, for homology assembly into the pVax1_AG backbone.
+LOCUS       P5               307 bp    DNA     linear   SYN 22-SEP-2026
+DEFINITION  P5 synthesis fragment (orf mode), 307 bp, for homology assembly into the pVax1_AG backbone.
 ACCESSION   P5
 VERSION     .
 KEYWORDS    gene fragment; homology assembly; IVT mRNA.
 SOURCE      synthetic construct
   ORGANISM  synthetic construct
 FEATURES             Location/Qualifiers
-     source          1..346
+     source          1..307
                      /organism="synthetic construct"
                      /mol_type="other DNA"
      misc_feature    1..20
@@ -14,35 +14,33 @@ FEATURES             Location/Qualifiers
                      /note="20-bp homology to the
                      linearised backbone; ends in the
                      Kozak."
-     CDS             21..326
+     CDS             21..287
                      /label="ORF"
                      /codon_start="1"
-                     /translation="MAYPYDVPDYAGGGGSEVSGLEQ
-                     LESIINFEKLTEWTSSNVMEERGGGGSEEFAKFASFE
-                     AQGALANIAVDKANLDVMKGGGGSACKNWFSSLSHFV
-                     IHL"
+                     /translation="MYPYDVPDYAGGGGSEVSGLEQL
+                     ESIINFEKLTEWTSSNVMEERGGGGSEEFAKFASFEA
+                     QGALANIAVDKANLDVMKGGGGSEEEEE"
                      /note="Codon-optimised in a single
                      pass."
-     misc_feature    21..26
-                     /label="MA"
-     misc_feature    27..53
+     misc_feature    21..23
+                     /label="M"
+     misc_feature    24..50
                      /label="HA"
-     misc_feature    54..68
+     misc_feature    51..65
                      /label="L_2"
-     misc_feature    69..155
+     misc_feature    66..152
                      /label="A"
-     misc_feature    156..170
+     misc_feature    153..167
                      /label="L_4"
-     misc_feature    171..257
+     misc_feature    168..254
                      /label="B"
-     misc_feature    258..272
+     misc_feature    255..269
                      /label="L_6"
-     misc_feature    273..320
-                     /label="CL1"
-     terminator      321..326
+     misc_feature    270..284
+                     /label="E5"
+     terminator      285..287
                      /label="stop"
-                     /note="Tandem stop"
-     misc_feature    327..346
+     misc_feature    288..307
                      /label="right_homology_arm"
                      /note="20-bp homology to the
                      linearised backbone (3' UTR start)."
@@ -53,10 +51,10 @@ COMMENT     ORF only: drops between the backbone's existing UTR
 COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
             starts at ATG and must not repeat it.
 ORIGIN
-        1 gaagaaatat aagagccacc atggcctacc catacgacgt gcccgactac gccggcggag
-       61 gcggcagcga ggtgagcgga ctggaacagc tggagagcat catcaacttc gagaagctga
-      121 ccgagtggac cagcagcaac gtgatggagg agagaggcgg cggaggcagc gaagagttcg
-      181 ccaaattcgc cagcttcgaa gcccagggag ccctggcaaa catcgccgtg gacaaagcca
-      241 acctggacgt gatgaaggga ggcggcggaa gcgcctgcaa gaactggttc agcagcctga
-      301 gccacttcgt gatccacctg tgataagctg ccttctgcgg ggcttg
+        1 gaagaaatat aagagccacc atgtacccct acgacgtgcc agactacgcc ggcggcggag
+       61 gcagcgaggt gagcggcctg gaacagctgg agagcatcat caacttcgag aagctgaccg
+      121 agtggaccag cagcaacgtg atggaggaga gaggcggcgg cggaagcgaa gagttcgcca
+      181 aattcgccag cttcgaagcc cagggagccc tggcaaacat cgccgtggac aaagccaacc
+      241 tggacgtgat gaagggaggc ggcggcagcg aagaggaaga ggagtgagct gccttctgcg
+      301 gggcttg
 //

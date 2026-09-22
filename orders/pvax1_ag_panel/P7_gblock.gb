@@ -1,12 +1,12 @@
-LOCUS       P7               631 bp    DNA     linear   SYN 22-SEP-2026
-DEFINITION  P7 synthesis fragment (orf mode), 631 bp, for homology assembly into the pVax1_AG backbone.
+LOCUS       P7               592 bp    DNA     linear   SYN 22-SEP-2026
+DEFINITION  P7 synthesis fragment (orf mode), 592 bp, for homology assembly into the pVax1_AG backbone.
 ACCESSION   P7
 VERSION     .
 KEYWORDS    gene fragment; homology assembly; IVT mRNA.
 SOURCE      synthetic construct
   ORGANISM  synthetic construct
 FEATURES             Location/Qualifiers
-     source          1..631
+     source          1..592
                      /organism="synthetic construct"
                      /mol_type="other DNA"
      misc_feature    1..20
@@ -14,47 +14,46 @@ FEATURES             Location/Qualifiers
                      /note="20-bp homology to the
                      linearised backbone; ends in the
                      Kozak."
-     CDS             21..611
+     CDS             21..572
                      /label="ORF"
                      /codon_start="1"
-                     /translation="MAYPYDVPDYAGGGGSEVSGLEQ
-                     LESIINFEKLTEWTSSNVMEERGGGGSACKNWFSSLS
-                     HFVIHLGSGATNFSLLKQAGDVEENPGPMAAPGARRP
-                     LLLLLLAGLAHGASADYKDDDDKGGGGSEEFAKFASF
-                     EAQGALANIAVDKANLDVMKGGGGSMLIPIAVGGALA
-                     GLVLIVLIAYLIGRKRSHAGYQTI"
+                     /translation="MYPYDVPDYAGGGGSEVSGLEQL
+                     ESIINFEKLTEWTSSNVMEERGGGGSEEEEEGSGATN
+                     FSLLKQAGDVEENPGPMAAPGARRPLLLLLLAGLAHG
+                     ASADYKDDDDKGGGGSEEFAKFASFEAQGALANIAVD
+                     KANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLI
+                     GRKRSHAGYQTI"
                      /note="Codon-optimised in a single
                      pass."
-     misc_feature    21..26
-                     /label="MA"
-     misc_feature    27..53
+     misc_feature    21..23
+                     /label="M"
+     misc_feature    24..50
                      /label="HA"
-     misc_feature    54..68
+     misc_feature    51..65
                      /label="L_2"
-     misc_feature    69..155
+     misc_feature    66..152
                      /label="A"
-     misc_feature    156..170
+     misc_feature    153..167
                      /label="L_4"
-     misc_feature    171..218
-                     /label="CL1"
-     misc_feature    219..284
+     misc_feature    168..182
+                     /label="E5"
+     misc_feature    183..248
                      /label="P2A"
-     sig_peptide     285..356
+     sig_peptide     249..320
                      /label="LAMP1_SP"
-     misc_feature    357..380
+     misc_feature    321..344
                      /label="FLAG"
-     misc_feature    381..395
+     misc_feature    345..359
                      /label="L_9"
-     misc_feature    396..482
+     misc_feature    360..446
                      /label="B"
-     misc_feature    483..497
+     misc_feature    447..461
                      /label="L_11"
-     misc_feature    498..605
+     misc_feature    462..569
                      /label="LAMP1_TMT"
-     terminator      606..611
+     terminator      570..572
                      /label="stop"
-                     /note="Tandem stop"
-     misc_feature    612..631
+     misc_feature    573..592
                      /label="right_homology_arm"
                      /note="20-bp homology to the
                      linearised backbone (3' UTR start)."
@@ -65,15 +64,14 @@ COMMENT     ORF only: drops between the backbone's existing UTR
 COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
             starts at ATG and must not repeat it.
 ORIGIN
-        1 gaagaaatat aagagccacc atggcctacc catacgacgt gcccgactac gccggcggag
-       61 gcggcagcga ggtgagcgga ctggaacagc tggagagcat catcaacttc gagaagctga
-      121 ccgagtggac cagcagcaac gtgatggagg agagaggcgg cggaggcagc gcatgcaaga
-      181 actggttcag cagcctgagc cacttcgtga tccacctggg aagcggcgcc acaaacttca
-      241 gcctgctgaa acaggccggc gacgtggaag agaacccagg cccaatggcc gccccaggag
-      301 caagaagacc actgctgctg ctgctgctgg caggactggc acacggagca agcgccgact
-      361 acaaagacga cgacgacaag ggaggcggag gcagcgaaga gttcgccaag ttcgccagct
-      421 tcgaagccca gggagccctg gcaaacatcg ccgtggacaa agccaacctg gacgtgatga
-      481 agggcggagg cggaagcatg ctgatcccaa tcgccgtggg aggcgccctg gccggactgg
-      541 tgctgattgt gctgatcgcc tacctgatcg gcagaaagag gagccacgcc ggctaccaga
-      601 ccatctgata agctgccttc tgcggggctt g
+        1 gaagaaatat aagagccacc atgtacccct acgacgtgcc agactacgcc ggcggcggag
+       61 gcagcgaggt gagcggcctg gaacagctgg agagcatcat caacttcgag aagctgaccg
+      121 agtggaccag cagcaacgtg atggaggaga gaggcggcgg cggaagcgaa gaggaagagg
+      181 agggaagcgg agccacaaac ttcagcctgc tgaagcaggc cggcgacgtg gaggaaaacc
+      241 caggcccaat ggccgcccca ggagccagaa gaccactgct gctgctgctg ctggcaggac
+      301 tggcacacgg agcaagcgcc gactacaaag acgacgacga caagggaggc ggaggcagcg
+      361 aagagttcgc caagttcgcc agcttcgaag cccagggagc cctggcaaac atcgccgtgg
+      421 acaaagccaa cctggacgtg atgaagggcg gcggaggaag catgctgatc ccaatcgccg
+      481 tgggaggcgc cctggccgga ctggtgctga ttgtgctgat cgcctacctg atcggcagaa
+      541 agaggagcca cgccggctac cagaccatct gagctgcctt ctgcggggct tg
 //

@@ -19,36 +19,49 @@ from txv.pvax1_ag import (
 from txv.qc import run_qc
 
 REFERENCE_PROTEINS = {
-    "P0": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSFLLWILVAVSLGLFFYSF"
-          "LVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPIN",
-    "P1": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEVSGLEQLESIINFEKLT"
-          "EWTSSNVMEERGGGGSFLLWILVAVSLGLFFYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECE"
-          "KQFQPYFIPIN",
-    "P2": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEAQGALANI"
-          "AVDKANLDVMKGGGGSFLLWILVAVSLGLFFYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECE"
-          "KQFQPYFIPIN",
-    "P3": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEVSGLEQLESIINFEKLT"
-          "EWTSSNVMEERGGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSFLLWILVAVSLGLFFYS"
-          "FLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPIN",
-    "P4": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEAQGALANI"
-          "AVDKANLDVMKGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSFLLWILVAVSLGLFFYS"
-          "FLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPIN",
-    "P5": "MAYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSEEFAKFASFEAQGALAN"
-          "IAVDKANLDVMKGGGGSACKNWFSSLSHFVIHL",
-    "P6": "MAAPGARRPLLLLLLAGLAHGASAYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEER"
-          "GGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLIGRKR"
-          "SHAGYQTI",
-    "P7": "MAYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSACKNWFSSLSHFVIHLG"
-          "SGATNFSLLKQAGDVEENPGPMAAPGARRPLLLLLLAGLAHGASADYKDDDDKGGGGSEEFAKFASF"
-          "EAQGALANIAVDKANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLIGRKRSHAGYQTI",
-    "P8": "MAYPYDVPDYAGGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSACKNWFSSLSHFVIHLG"
-          "SGATNFSLLKQAGDVEENPGPMAAPGARRPLLLLLLAGLAHGASADYKDDDDKGGGGSEVSGLEQLE"
-          "SIINFEKLTEWTSSNVMEERGGGGSMLIPIAVGGALAGLVLIVLIAYLIGRKRSHAGYQTI",
+    "P0": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSFLLWILVAVSLGLFFYS"
+          "FLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPINEEEEE",
+    "P1": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEVSGLEQLESIINFEKL"
+          "TEWTSSNVMEERGGGGSFLLWILVAVSLGLFFYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPE"
+          "CEKQFQPYFIPINEEEEE",
+    "P2": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEAQGALAN"
+          "IAVDKANLDVMKGGGGSFLLWILVAVSLGLFFYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPE"
+          "CEKQFQPYFIPINEEEEE",
+    "P3": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEVSGLEQLESIINFEKL"
+          "TEWTSSNVMEERGGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSFLLWILVAVSLGLFF"
+          "YSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPINEEEEE",
+    "P4": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEAQGALAN"
+          "IAVDKANLDVMKGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSFLLWILVAVSLGLFF"
+          "YSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPINEEEEE",
+    "P5": "MYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSEEFAKFASFEAQGALAN"
+          "IAVDKANLDVMKGGGGSEEEEE",
+    "P6": "MAAPGARRPLLLLLLAGLAHGASAYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEE"
+          "RGGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLIGR"
+          "KRSHAGYQTI",
+    "P7": "MYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSEEEEEGSGATNFSLLKQ"
+          "AGDVEENPGPMAAPGARRPLLLLLLAGLAHGASADYKDDDDKGGGGSEEFAKFASFEAQGALANIA"
+          "VDKANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLIGRKRSHAGYQTI",
+    "P8": "MYPYDVPDYAGGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSEEEEEGSGATNFSLLKQ"
+          "AGDVEENPGPMAAPGARRPLLLLLLAGLAHGASADYKDDDDKGGGGSEVSGLEQLESIINFEKLTE"
+          "WTSSNVMEERGGGGSMLIPIAVGGALAGLVLIVLIAYLIGRKRSHAGYQTI",
 }
 
+#: Protein lengths from the audited construct_architecture table.
 REFERENCE_LENGTHS = {
-    "P0": 111, "P1": 145, "P2": 145, "P3": 179, "P4": 179,
-    "P5": 100, "P6": 142, "P7": 195, "P8": 195,
+    "P0": 116, "P1": 150, "P2": 150, "P3": 184, "P4": 184,
+    "P5": 88, "P6": 142, "P7": 183, "P8": 183,
+}
+
+#: ORF and finished-plasmid lengths from the same table. These are the
+#: strongest external check available: they close only if the module content,
+#: the stop-codon convention and the insertion site are all right.
+REFERENCE_ORF_NT = {
+    "P0": 351, "P1": 453, "P2": 453, "P3": 555, "P4": 555,
+    "P5": 267, "P6": 429, "P7": 552, "P8": 552,
+}
+REFERENCE_PLASMID_BP = {
+    "P0": 3486, "P1": 3588, "P2": 3588, "P3": 3690, "P4": 3690,
+    "P5": 3402, "P6": 3564, "P7": 3687, "P8": 3687,
 }
 
 
@@ -138,7 +151,7 @@ def test_panel_builds_into_a_valid_ivt_construct(name):
 def test_panel_construct_annotates_every_module():
     construct = build_panel_construct("P7")
     labels = {f.name for f in construct.features}
-    for module in ("MA", "HA", "A", "CL1", "P2A", "LAMP1_SP", "FLAG", "B",
+    for module in ("M", "HA", "A", "E5", "P2A", "LAMP1_SP", "FLAG", "B",
                    "LAMP1_TMT"):
         assert module in labels or any(
             label.startswith(f"{module}_") for label in labels
@@ -183,3 +196,61 @@ def test_open_decisions_are_recorded():
     joined = " ".join(OPEN_DECISIONS)
     assert "A120" in joined
     assert "AAGCTT" in joined or "HindIII" in joined
+
+
+# --- the degron ------------------------------------------------------------
+
+def test_the_panel_uses_e5_not_cl1():
+    """E5 is the element CVGBM carries and the one that won CureVac's screen."""
+    assert MODULES["E5"] == "EEEEE"
+    for panel in PANEL:
+        assert "CL1" not in panel.modules, panel.name
+    with_degron = [p.name for p in PANEL if "E5" in p.modules]
+    assert with_degron == ["P0", "P1", "P2", "P3", "P4", "P5", "P7", "P8"]
+    # P6 is the one construct with no degron at all.
+    assert "E5" not in PANEL_BY_NAME["P6"].modules
+
+
+def test_cl1_is_retained_only_as_a_documented_alternative():
+    from txv.pvax1_ag import MODULE_NOTES
+
+    assert MODULES["CL1"] == "ACKNWFSSLSHFVIHL"
+    assert "NOT USED" in MODULE_NOTES["CL1"]
+    assert "withdrawn" in MODULE_NOTES["CL1"]
+
+
+def test_e5_has_a_free_c_terminus_only_where_it_can_work():
+    """A C-degron needs a free C-terminus; upstream of P2A it does not have one."""
+    for name in ("P0", "P1", "P2", "P3", "P4", "P5"):
+        assert PANEL_BY_NAME[name].protein().endswith("EEEEE"), name
+    for name in ("P7", "P8"):
+        panel = PANEL_BY_NAME[name]
+        assert not panel.protein().endswith("EEEEE")
+        assert panel.modules.index("E5") < panel.modules.index("P2A")
+    assert "weak" in PANEL_BY_NAME["P7"].question
+
+
+def test_e5_codons_are_pinned_against_their_own_repetitiveness():
+    from txv.pvax1_ag import PINNED_DNA
+
+    assert PINNED_DNA["E5"] == "GAAGAGGAAGAGGAG"
+    construct = build_panel_construct("P5")
+    assert construct.feature("E5").slice(construct.template) == PINNED_DNA["E5"]
+    # The pin exists to break periodicity: no 12-nt repeat anywhere in the ORF.
+    orf, seen, repeats = construct.orf, {}, []
+    for i in range(len(orf) - 12 + 1):
+        kmer = orf[i : i + 12]
+        if kmer in seen:
+            repeats.append(kmer)
+        seen[kmer] = i
+    assert not repeats, repeats
+
+
+@pytest.mark.parametrize("name", sorted(REFERENCE_ORF_NT))
+def test_orf_length_matches_the_audited_table(name):
+    assert len(build_panel_construct(name).orf) == REFERENCE_ORF_NT[name]
+
+
+def test_single_stop_codon_matches_the_audited_convention():
+    construct = build_panel_construct("P3")
+    assert len(construct.feature("stop")) == 3

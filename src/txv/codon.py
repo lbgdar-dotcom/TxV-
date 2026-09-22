@@ -212,11 +212,22 @@ class CodonOptimizer:
         self._max_motif = max((len(m) for m in self.config.forbidden), default=0)
 
     # -- public API ---------------------------------------------------------
-    def optimize(self, protein: str, add_stop: str | None = "TGA") -> OptimizationResult:
+    def optimize(
+        self,
+        protein: str,
+        add_stop: str | None = "TGA",
+        pinned: dict[int, str] | None = None,
+    ) -> OptimizationResult:
         """Optimise a protein sequence into a coding DNA sequence.
 
         ``protein`` may end in ``*``; otherwise ``add_stop`` (a stop codon, or
         ``None`` for a translational fusion) is appended.
+
+        ``pinned`` maps a residue index to the exact codon to use there, for
+        elements whose encoding was chosen deliberately and must not be
+        re-derived. Pinned codons still supply context to the search, so the
+        rest of the sequence is optimised *around* them rather than in
+        ignorance of them -- which is the whole point of doing this in one pass.
         """
         protein = protein.strip().upper()
         if protein.endswith("*"):
@@ -227,10 +238,20 @@ class CodonOptimizer:
         if unknown:
             raise ValueError(f"unknown residues: {sorted(unknown)}")
 
-        dna = self._beam_search(protein)
+        pinned = dict(pinned or {})
+        for index, codon in pinned.items():
+            if not 0 <= index < len(protein):
+                raise ValueError(f"pinned index {index} is outside the protein")
+            if CODON_TO_AA[codon] != protein[index]:
+                raise ValueError(
+                    f"pinned codon {codon} at {index} encodes "
+                    f"{CODON_TO_AA[codon]}, not {protein[index]}"
+                )
+
+        dna = self._beam_search(protein, pinned)
         if add_stop:
             dna += clean(add_stop)
-        dna, edits = self._repair(dna, protein)
+        dna, edits = self._repair(dna, protein, pinned)
 
         return OptimizationResult(
             dna=dna,
@@ -258,15 +279,17 @@ class CodonOptimizer:
         return sorted(kept or syn)
 
     # -- search -------------------------------------------------------------
-    def _beam_search(self, protein: str) -> str:
+    def _beam_search(self, protein: str, pinned: dict[int, str] | None = None) -> str:
         cfg = self.config
+        pinned = pinned or {}
         # Beam entries: (cost, sequence). Kept small; sequences are short enough
         # that carrying the full string is cheaper than reconstructing it.
         beam: list[tuple[float, str]] = [(0.0, "")]
-        for aa in protein:
+        for index, aa in enumerate(protein):
+            options = [pinned[index]] if index in pinned else self.choices_for(aa)
             candidates: list[tuple[float, str]] = []
             for cost, seq in beam:
-                for codon in self.choices_for(aa):
+                for codon in options:
                     candidates.append((cost + self._step_cost(seq, codon), seq + codon))
             candidates.sort(key=lambda c: c[0])
             # Deduplicate on the suffix that can still affect future costs.
@@ -313,13 +336,15 @@ class CodonOptimizer:
         return cost
 
     # -- repair -------------------------------------------------------------
-    def _repair(self, dna: str, protein: str) -> tuple[str, int]:
+    def _repair(self, dna: str, protein: str,
+                pinned: dict[int, str] | None = None) -> tuple[str, int]:
         """Remove residual forbidden motifs by local re-synonymisation.
 
         For each remaining hit, try every synonymous substitution at each codon
         the motif overlaps and keep the first that removes the hit without
         creating a new one. Protein sequence is invariant by construction.
         """
+        pinned = pinned or {}
         edits = 0
         for _ in range(8):
             hits = self.find_forbidden(dna)
@@ -332,6 +357,8 @@ class CodonOptimizer:
             improved = False
             baseline = len(hits)
             for ci in range(first, last + 1):
+                if ci in pinned:
+                    continue  # deliberately chosen; not ours to re-derive
                 aa = CODON_TO_AA[dna[ci * 3 : ci * 3 + 3]]
                 if aa == "*":
                     continue

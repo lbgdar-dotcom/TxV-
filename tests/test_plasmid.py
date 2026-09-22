@@ -107,6 +107,20 @@ def test_plasmid_size_arithmetic(backbone):
     assert len(build) == 3855 - 720 + len(construct.orf)
 
 
+#: Finished-plasmid sizes from the audited construct_architecture table.
+AUDITED_PLASMID_BP = {
+    "P0": 3486, "P1": 3588, "P2": 3588, "P3": 3690, "P4": 3690,
+    "P5": 3402, "P6": 3564, "P7": 3687, "P8": 3687,
+}
+
+
+@pytest.mark.parametrize("name", sorted(AUDITED_PLASMID_BP))
+def test_assembled_plasmid_matches_the_audited_size(backbone, name):
+    """Closes only if module content, stop convention and insert site all agree."""
+    build = build_plasmid(backbone, build_panel_construct(name), name)
+    assert len(build) == AUDITED_PLASMID_BP[name]
+
+
 def test_egfp_specific_annotations_are_dropped_not_left_lying(backbone):
     """A primer annotation that no longer anneals is a map that lies."""
     build = build_plasmid(backbone, build_panel_construct("P3"), "x")
@@ -136,7 +150,7 @@ def test_module_annotation_is_carried_into_the_plasmid(backbone):
     build = build_plasmid(backbone, build_panel_construct("P7"), "pVax1_AG_P7")
     labels = {f.label for f in build.record.features}
     assert "pVax1_AG_P7_ORF" in labels
-    for module in ("HA", "CL1", "P2A", "LAMP1_SP", "FLAG", "LAMP1_TMT"):
+    for module in ("HA", "E5", "P2A", "LAMP1_SP", "FLAG", "LAMP1_TMT"):
         assert module in labels or any(l.startswith(f"{module}_") for l in labels)
 
 

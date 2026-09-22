@@ -50,6 +50,7 @@ SOURCE = "audited P0-P8 build (pVax1_AG panel); re-verified by reconstruction"
 
 MODULES: dict[str, str] = {
     # -- initiation ---------------------------------------------------------
+    "M": "M",
     "MA": "MA",
     # -- routing: CTLA-4 arm ------------------------------------------------
     "CTLA4_SP": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFS",
@@ -67,13 +68,29 @@ MODULES: dict[str, str] = {
     "FLAG": "DYKDDDDK",
     # -- other functional modules -------------------------------------------
     "L": "GGGGS",
+    "E5": "EEEEE",
     "CL1": "ACKNWFSSLSHFVIHL",
     "P2A": "GSGATNFSLLKQAGDVEENPGP",
 }
 
+#: Encodings chosen deliberately rather than derived. E5's five glutamates are
+#: inherently repetitive: the per-module optimum GAGGAGGAAGAGGAG duplicated the
+#: start of antigen B and produced a 12-nt direct repeat at the linker
+#: junctions, and a naive run of GAG codons produces an internal tandem repeat
+#: of its own. Alternating GAA/GAG breaks the periodicity.
+PINNED_DNA: dict[str, str] = {
+    "E5": "GAAGAGGAAGAGGAG",
+}
+
 MODULE_NOTES: dict[str, str] = {
-    "MA": "Initiator methionine plus the Kozak alanine, giving the G at +4 that "
-          "completes the strong Kozak context.",
+    "M": "Bare initiator methionine, as the audited architecture has it on "
+         "P5/P7/P8. Leaves the +4 base to the next codon (Tyr of the HA tag), "
+         "which is a weaker Kozak than P0-P4 and P6 get from their signal "
+         "peptides -- see MA.",
+    "MA": "Initiator methionine plus a Kozak alanine, giving the G at +4 that "
+          "completes the strong Kozak context. The signal peptides (CTLA4_SP, "
+          "LAMP1_SP) already begin this way; adding it to P5/P7/P8 would "
+          "harmonise initiation across the panel at the cost of one residue.",
     "CTLA4_SP": "CTLA-4 signal peptide, N-terminal by necessity: SRP reads the "
                 "first thing out of the ribosome, so an SP works nowhere else. "
                 "Includes the MA start.",
@@ -105,8 +122,22 @@ MODULE_NOTES: dict[str, str] = {
     "FLAG": "FLAG tag on the second cistron of the dual-route constructs, so the "
             "two P2A-separated products can be detected independently.",
     "L": "GGGGS flexible linker.",
-    "CL1": "CL1 degron: a hydrophobic degradation signal that drives proteasomal "
-           "turnover, boosting the cytosolic (MHC-I) arm.",
+    "E5": "Acidic C-degron: five glutamates that accelerate proteasomal turnover, "
+          "which is what MHC-I peptide supply actually depends on. This is the "
+          "element CVGBM carries (Lutz et al. 2025, doi:10.1007/s00262-025-04178-x), "
+          "and it was the best-performing element in CureVac's own routing screen. "
+          "POSITIONAL: a C-degron needs a FREE C-TERMINUS, so it works in P0-P5 "
+          "where it ends the protein, and is expected to be weak or inactive in "
+          "P7/P8 where it sits upstream of P2A and the skip product has no free "
+          "C-terminus. P5 is therefore the degron-positive comparator, not P7/P8.",
+    "CL1": "CL1 degron (Gilon et al.): a hydrophobic degron that also drives "
+           "proteasomal turnover. NOT USED in this panel. It was substituted for "
+           "E5 at one point on the grounds that a pentaglutamate is not a "
+           "characterised degron; that claim was wrong and was withdrawn -- E5 is "
+           "a cited C-degron and outperformed the alternatives in the CVGBM "
+           "screen. Kept here only so the substitution can be revisited "
+           "deliberately, e.g. as an E5-vs-CL1 arm on a matched backbone, which "
+           "CVGBM never ran.",
     "P2A": "P2A ribosomal skipping element with its GSG spacer. Yields two "
            "separate polypeptides from one ORF, which is what makes a dual-route "
            "construct possible. Skipping is efficient but not complete, so expect "
@@ -186,35 +217,38 @@ class PanelConstruct:
 
 PANEL: tuple[PanelConstruct, ...] = (
     PanelConstruct(
-        "P0", ("CTLA4_SP", "HA", "L", "CTLA4_TMT"), "CTLA-4 (AP-2, via surface)",
+        "P0", ("CTLA4_SP", "HA", "L", "CTLA4_TMT", "E5"),
+        "CTLA-4 (AP-2, via surface)",
         "Scaffold-only control: does the routing module alone produce signal?",
         (),
     ),
     PanelConstruct(
-        "P1", ("CTLA4_SP", "HA", "L", "A", "L", "CTLA4_TMT"),
+        "P1", ("CTLA4_SP", "HA", "L", "A", "L", "CTLA4_TMT", "E5"),
         "CTLA-4 (AP-2, via surface)",
         "Single-antigen (A) scaffold control.", ("A",),
     ),
     PanelConstruct(
-        "P2", ("CTLA4_SP", "HA", "L", "B", "L", "CTLA4_TMT"),
+        "P2", ("CTLA4_SP", "HA", "L", "B", "L", "CTLA4_TMT", "E5"),
         "CTLA-4 (AP-2, via surface)",
         "Single-antigen (B) scaffold control.", ("B",),
     ),
     PanelConstruct(
-        "P3", ("CTLA4_SP", "HA", "L", "A", "L", "B", "L", "CTLA4_TMT"),
+        "P3", ("CTLA4_SP", "HA", "L", "A", "L", "B", "L", "CTLA4_TMT", "E5"),
         "CTLA-4 (AP-2, via surface)",
         "Can one transcript drive simultaneous class I and class II "
         "presentation? Order A-then-B.", ("A", "B"),
     ),
     PanelConstruct(
-        "P4", ("CTLA4_SP", "HA", "L", "B", "L", "A", "L", "CTLA4_TMT"),
+        "P4", ("CTLA4_SP", "HA", "L", "B", "L", "A", "L", "CTLA4_TMT", "E5"),
         "CTLA-4 (AP-2, via surface)",
         "Order control for P3: does cassette order change the outcome?",
         ("B", "A"),
     ),
     PanelConstruct(
-        "P5", ("MA", "HA", "L", "A", "L", "B", "L", "CL1"), "cytosolic (+CL1 degron)",
-        "Cytosolic baseline: proteasome-directed, no membrane routing.",
+        "P5", ("M", "HA", "L", "A", "L", "B", "L", "E5"),
+        "cytosolic (+E5 degron, free C-terminus)",
+        "Cytosolic baseline, and the only construct where the degron has a free "
+        "C-terminus -- so this is the degron-positive comparator.",
         ("A", "B"),
     ),
     PanelConstruct(
@@ -225,16 +259,16 @@ PANEL: tuple[PanelConstruct, ...] = (
     ),
     PanelConstruct(
         "P7",
-        ("MA", "HA", "L", "A", "L", "CL1", "P2A", "LAMP1_SP", "FLAG", "L", "B",
+        ("M", "HA", "L", "A", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "B",
          "L", "LAMP1_TMT"),
         "dual: A cytosolic + B lysosomal",
         "Dual route from one transcript: A to the proteasome, B to the "
-        "endolysosome. LAMP1 arm is downstream of P2A because GYQTI must end "
-        "the protein.", ("A", "B"),
+        "endolysosome. Note E5 is internal here, upstream of P2A, so it has no "
+        "free C-terminus and is expected to be weak.", ("A", "B"),
     ),
     PanelConstruct(
         "P8",
-        ("MA", "HA", "L", "B", "L", "CL1", "P2A", "LAMP1_SP", "FLAG", "L", "A",
+        ("M", "HA", "L", "B", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "A",
          "L", "LAMP1_TMT"),
         "dual: B cytosolic + A lysosomal",
         "Swap control for P7: is the effect about the route or about the "
@@ -267,6 +301,7 @@ def module_registry(base: PartRegistry | None = None) -> PartRegistry:
         "L": PartKind.LINKER,
         "P2A": PartKind.LINKER,
         "CL1": PartKind.TAG,
+        "M": PartKind.SIGNAL_PEPTIDE,
         "MA": PartKind.SIGNAL_PEPTIDE,
         "A": PartKind.TAG,
         "B": PartKind.TAG,
@@ -303,6 +338,7 @@ def module_registry(base: PartRegistry | None = None) -> PartRegistry:
 #: Module -> annotation kind, so each module gets its own coloured feature in
 #: the GenBank record and in Benchling rather than one opaque CDS block.
 MODULE_KIND: dict[str, str] = {
+    "M": "start",
     "MA": "start",
     "CTLA4_SP": "signal_peptide",
     "LAMP1_SP": "signal_peptide",
@@ -312,6 +348,7 @@ MODULE_KIND: dict[str, str] = {
     "B": "neoepitope",
     "HA": "tag",
     "FLAG": "tag",
+    "E5": "degron",
     "CL1": "degron",
     "P2A": "linker",
     "L": "linker",
@@ -339,6 +376,7 @@ def panel_cassette(name: str) -> "Cassette":
                 name=label,
                 sequence=MODULES[module],
                 kind=MODULE_KIND.get(module, "full_length"),
+                pinned_dna=PINNED_DNA.get(module),
                 note=MODULE_NOTES.get(module, ""),
             )
         )
@@ -416,6 +454,10 @@ def build_panel_construct(
     spec.trafficking = None
     spec.sp_spacer = None
     spec.traffic_spacer = None
+    # The audited architecture uses a single stop codon; its recorded ORF and
+    # plasmid lengths only close with one. Set tandem_stop on the spec you pass
+    # if you want the extra read-through insurance and accept the divergence.
+    spec.tandem_stop = getattr(spec, "_tandem_override", False) or False
 
     builder = ConstructBuilder(
         registry=registry or module_registry(),
@@ -446,7 +488,7 @@ def build_panel(
 
 
 __all__ = [
-    "MODULES", "MODULE_NOTES", "MODULE_KIND", "BACKBONE_OLIGOS",
+    "MODULES", "MODULE_NOTES", "MODULE_KIND", "PINNED_DNA", "BACKBONE_OLIGOS",
     "OPEN_DECISIONS", "PANEL", "PANEL_BY_NAME", "PanelConstruct", "SOURCE",
     "ROUTES", "routed_spec",
     "panel_proteins", "module_registry", "panel_cassette",

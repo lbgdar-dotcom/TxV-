@@ -1,12 +1,12 @@
-LOCUS       P6               472 bp    DNA     linear   SYN 22-SEP-2026
-DEFINITION  P6 synthesis fragment (orf mode), 472 bp, for homology assembly into the pVax1_AG backbone.
+LOCUS       P6               469 bp    DNA     linear   SYN 22-SEP-2026
+DEFINITION  P6 synthesis fragment (orf mode), 469 bp, for homology assembly into the pVax1_AG backbone.
 ACCESSION   P6
 VERSION     .
 KEYWORDS    gene fragment; homology assembly; IVT mRNA.
 SOURCE      synthetic construct
   ORGANISM  synthetic construct
 FEATURES             Location/Qualifiers
-     source          1..472
+     source          1..469
                      /organism="synthetic construct"
                      /mol_type="other DNA"
      misc_feature    1..20
@@ -14,7 +14,7 @@ FEATURES             Location/Qualifiers
                      /note="20-bp homology to the
                      linearised backbone; ends in the
                      Kozak."
-     CDS             21..452
+     CDS             21..449
                      /label="ORF"
                      /codon_start="1"
                      /translation="MAAPGARRPLLLLLLAGLAHGAS
@@ -40,10 +40,9 @@ FEATURES             Location/Qualifiers
                      /label="L_6"
      misc_feature    339..446
                      /label="LAMP1_TMT"
-     terminator      447..452
+     terminator      447..449
                      /label="stop"
-                     /note="Tandem stop"
-     misc_feature    453..472
+     misc_feature    450..469
                      /label="right_homology_arm"
                      /note="20-bp homology to the
                      linearised backbone (3' UTR start)."
@@ -61,5 +60,5 @@ ORIGIN
       241 agttcgccaa attcgccagc ttcgaagccc agggagccct ggcaaacatc gccgtggaca
       301 aagccaacct ggacgtgatg aagggaggcg gcggaagcat gctgatccca atcgccgtgg
       361 gaggcgccct ggcaggactg gtgctgatcg tgctgatcgc ctacctgatc ggcagaaaga
-      421 gaagccacgc cggctaccag accatctgat aagctgcctt ctgcggggct tg
+      421 gaagccacgc cggctaccag accatctgag ctgccttctg cggggcttg
 //

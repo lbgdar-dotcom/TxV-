@@ -8,17 +8,17 @@ reproducible from the repo.
 
 | | bp | GC | min/max GC in any 100-nt window | Route |
 |---|---|---|---|---|
-| P0 | 379 | 59.6% | 56 / 64% | CTLA-4 scaffold only |
-| P1 | 481 | 59.7% | 56 / 64% | CTLA-4 + antigen A |
-| P2 | 481 | 60.3% | 56 / 65% | CTLA-4 + antigen B |
-| P3 | 583 | 60.2% | 57 / 64% | CTLA-4 + A + B |
-| P4 | 583 | 60.2% | 57 / 64% | CTLA-4 + B + A |
-| P5 | 346 | 60.4% | 58 / 64% | cytosolic + CL1 degron |
-| P6 | 472 | 61.7% | 58 / 67% | LAMP1 |
-| P7 | 631 | 62.0% | 58 / 66% | dual: A cytosolic, B lysosomal |
-| P8 | 631 | 62.6% | 59 / 68% | dual: B cytosolic, A lysosomal |
+| P0 | 391 | 60.1% | 58 / 64% | CTLA-4 (AP-2, via surface) |
+| P1 | 493 | 60.0% | 58 / 64% | CTLA-4 (AP-2, via surface) |
+| P2 | 493 | 60.7% | 58 / 65% | CTLA-4 (AP-2, via surface) |
+| P3 | 595 | 60.5% | 58 / 64% | CTLA-4 (AP-2, via surface) |
+| P4 | 595 | 60.5% | 59 / 64% | CTLA-4 (AP-2, via surface) |
+| P5 | 307 | 61.2% | 58 / 64% | cytosolic (+E5 degron, free C-terminus) |
+| P6 | 469 | 62.1% | 58 / 67% | LAMP1 (AP-3, direct to lysosome) |
+| P7 | 592 | 62.7% | 59 / 68% | dual: A cytosolic + B lysosomal |
+| P8 | 592 | 62.8% | 59 / 68% | dual: B cytosolic + A lysosomal |
 
-All nine are inside standard gene-fragment limits: 125–3000 bp, overall and
+All nine carry the **E5 acidic C-degron (EEEEE)** as CVGBM does, with its codons pinned to `GAAGAGGAAGAGGAG`. All are inside standard gene-fragment limits: 125–3000 bp, overall and
 windowed GC within 25–75%, no homopolymer ≥ 6 nt, no repeated 20-mer, longest
 perfect hairpin stem 9 bp. Order as **dsDNA gene fragments** (IDT gBlocks,
 Twist Gene Fragments, GenScript — any equivalent).
@@ -85,14 +85,14 @@ these assemblies are usually efficient enough that 4 is plenty.
 
 | | plasmid | insert | | | plasmid | insert |
 |---|---|---|---|---|---|---|
-| P0 | 3474 bp | 339 bp | | P5 | 3441 bp | 306 bp |
-| P1 | 3576 bp | 441 bp | | P6 | 3567 bp | 432 bp |
-| P2 | 3576 bp | 441 bp | | P7 | 3726 bp | 591 bp |
-| P3 | 3678 bp | 543 bp | | P8 | 3726 bp | 591 bp |
-| P4 | 3678 bp | 543 bp | | | | |
+| P0 | 3486 bp | 351 bp | | P5 | 3402 bp | 267 bp |
+| P1 | 3588 bp | 453 bp | | P6 | 3564 bp | 429 bp |
+| P2 | 3588 bp | 453 bp | | P7 | 3687 bp | 552 bp |
+| P3 | 3690 bp | 555 bp | | P8 | 3687 bp | 552 bp |
+| P4 | 3690 bp | 555 bp | | | | |
 
 The insert always occupies 699–(699 + insert length − 1), replacing the eGFP CDS
-at 699–1418. Sanger across both junctions, or
+at 699–1418. Every size matches the audited construct_architecture table exactly. Sanger across both junctions, or
 whole-plasmid nanopore, which now costs about the same and catches backbone
 rearrangements that two Sanger reads miss. Check specifically:
 

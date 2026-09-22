@@ -54,6 +54,9 @@ class Antigen:
     hla: tuple[str, ...] = ()
     #: Index of the mutated residue within ``sequence`` (0-based), if known.
     mutation_offset: int | None = None
+    #: Exact DNA for this bead, when its encoding was chosen deliberately and
+    #: must not be re-derived by the optimiser.
+    pinned_dna: str | None = None
     note: str = ""
 
     def __post_init__(self) -> None:
@@ -66,6 +69,16 @@ class Antigen:
             raise ValueError(f"antigen {self.name!r}: empty sequence")
         if self.mutation_offset is not None and not 0 <= self.mutation_offset < len(seq):
             raise ValueError(f"antigen {self.name!r}: mutation_offset out of range")
+        if self.pinned_dna is not None:
+            from .seqops import clean, translate
+
+            pinned = clean(self.pinned_dna)
+            object.__setattr__(self, "pinned_dna", pinned)
+            if translate(pinned, stop_at_stop=False) != seq:
+                raise ValueError(
+                    f"antigen {self.name!r}: pinned_dna encodes "
+                    f"{translate(pinned, stop_at_stop=False)!r}, not {seq!r}"
+                )
 
     def __len__(self) -> int:
         return len(self.sequence)
