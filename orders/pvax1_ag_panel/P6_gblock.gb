@@ -1,0 +1,65 @@
+LOCUS       P6               472 bp    DNA     linear   SYN 22-SEP-2026
+DEFINITION  P6 synthesis fragment (orf mode), 472 bp, for homology assembly into the pVax1_AG backbone.
+ACCESSION   P6
+VERSION     .
+KEYWORDS    gene fragment; homology assembly; IVT mRNA.
+SOURCE      synthetic construct
+  ORGANISM  synthetic construct
+FEATURES             Location/Qualifiers
+     source          1..472
+                     /organism="synthetic construct"
+                     /mol_type="other DNA"
+     misc_feature    1..20
+                     /label="left_homology_arm"
+                     /note="20-bp homology to the
+                     linearised backbone; ends in the
+                     Kozak."
+     CDS             21..452
+                     /label="ORF"
+                     /codon_start="1"
+                     /translation="MAAPGARRPLLLLLLAGLAHGAS
+                     AYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTS
+                     SNVMEERGGGGSEEFAKFASFEAQGALANIAVDKANL
+                     DVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLIGRKR
+                     SHAGYQTI"
+                     /note="Codon-optimised in a single
+                     pass."
+     sig_peptide     21..92
+                     /label="LAMP1_SP"
+     misc_feature    93..119
+                     /label="HA"
+     misc_feature    120..134
+                     /label="L_2"
+     misc_feature    135..221
+                     /label="A"
+     misc_feature    222..236
+                     /label="L_4"
+     misc_feature    237..323
+                     /label="B"
+     misc_feature    324..338
+                     /label="L_6"
+     misc_feature    339..446
+                     /label="LAMP1_TMT"
+     terminator      447..452
+                     /label="stop"
+                     /note="Tandem stop"
+     misc_feature    453..472
+                     /label="right_homology_arm"
+                     /note="20-bp homology to the
+                     linearised backbone (3' UTR start)."
+COMMENT     ORF only: drops between the backbone's existing UTR
+            rails. The construct's own UTRs are NOT part of this
+            order, so the backbone's UTRs are what the transcript
+            will carry.
+COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
+            starts at ATG and must not repeat it.
+ORIGIN
+        1 gaagaaatat aagagccacc atggccgccc caggcgccag aagaccactg ctgctgctgc
+       61 tgctggccgg cctggcccat ggagcaagcg catacccata cgatgtgcca gactacgccg
+      121 gaggaggagg cagcgaagtg agcggactgg agcagctgga gagcatcatc aacttcgaga
+      181 agctgaccga gtggaccagc agcaacgtga tggaggagag aggcggcgga ggcagcgaag
+      241 agttcgccaa attcgccagc ttcgaagccc agggagccct ggcaaacatc gccgtggaca
+      301 aagccaacct ggacgtgatg aagggaggcg gcggaagcat gctgatccca atcgccgtgg
+      361 gaggcgccct ggcaggactg gtgctgatcg tgctgatcgc ctacctgatc ggcagaaaga
+      421 gaagccacgc cggctaccag accatctgat aagctgcctt ctgcggggct tg
+//

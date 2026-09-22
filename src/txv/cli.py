@@ -176,21 +176,23 @@ def cmd_panel(args) -> int:
 def cmd_order(args) -> int:
     """Produce synthesis-ready fragments for the panel or a designed construct."""
     from .order import (
-        FragmentMode, PolyAMode, order_fasta, order_table, synthesis_fragment,
+        FragmentMode, PolyAMode, fragment_genbank, order_fasta, order_table,
+        synthesis_fragment,
     )
     from .pvax1_ag import PANEL, build_panel_construct
 
     names = args.only or [p.name for p in PANEL]
     registry = _registry(args)
     fragments = []
+    records: dict[str, str] = {}
     for name in names:
         spec = ConstructSpec(name=name, utr5=args.utr5, utr3=args.utr3,
                              polya=args.polya)
         construct = build_panel_construct(name, spec=spec, registry=registry)
-        fragments.append(
-            synthesis_fragment(construct, FragmentMode(args.mode),
-                               PolyAMode(args.polya_mode))
-        )
+        fragment = synthesis_fragment(construct, FragmentMode(args.mode),
+                                      PolyAMode(args.polya_mode))
+        fragments.append(fragment)
+        records[name] = fragment_genbank(fragment, construct)
 
     flagged = 0
     for fragment in fragments:
@@ -209,8 +211,11 @@ def cmd_order(args) -> int:
         out = Path(args.out)
         out.mkdir(parents=True, exist_ok=True)
         (out / "ordering_table.csv").write_text(order_table(fragments))
-        (out / "synthesis_fragments.fasta").write_text(order_fasta(fragments))
-        print(f"\nwrote ordering_table.csv and synthesis_fragments.fasta to {out}/")
+        (out / "gblocks.fasta").write_text(order_fasta(fragments))
+        for name, record in records.items():
+            (out / f"{name}_gblock.gb").write_text(record)
+        print(f"\nwrote ordering_table.csv, gblocks.fasta and "
+              f"{len(records)} GenBank record(s) to {out}/")
     return 1 if flagged else 0
 
 

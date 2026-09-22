@@ -1,0 +1,68 @@
+LOCUS       P4               583 bp    DNA     linear   SYN 22-SEP-2026
+DEFINITION  P4 synthesis fragment (orf mode), 583 bp, for homology assembly into the pVax1_AG backbone.
+ACCESSION   P4
+VERSION     .
+KEYWORDS    gene fragment; homology assembly; IVT mRNA.
+SOURCE      synthetic construct
+  ORGANISM  synthetic construct
+FEATURES             Location/Qualifiers
+     source          1..583
+                     /organism="synthetic construct"
+                     /mol_type="other DNA"
+     misc_feature    1..20
+                     /label="left_homology_arm"
+                     /note="20-bp homology to the
+                     linearised backbone; ends in the
+                     Kozak."
+     CDS             21..563
+                     /label="ORF"
+                     /codon_start="1"
+                     /translation="MACLGLRRYKAQLQLPSRTWPFV
+                     ALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEA
+                     QGALANIAVDKANLDVMKGGGGSEVSGLEQLESIINF
+                     EKLTEWTSSNVMEERGGGGSFLLWILVAVSLGLFFYS
+                     FLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQF
+                     QPYFIPIN"
+                     /note="Codon-optimised in a single
+                     pass."
+     sig_peptide     21..125
+                     /label="CTLA4_SP"
+     misc_feature    126..152
+                     /label="HA"
+     misc_feature    153..167
+                     /label="L_2"
+     misc_feature    168..254
+                     /label="B"
+     misc_feature    255..269
+                     /label="L_4"
+     misc_feature    270..356
+                     /label="A"
+     misc_feature    357..371
+                     /label="L_6"
+     misc_feature    372..557
+                     /label="CTLA4_TMT"
+     terminator      558..563
+                     /label="stop"
+                     /note="Tandem stop"
+     misc_feature    564..583
+                     /label="right_homology_arm"
+                     /note="20-bp homology to the
+                     linearised backbone (3' UTR start)."
+COMMENT     ORF only: drops between the backbone's existing UTR
+            rails. The construct's own UTRs are NOT part of this
+            order, so the backbone's UTRs are what the transcript
+            will carry.
+COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
+            starts at ATG and must not repeat it.
+ORIGIN
+        1 gaagaaatat aagagccacc atggcctgcc tgggcctgag aagatacaag gcccagctgc
+       61 agctgcccag cagaacctgg ccattcgtgg ccctgctgac actgctgttc atccccgtgt
+      121 tcagctaccc atacgacgtg ccagactacg ccggcggcgg aggcagcgaa gagttcgcca
+      181 aattcgccag cttcgaagcc cagggagcac tggccaacat cgccgtggac aaagccaacc
+      241 tggacgtgat gaagggaggc ggcggaagcg aggtgagcgg actggagcag ctggagagca
+      301 tcatcaactt cgagaagctg accgagtgga ccagcagcaa cgtgatggag gagagaggcg
+      361 gaggcggcag cttcctgctg tggattctgg tggcagtgag cctgggcctg ttcttctaca
+      421 gcttcctggt gagcgccgtg agcctgagca agatgctgaa gaagcggagc ccactgacca
+      481 caggcgtgta cgtgaagatg ccacccaccg agccagagtg cgagaagcag ttccagccct
+      541 acttcatccc catcaactga taagctgcct tctgcggggc ttg
+//

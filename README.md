@@ -282,7 +282,17 @@ untailed control, or do an RNase H / oligo-dT assay. A tail that was never
 incorporated looks exactly like a tail that was, until you check.
 
 `txv order --out order/` writes `ordering_table.csv` (vendor-ready, sequence
-included) and `synthesis_fragments.fasta`.
+included), `gblocks.fasta`, and an annotated `*_gblock.gb` per fragment for
+Benchling import. The GenBank records deliberately show only what you are
+buying — in ORF mode the UTRs come from the backbone, so a record displaying
+them would misrepresent the order.
+
+A generated order for the P0-P8 panel, with a step-by-step cloning protocol, is
+checked in at [`orders/pvax1_ag_panel/`](orders/pvax1_ag_panel/).
+
+`assemble_into_backbone()` simulates the assembly against the parent plasmid and
+returns the full circular sequence. It refuses rather than guessing if either
+homology rail is not unique in the backbone.
 
 ---
 
@@ -391,7 +401,7 @@ ORF length, GC, uridine fraction, CAI, linker, placeholder list and QC status.
 ## Tests
 
 ```bash
-python -m pytest        # 190 tests
+python -m pytest        # 218 tests
 ```
 
 The suite encodes the invariants that matter: codon optimisation never changes

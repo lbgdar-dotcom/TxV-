@@ -1,0 +1,79 @@
+LOCUS       P8               631 bp    DNA     linear   SYN 22-SEP-2026
+DEFINITION  P8 synthesis fragment (orf mode), 631 bp, for homology assembly into the pVax1_AG backbone.
+ACCESSION   P8
+VERSION     .
+KEYWORDS    gene fragment; homology assembly; IVT mRNA.
+SOURCE      synthetic construct
+  ORGANISM  synthetic construct
+FEATURES             Location/Qualifiers
+     source          1..631
+                     /organism="synthetic construct"
+                     /mol_type="other DNA"
+     misc_feature    1..20
+                     /label="left_homology_arm"
+                     /note="20-bp homology to the
+                     linearised backbone; ends in the
+                     Kozak."
+     CDS             21..611
+                     /label="ORF"
+                     /codon_start="1"
+                     /translation="MAYPYDVPDYAGGGGSEEFAKFA
+                     SFEAQGALANIAVDKANLDVMKGGGGSACKNWFSSLS
+                     HFVIHLGSGATNFSLLKQAGDVEENPGPMAAPGARRP
+                     LLLLLLAGLAHGASADYKDDDDKGGGGSEVSGLEQLE
+                     SIINFEKLTEWTSSNVMEERGGGGSMLIPIAVGGALA
+                     GLVLIVLIAYLIGRKRSHAGYQTI"
+                     /note="Codon-optimised in a single
+                     pass."
+     misc_feature    21..26
+                     /label="MA"
+     misc_feature    27..53
+                     /label="HA"
+     misc_feature    54..68
+                     /label="L_2"
+     misc_feature    69..155
+                     /label="B"
+     misc_feature    156..170
+                     /label="L_4"
+     misc_feature    171..218
+                     /label="CL1"
+     misc_feature    219..284
+                     /label="P2A"
+     sig_peptide     285..356
+                     /label="LAMP1_SP"
+     misc_feature    357..380
+                     /label="FLAG"
+     misc_feature    381..395
+                     /label="L_9"
+     misc_feature    396..482
+                     /label="A"
+     misc_feature    483..497
+                     /label="L_11"
+     misc_feature    498..605
+                     /label="LAMP1_TMT"
+     terminator      606..611
+                     /label="stop"
+                     /note="Tandem stop"
+     misc_feature    612..631
+                     /label="right_homology_arm"
+                     /note="20-bp homology to the
+                     linearised backbone (3' UTR start)."
+COMMENT     ORF only: drops between the backbone's existing UTR
+            rails. The construct's own UTRs are NOT part of this
+            order, so the backbone's UTRs are what the transcript
+            will carry.
+COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
+            starts at ATG and must not repeat it.
+ORIGIN
+        1 gaagaaatat aagagccacc atggcctacc cctacgacgt gccagactac gccggcggcg
+       61 gcggcagcga agagttcgcc aaattcgcca gcttcgaagc ccagggagca ctggccaaca
+      121 tcgccgtgga caaagccaac ctggacgtga tgaagggagg cggcggaagc gcctgcaaga
+      181 actggttcag cagcctgagc cacttcgtga tccacctggg cagcggagcc acaaacttca
+      241 gcctgctgaa gcaggccggc gacgtggaag agaacccagg cccaatggcc gccccaggag
+      301 ccagaagacc actgctgctg ctgctgctgg caggactggc acacggagca agcgccgact
+      361 acaaagacga cgacgacaag ggaggcggag gcagcgaagt gagcggcctg gagcagctgg
+      421 agagcatcat caacttcgag aagctgaccg agtggaccag cagcaacgtg atggaggaga
+      481 ggggcggcgg aggaagcatg ctgatcccaa tcgccgtggg aggcgccctg gccggactgg
+      541 tgctgattgt gctgatcgcc tacctgatcg gcagaaagag gagccacgcc ggctaccaga
+      601 ccatctgata agctgccttc tgcggggctt g
+//

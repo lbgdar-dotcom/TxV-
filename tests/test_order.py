@@ -8,7 +8,9 @@ from txv.order import (
     PVAX1_AG_RIGHT_OVERLAP,
     FragmentMode,
     PolyAMode,
+    assemble_into_backbone,
     assess_synthesis,
+    fragment_genbank,
     order_fasta,
     order_table,
     synthesis_fragment,
@@ -149,3 +151,105 @@ def test_every_panel_member_orders_cleanly_in_the_default_mode():
     for name in [f"P{i}" for i in range(9)]:
         fragment = synthesis_fragment(build_panel_construct(name))
         assert fragment.risk.ok, (name, fragment.risk.flags)
+
+
+# --- annotated records ----------------------------------------------------
+
+def test_fragment_genbank_is_wellformed_and_matches_the_sequence(panel_construct):
+    import re
+
+    fragment = synthesis_fragment(panel_construct)
+    record = fragment_genbank(fragment, panel_construct)
+    assert record.startswith("LOCUS")
+    assert record.rstrip().endswith("//")
+    assert f"{fragment.length} bp" in record
+    origin = record.split("ORIGIN\n", 1)[1].rsplit("//", 1)[0]
+    assert "".join(re.findall(r"[acgtn]+", origin)).upper() == fragment.sequence
+
+
+def test_fragment_genbank_annotates_both_homology_arms(panel_construct):
+    record = fragment_genbank(synthesis_fragment(panel_construct), panel_construct)
+    assert "left_homology_arm" in record and "right_homology_arm" in record
+    assert "1..20" in record
+
+
+def test_fragment_genbank_does_not_advertise_utrs_it_is_not_shipping(panel_construct):
+    """In ORF mode the UTRs come from the backbone; showing them would mislead."""
+    record = fragment_genbank(synthesis_fragment(panel_construct), panel_construct)
+    assert "UTR5_hAg" not in record
+    assert "UTR3_AES_mtRNR1" not in record
+    assert "polyA" not in record
+
+
+def test_fragment_genbank_cds_coordinates_bound_the_orf(panel_construct):
+    fragment = synthesis_fragment(panel_construct)
+    record = fragment_genbank(fragment, panel_construct)
+    start = len(fragment.left_overlap) + 1
+    end = len(fragment.left_overlap) + len(panel_construct.orf)
+    assert f"CDS             {start}..{end}" in record
+
+
+# --- in-silico assembly ---------------------------------------------------
+
+LEFT_RAIL = "GAAGAAATATAAGAGCCACC"
+
+
+def _mock_backbone(insert="ATGGGGTAA", pad_left="TTTTCCCC", pad_right="GGGGAAAA"):
+    return pad_left + LEFT_RAIL + insert + PVAX1_AG_RIGHT_OVERLAP + pad_right
+
+
+def test_assembly_replaces_the_existing_orf(panel_construct):
+    backbone = _mock_backbone()
+    plasmid = assemble_into_backbone(backbone, panel_construct.orf, "P3_test")
+    assert panel_construct.orf in plasmid.sequence
+    assert "ATGGGGTAA" not in plasmid.sequence, "the old ORF must be replaced"
+    assert len(plasmid) == len(backbone) - 9 + len(panel_construct.orf)
+
+
+def test_assembly_keeps_the_rails_single_copy_and_in_frame(panel_construct):
+    plasmid = assemble_into_backbone(
+        _mock_backbone(), panel_construct.orf, "P3_test"
+    )
+    assert plasmid.sequence.count(LEFT_RAIL) == 1
+    assert plasmid.sequence.count(PVAX1_AG_RIGHT_OVERLAP) == 1
+    assert plasmid.sequence[plasmid.insert_start - 6 : plasmid.insert_start + 3] \
+        == "GCCACCATG"
+    assert plasmid.sequence[plasmid.insert_start : plasmid.insert_end] \
+        == panel_construct.orf
+
+
+def test_assembly_refuses_an_ambiguous_backbone(panel_construct):
+    duplicated = _mock_backbone() + _mock_backbone()
+    with pytest.raises(ValueError, match="occurs 2 times"):
+        assemble_into_backbone(duplicated, panel_construct.orf, "x")
+
+
+def test_assembly_refuses_a_missing_rail(panel_construct):
+    with pytest.raises(ValueError, match="occurs 0 times"):
+        assemble_into_backbone("ACGT" * 50, panel_construct.orf, "x")
+
+
+def test_assembly_refuses_a_backbone_that_wraps_the_origin(panel_construct):
+    wrapped = PVAX1_AG_RIGHT_OVERLAP + "GGGGAAAA" + "TTTTCCCC" + LEFT_RAIL
+    with pytest.raises(ValueError, match="rotate the backbone"):
+        assemble_into_backbone(wrapped, panel_construct.orf, "x")
+
+
+def test_every_panel_member_assembles_cleanly():
+    from txv.seqops import translate
+
+    for name in [f"P{i}" for i in range(9)]:
+        construct = build_panel_construct(name)
+        plasmid = assemble_into_backbone(_mock_backbone(), construct.orf, name)
+        orf = plasmid.sequence[plasmid.insert_start : plasmid.insert_end]
+        assert translate(orf, stop_at_stop=True).rstrip("*") == construct.orf_protein
+
+
+def test_the_ordered_fragment_and_the_assembly_agree(panel_construct):
+    """What you order and what you model must contain the same insert."""
+    fragment = synthesis_fragment(panel_construct)
+    plasmid = assemble_into_backbone(
+        _mock_backbone(), panel_construct.orf, "P3_test"
+    )
+    assert fragment.insert == \
+        plasmid.sequence[plasmid.insert_start : plasmid.insert_end]
