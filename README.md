@@ -401,7 +401,7 @@ ORF length, GC, uridine fraction, CAI, linker, placeholder list and QC status.
 ## Tests
 
 ```bash
-python -m pytest        # 218 tests
+python -m pytest        # 201 tests
 ```
 
 The suite encodes the invariants that matter: codon optimisation never changes
