@@ -43,8 +43,19 @@ def test_dedupe_is_reported(antigens):
     assert len(report.construct.cassette.antigens) == len(antigens)
 
 
-def test_strict_mode_fails_on_placeholders(antigens):
+def test_strict_mode_passes_with_the_default_real_parts(antigens):
     report = design_construct("X", antigens, allow_placeholders=False)
+    assert report.qc.passed, report.to_text()
+    assert report.construct.placeholders_used == []
+
+
+def test_strict_mode_fails_when_a_placeholder_is_chosen(antigens):
+    from txv.constructs import ConstructSpec
+
+    report = design_construct(
+        "X", antigens, spec=ConstructSpec(name="X", utr5="UTR5_placeholder"),
+        allow_placeholders=False,
+    )
     assert not report.qc.passed
 
 

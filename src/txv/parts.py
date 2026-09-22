@@ -99,12 +99,53 @@ _BUILTIN: list[Part] = [
     ),
     # ---- untranslated regions ------------------------------------------------
     Part(
+        "UTR5_hAg", PartKind.UTR5, Provenance.LITERATURE,
+        dna="GAGAATAAACTAGTATTCTTCTGGTCCCCACAGACTCAGAGAGAACCC",
+        source="BNT162b2 published sequence (5' leader, nt 1-48)",
+        note="DEFAULT 5' UTR. The BNT162b2 5' leader up to but not including the "
+             "Kozak, which kozak_strong (GCCACC) supplies -- the two concatenated "
+             "reproduce the validated 54-nt leader exactly. Human alpha-globin "
+             "(HBA1/HBA2-shared) 5' UTR preceded by a 14-nt vector leader "
+             "(GAGAATAAACTAGT). No upstream AUG. Two things to know about the "
+             "leader: it contains AATAAA at position 3 and an SpeI site (ACTAGT) "
+             "at position 8. Both are in the clinically validated sequence and are "
+             "inert for a cytoplasmically delivered transcript -- but if you cut "
+             "with SpeI, use UTR5_hAg_core instead.",
+    ),
+    Part(
+        "UTR5_hAg_core", PartKind.UTR5, Provenance.LITERATURE,
+        dna="GGGATTCTTCTGGTCCCCACAGACTCAGAGAGAACCC",
+        source="human alpha-globin 5' UTR from the BNT162b2 leader (nt 15-48), "
+               "with a GGG transcription start",
+        note="The alpha-globin 5' UTR without the BNT162b2 vector leader, so no "
+             "AATAAA and no SpeI site, prefixed with GGG because T7 initiates far "
+             "more efficiently from a G-rich +1. Use when you want the validated "
+             "UTR but not the cloning scars.",
+    ),
+    Part(
         "UTR5_placeholder", PartKind.UTR5, Provenance.PLACEHOLDER,
         dna="AGGAAATAAGAGAGAAAAGAAGAGTAAGAAG",
         note="NOT a validated 5' UTR -- an unstructured, A-rich, ATG-free stand-in "
              "so the assembler runs end to end. Replace with your validated 5' UTR "
              "(e.g. an HBA/HBB-derived or screened synthetic leader). Requirements: "
              "no upstream AUG, weak 5'-proximal secondary structure, ~30-60 nt.",
+    ),
+    Part(
+        "UTR3_AES_mtRNR1", PartKind.UTR3, Provenance.LITERATURE,
+        dna="CTCGAGCTGGTACTGCATGCACGCAATGCTAGCTGCCCCTTTCCCGTCCTGGGTACCCCGAG"
+            "TCTCCCCCGACCTCGGGTCCCAGGTATGCTCCCACCTCCACCTGCCCCACTCACCACCTCTG"
+            "CTAGTTCCAGACACCTCCCAAGCACGCAGCAATGCAGCTCAAAACGCTTAGCCTAGCCACAC"
+            "CCCCACGGGAAACAGCAGTGATTAACCTTTAGCAATAAACGAAAGTTTAACTAAGCTATACT"
+            "AACCCCAGGGTTGGTCAATTTCGTGCCAGCCACACCCTGGAGCTAGCA",
+        source="BNT162b2 published sequence (3' UTR, 296 nt)",
+        note="DEFAULT 3' UTR. A composite of two elements selected ex vivo for "
+             "RNA stability and total protein output: the amino-terminal enhancer "
+             "of split (AES) 3' UTR and the mitochondrially encoded 12S rRNA "
+             "(mtRNR1). Verbatim from the validated construct, which means it "
+             "carries its cloning scars: XhoI (CTCGAG) at position 0 and NheI "
+             "(GCTAGC) at 27 and 289. It also contains AATAAA at 219, inside the "
+             "mtRNR1 element. All three are in the clinical sequence; they matter "
+             "only if you use those enzymes.",
     ),
     Part(
         "UTR3_placeholder", PartKind.UTR3, Provenance.PLACEHOLDER,
@@ -193,10 +234,18 @@ _BUILTIN: list[Part] = [
     ),
     # ---- tails ---------------------------------------------------------------
     Part(
+        "polyA_120", PartKind.POLYA, Provenance.CANONICAL,
+        dna="A" * 120,
+        note="DEFAULT tail: homopolymeric 120-nt poly(A), encoded in the template "
+             "so every transcript has a defined tail length. Long homopolymers can "
+             "contract during propagation in E. coli, so verify the tract length "
+             "on each prep rather than assuming it (see segmented_polya for the "
+             "alternative that resists contraction).",
+    ),
+    Part(
         "polyA_100", PartKind.POLYA, Provenance.CANONICAL,
         dna="A" * 100,
-        note="Homopolymeric 100-nt poly(A). Encoded in the template so every "
-             "transcript has a defined tail length.",
+        note="Homopolymeric 100-nt poly(A).",
     ),
     # ---- template linearisation ---------------------------------------------
     Part(

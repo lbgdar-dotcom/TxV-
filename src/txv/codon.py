@@ -174,6 +174,27 @@ def codon_adaptation_index(dna: str, usage: dict[str, float] | None = None) -> f
     return math.exp(sum(math.log(weights[c]) for c in sense) / len(sense))
 
 
+def uridine_floor(protein: str, usage: dict[str, float] | None = None,
+                  min_codon_usage: float = 0.0) -> tuple[int, int]:
+    """Minimum achievable uridines in a CDS encoding ``protein``.
+
+    Many residues have no U-free codon -- Phe, Tyr, Cys, Trp and Ile cannot
+    avoid one, and Leu/Ser/Val can only sometimes. So uridine depletion has a
+    hard floor set by the amino-acid sequence, and an optimiser that appears to
+    "stop responding" to a higher uridine weight has simply reached it.
+
+    Returns ``(floor_uridines, codons)``; divide by ``codons * 3`` for the
+    floor as a fraction of the CDS.
+    """
+    usage = usage or HUMAN_CODON_USAGE
+    total = 0
+    for aa in protein.rstrip("*"):
+        options = [c for c in AA_TO_CODONS[aa]
+                   if usage.get(c, 0.0) >= min_codon_usage] or AA_TO_CODONS[aa]
+        total += min(c.count("T") for c in options)
+    return total, len(protein.rstrip("*"))
+
+
 class CodonOptimizer:
     """Beam-search codon optimiser."""
 
@@ -334,4 +355,5 @@ class CodonOptimizer:
 __all__ = [
     "CodonOptimizer", "OptimizerConfig", "OptimizationResult",
     "HUMAN_CODON_USAGE", "DEFAULT_FORBIDDEN", "codon_adaptation_index",
+    "uridine_floor",
 ]

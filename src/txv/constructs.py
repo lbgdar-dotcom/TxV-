@@ -107,12 +107,16 @@ class ConstructSpec:
 
     name: str
     promoter: str = "T7_promoter"
-    utr5: str = "UTR5_placeholder"
+    utr5: str = "UTR5_hAg"
     kozak: str = "kozak_strong"
     signal_peptide: str | None = "SP_tPA"
-    trafficking: str | None = "MITD_placeholder"
-    utr3: str = "UTR3_placeholder"
-    polya: str = "polyA_100"
+    #: No trafficking domain by default -- the only generic one available is a
+    #: placeholder, and a construct should not silently contain one. Real
+    #: routing modules (CTLA4_TMT, LAMP1_TMT) live in :mod:`txv.pvax1_ag`;
+    #: :func:`txv.pvax1_ag.routed_spec` wires them up.
+    trafficking: str | None = None
+    utr3: str = "UTR3_AES_mtRNR1"
+    polya: str = "polyA_120"
     linearization_site: str | None = "BspQI_site"
     stop_codon: str = "TGA"
     #: Append a second stop in the same frame. Cheap insurance against

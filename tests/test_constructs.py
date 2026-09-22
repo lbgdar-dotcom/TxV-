@@ -71,9 +71,31 @@ def test_initiator_methionine_is_added_when_nothing_supplies_one(antigens):
     assert any("initiator methionine" in n for n in construct.design_notes)
 
 
-def test_placeholders_are_reported(construct):
+def test_default_construct_contains_no_placeholders(construct):
+    """The shipped defaults are real sequences, so a default build is clean."""
+    assert construct.placeholders_used == []
+    assert not any("Placeholder parts in use" in n for n in construct.design_notes)
+
+
+def test_placeholders_are_reported_when_explicitly_requested(antigens):
+    spec = ConstructSpec(name="ph", utr5="UTR5_placeholder")
+    construct = build_construct("ph", antigens, spec=spec)
     assert "UTR5_placeholder" in construct.placeholders_used
     assert any("Placeholder parts in use" in n for n in construct.design_notes)
+
+
+def test_default_utrs_are_the_validated_ones(construct):
+    assert construct.feature("UTR5_hAg")
+    assert construct.feature("UTR3_AES_mtRNR1")
+    # 5' UTR + Kozak must reconstitute the validated 54-nt leader exactly.
+    leader = construct.template[
+        construct.feature("UTR5_hAg").start : construct.feature("ORF").start
+    ]
+    assert leader == "GAGAATAAACTAGTATTCTTCTGGTCCCCACAGACTCAGAGAGAACCCGCCACC"
+
+
+def test_default_polya_is_120_nt(construct):
+    assert len(construct.feature("polyA_120")) == 120
 
 
 def test_empty_cassette_is_rejected():

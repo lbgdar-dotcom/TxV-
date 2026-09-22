@@ -345,6 +345,54 @@ def panel_cassette(name: str) -> "Cassette":
     return Cassette(beads, linker="")
 
 
+#: Routes available to a generic cassette, built from the verified modules.
+#: Each entry is (signal peptide part, trafficking part, note).
+ROUTES: dict[str, tuple[str | None, str | None, str]] = {
+    "ctla4": ("pvax1_CTLA4_SP", "pvax1_CTLA4_TMT",
+              "AP-2 / YVKM: ER -> Golgi -> surface -> endocytosis -> MIIC."),
+    "lamp1": ("pvax1_LAMP1_SP", "pvax1_LAMP1_TMT",
+              "AP-3 / GYQTI: direct TGN -> lysosome, skipping the surface."),
+    "cytosolic": (None, None,
+                  "No routing: translated on free ribosomes, proteasome-directed. "
+                  "CD8-biased by construction."),
+}
+
+
+def routed_spec(
+    route: str = "ctla4",
+    name: str = "construct",
+    **spec_kwargs,
+) -> tuple["ConstructSpec", PartRegistry]:
+    """A :class:`~txv.constructs.ConstructSpec` wired to a verified route.
+
+    Returns ``(spec, registry)``. Use this to put a *generic* antigen cassette
+    on one of the panel's routes -- the modules are real sequences, so the
+    resulting construct contains no placeholders.
+
+    Note the positional constraint the LAMP1 route carries: ``GYQTI`` must end
+    the protein, so the spec puts no spacer after the trafficking domain.
+    """
+    from .constructs import ConstructSpec
+
+    try:
+        signal_peptide, trafficking, _ = ROUTES[route]
+    except KeyError:
+        raise KeyError(
+            f"unknown route {route!r}; choose from {sorted(ROUTES)}"
+        ) from None
+
+    spec = ConstructSpec(
+        name=name,
+        signal_peptide=signal_peptide,
+        trafficking=trafficking,
+        # GYQTI must be the last residues of the protein; a spacer after the
+        # trafficking domain would abolish AP-3 binding.
+        traffic_spacer=None,
+        **spec_kwargs,
+    )
+    return spec, module_registry()
+
+
 def build_panel_construct(
     name: str,
     spec: "ConstructSpec | None" = None,
@@ -400,6 +448,7 @@ def build_panel(
 __all__ = [
     "MODULES", "MODULE_NOTES", "MODULE_KIND", "BACKBONE_OLIGOS",
     "OPEN_DECISIONS", "PANEL", "PANEL_BY_NAME", "PanelConstruct", "SOURCE",
+    "ROUTES", "routed_spec",
     "panel_proteins", "module_registry", "panel_cassette",
     "build_panel_construct", "build_panel",
 ]

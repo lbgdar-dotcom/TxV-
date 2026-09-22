@@ -173,6 +173,67 @@ def cmd_panel(args) -> int:
     return 1 if failures else 0
 
 
+def cmd_order(args) -> int:
+    """Produce synthesis-ready fragments for the panel or a designed construct."""
+    from .order import (
+        FragmentMode, PolyAMode, order_fasta, order_table, synthesis_fragment,
+    )
+    from .pvax1_ag import PANEL, build_panel_construct
+
+    names = args.only or [p.name for p in PANEL]
+    registry = _registry(args)
+    fragments = []
+    for name in names:
+        spec = ConstructSpec(name=name, utr5=args.utr5, utr3=args.utr3,
+                             polya=args.polya)
+        construct = build_panel_construct(name, spec=spec, registry=registry)
+        fragments.append(
+            synthesis_fragment(construct, FragmentMode(args.mode),
+                               PolyAMode(args.polya_mode))
+        )
+
+    flagged = 0
+    for fragment in fragments:
+        status = "ok" if fragment.risk.ok else "CHECK"
+        print(f"{fragment.name:<6}{fragment.length:>6} bp  "
+              f"GC {fragment.risk.gc:>6.1%}  {status}")
+        for flag in fragment.risk.flags:
+            flagged += 1
+            print(f"         ! {flag}")
+    if fragments:
+        print()
+        for note in fragments[0].notes:
+            print(f"  note: {note}")
+
+    if args.out:
+        out = Path(args.out)
+        out.mkdir(parents=True, exist_ok=True)
+        (out / "ordering_table.csv").write_text(order_table(fragments))
+        (out / "synthesis_fragments.fasta").write_text(order_fasta(fragments))
+        print(f"\nwrote ordering_table.csv and synthesis_fragments.fasta to {out}/")
+    return 1 if flagged else 0
+
+
+def cmd_series(args) -> int:
+    """Build a matched variant series for one of the two experimental axes."""
+    from .variants import multiplex_ladder, series_outputs, uridine_ladder
+
+    antigens = load_antigens(args.antigens)
+    if args.axis == "uridine":
+        series = uridine_ladder(antigens, route=args.route)
+    else:
+        sizes = tuple(int(s) for s in args.sizes.split(",")) if args.sizes else (1, 2, 4, 6, 8)
+        series = multiplex_ladder(antigens, sizes=sizes, route=args.route)
+    print(series.to_text())
+    failures = [v.name for v in series.variants if not v.qc.passed]
+    if failures:
+        print(f"\nQC failed for: {', '.join(failures)}")
+    if args.out:
+        written = series_outputs(series, args.out)
+        print(f"\nwrote {len(written)} file(s) to {args.out}/")
+    return 1 if failures else 0
+
+
 def cmd_compositions(args) -> int:
     for name, comp in COMPOSITIONS.items():
         ratios = " : ".join(f"{k} {v}" for k, v in comp.molar_ratios.items())
@@ -192,13 +253,13 @@ def build_parser() -> argparse.ArgumentParser:
     design.add_argument("--name", required=True, help="construct name")
     design.add_argument("--out", help="output directory")
     design.add_argument("--parts", help="JSON parts file overriding the built-ins")
-    design.add_argument("--utr5", default="UTR5_placeholder")
-    design.add_argument("--utr3", default="UTR3_placeholder")
+    design.add_argument("--utr5", default="UTR5_hAg")
+    design.add_argument("--utr3", default="UTR3_AES_mtRNR1")
     design.add_argument("--signal-peptide", default="SP_tPA")
     design.add_argument("--no-signal-peptide", action="store_true")
     design.add_argument("--trafficking", default="MITD_placeholder")
     design.add_argument("--no-trafficking", action="store_true")
-    design.add_argument("--polya", default="polyA_100")
+    design.add_argument("--polya", default="polyA_120")
     design.add_argument("--linker", help="force a linker instead of selecting one")
     design.add_argument("--linker-candidates", nargs="*")
     design.add_argument("--no-reorder", action="store_true")
@@ -248,11 +309,38 @@ def build_parser() -> argparse.ArgumentParser:
     panel.add_argument("--only", nargs="*", help="subset, e.g. --only P3 P7")
     panel.add_argument("--out", help="output directory")
     panel.add_argument("--parts", help="JSON parts file overriding the built-ins")
-    panel.add_argument("--utr5", default="UTR5_placeholder")
-    panel.add_argument("--utr3", default="UTR3_placeholder")
-    panel.add_argument("--polya", default="polyA_100")
+    panel.add_argument("--utr5", default="UTR5_hAg")
+    panel.add_argument("--utr3", default="UTR3_AES_mtRNR1")
+    panel.add_argument("--polya", default="polyA_120")
     panel.add_argument("--strict", action="store_true")
     panel.set_defaults(func=cmd_panel)
+
+    order = sub.add_parser("order", help="synthesis-ready fragments to order")
+    order.add_argument("--only", nargs="*", help="subset, e.g. --only P3 P7")
+    order.add_argument("--mode", default="orf", choices=["orf", "cassette"],
+                       help="orf: drop into the existing backbone rails. "
+                            "cassette: also replace the backbone UTRs")
+    order.add_argument("--polya-mode", default="pcr_added",
+                       choices=["pcr_added", "encoded"],
+                       help="pcr_added omits the A-tract from the order")
+    order.add_argument("--out", help="output directory")
+    order.add_argument("--parts", help="JSON parts file overriding the built-ins")
+    order.add_argument("--utr5", default="UTR5_hAg")
+    order.add_argument("--utr3", default="UTR3_AES_mtRNR1")
+    order.add_argument("--polya", default="polyA_120")
+    order.set_defaults(func=cmd_order)
+
+    series = sub.add_parser(
+        "series", help="matched variant series for the experimental axes"
+    )
+    series.add_argument("antigens", help="antigen table (.json, .csv or .tsv)")
+    series.add_argument("--axis", default="multiplex",
+                        choices=["multiplex", "uridine"])
+    series.add_argument("--route", default="ctla4",
+                        choices=["ctla4", "lamp1", "cytosolic"])
+    series.add_argument("--sizes", help="multiplex only, e.g. 1,2,4,6,8")
+    series.add_argument("--out", help="output directory")
+    series.set_defaults(func=cmd_series)
 
     comps = sub.add_parser("compositions", help="list LNP lipid compositions")
     comps.set_defaults(func=cmd_compositions)

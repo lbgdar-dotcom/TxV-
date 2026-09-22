@@ -44,6 +44,8 @@ direct repeats — which otherwise recombine during plasmid propagation.
 ```bash
 txv design examples/antigens_example.csv --name TXV-001 --out out/
 txv panel --out panel/            # the audited P0-P8 series
+txv order --out order/            # synthesis-ready fragments to send a vendor
+txv series antigens.csv --axis multiplex --out series/
 txv formulate --fasta out/TXV-001.mrna.fasta --mrna-ug 100 --np 6
 txv parts                         # what's in the registry, and what's a placeholder
 ```
@@ -63,21 +65,42 @@ write_outputs(report, "out/")
 
 ---
 
-## Read this before you use the output
+## The default UTRs
+
+The defaults are the **BNT162b2 UTRs**, extracted from the published sequence
+rather than transcribed from memory. The extraction is self-validating: the ORF
+between them is exactly 3822 nt in frame, 1273 aa, correct spike N-terminus,
+tandem TGA·TGA.
+
+| Part | Length | What it is |
+|---|---|---|
+| `UTR5_hAg` | 48 nt | Human α-globin (HBA1/HBA2-shared) 5′ UTR behind a 14-nt vector leader. With `kozak_strong` (`GCCACC`) it reconstitutes the validated 54-nt leader exactly — a test asserts this. |
+| `UTR5_hAg_core` | 37 nt | The α-globin UTR without the vector leader, prefixed `GGG` for T7. Use if the scars below matter to you. |
+| `UTR3_AES_mtRNR1` | 296 nt | AES + mtRNR1 composite, selected *ex vivo* for stability and total protein output. |
+| `polyA_120` | 120 nt | Encoded tail. |
+
+**What the validated sequences actually contain**, because you should know
+before picking a restriction enzyme: the 5′ leader has `AATAAA` at position 3
+and an SpeI site at 8; the 3′ UTR opens with an XhoI scar, carries NheI at 27
+and 289, and has `AATAAA` at 219 inside mtRNR1. All of it is in the clinical
+sequence. `AAUAAA` only directs cleavage in the *nucleus*, so it is inert in a
+cytoplasmically delivered transcript — which is why QC attributes each motif to
+its feature and warns **only** for hits in the ORF, where the optimiser could
+have avoided them. A hit in a fixed part you chose is reported as a fact, not a
+defect.
 
 ### Placeholder parts are not real sequences
 
-`UTR5_placeholder`, `UTR3_placeholder` and `MITD_placeholder` are **stand-ins**
-so the assembler runs end to end. They are not validated UTRs. Every part
-carries a `Provenance` tag (`CANONICAL` / `LITERATURE` / `PLACEHOLDER`), any
-construct containing a placeholder reports it, and QC **fails** on one unless
-you pass `allow_placeholders=True` (or drop `--strict`).
+A default build now contains **no placeholders**. `UTR5_placeholder`,
+`UTR3_placeholder` and `MITD_placeholder` remain in the registry as stand-ins,
+but nothing selects them by default, and `ConstructSpec.trafficking` defaults to
+`None` rather than a placeholder — real routing comes from `txv.pvax1_ag`.
+
+Every part carries a `Provenance` tag (`CANONICAL` / `LITERATURE` /
+`PLACEHOLDER`); any construct containing a placeholder reports it, and QC
+**fails** on one unless you pass `allow_placeholders=True`.
 
 Supply your own with a JSON parts file:
-
-```bash
-txv design antigens.csv --name X --parts my_parts.json --utr5 UTR5_house --strict
-```
 
 ```json
 {"parts": [{"name": "UTR5_house", "kind": "utr5", "provenance": "literature",
@@ -115,7 +138,9 @@ via `extra=`.
 | `lnp` | RNA mass, N/P stoichiometry, lipid masses, mixing volumes, dosing |
 | `benchling` | Payload construction, dry run, live registration |
 | `pipeline` | The end-to-end flow and file I/O |
-| `pvax1_ag` | The audited P0–P8 module library and panel |
+| `pvax1_ag` | The audited P0–P8 module library, panel and routes |
+| `order` | Synthesis fragments, assembly overlaps, vendor-failure screening |
+| `variants` | Matched construct series for the two experimental axes |
 
 ### Codon optimisation is a constrained search, not a lookup
 
@@ -221,6 +246,92 @@ is not interchangeable with commercial pVAX1).
 
 ---
 
+## Ordering the plasmid
+
+Two decisions turn a construct into an order, and both are easy to get wrong
+silently. `txv order` makes them explicit.
+
+**What are you replacing in the backbone?** `--mode orf` (default) orders only
+the coding sequence and drops it between the backbone's existing UTR rails —
+minimal change, and the construct's own UTRs are *not* used. `--mode cassette`
+orders 5′ UTR + ORF + 3′ UTR and replaces the backbone's UTRs, which is what
+you want if upgrading the UTRs is the point — but it **moves the IVT
+primer-annealing rails**, so the primers must be re-designed. It is not a
+drop-in, and the tool says so on every cassette fragment.
+
+**Is the poly(A) tail encoded or added by PCR?** This one has a concrete
+answer. A 120-nt A-tract is genuinely hard to synthesise — most vendors fail,
+refuse, or silently deliver a contracted tract — and it contracts again in
+*E. coli*. The screen catches it:
+
+```
+P3      1053 bp  GC 51.8%  CHECK
+         ! 121-nt A-tract at 912: most vendors cannot synthesise this reliably
+         ! 81 exact repeat(s) of 40+ nt
+```
+
+If your IVT reverse primer already anneals upstream of the encoded tract and
+adds the tail by PCR, then the encoded tract does **no work for the transcript**
+and only makes synthesis and propagation harder. `--polya-mode pcr_added` (the
+default) drops it, and all nine panel fragments then order clean at 346–631 bp
+with no flags.
+
+The one thing that assumption rests on is worth measuring once, since it is
+cheap: run the IVT product on a denaturing gel or TapeStation against an
+untailed control, or do an RNase H / oligo-dT assay. A tail that was never
+incorporated looks exactly like a tail that was, until you check.
+
+`txv order --out order/` writes `ordering_table.csv` (vendor-ready, sequence
+included) and `synthesis_fragments.fasta`.
+
+---
+
+## Two experiments the panel cannot answer
+
+The panel settles *where* an antigen goes. `txv.variants` builds matched series
+for the two questions that decide whether a multi-antigen vaccine is potent.
+Each moves one variable and holds the rest, because that is the only form in
+which the answer is interpretable.
+
+### How many antigens before presentation decays?
+
+Published routing work is mostly one or two antigens. Whether there is a
+**presentation budget** — a point past which adding antigens dilutes per-epitope
+pMHC instead of adding breadth — is open, and it is the question that decides
+how many antigens a cassette should carry.
+
+```bash
+txv series antigens.csv --axis multiplex --sizes 1,2,4,6,8 --route ctla4
+```
+
+Two properties make the series interpretable, and both are deliberate.
+**Nesting**: arm *k* contains every antigen of arm *k−1*, so a drop cannot be
+explained by a different antigen set. **An anchor antigen** in position 1 of
+every arm, as an internal standard — normalise the others to it and a global
+translation drop becomes separable from genuine per-epitope dilution.
+
+### Does uridine depletion trade expression against adjuvanticity?
+
+Depleting uridine raises expression and lowers innate sensing. For a
+prophylactic vaccine that is unambiguously good. For a **cancer** vaccine it may
+not be: the same sensing you suppress is part of what matures the DC and
+licenses it to prime CD8 T cells. So the potency-optimal uridine content may not
+be the expression-optimal one.
+
+```bash
+txv series antigens.csv --axis uridine --route ctla4
+```
+
+Uridine **cannot** be varied independently of codon adaptation — depleting U
+forces synonymous choices away from the preferred codon — so the series reports
+CAI and GC per arm as covariates rather than pretending the axis is clean. It
+also reports `floor_U`, the minimum uridines the encoded protein admits: Phe,
+Tyr, Cys, Trp and Ile have no U-free codon, so there is a hard floor, and an
+arm sitting on it cannot be pushed lower without changing the protein. An
+optimiser that "stops responding" to more weight has simply reached it.
+
+---
+
 ## LNP formulation
 
 N/P — moles of ionisable nitrogen over moles of RNA backbone phosphate — is the
@@ -280,7 +391,7 @@ ORF length, GC, uridine fraction, CAI, linker, placeholder list and QC status.
 ## Tests
 
 ```bash
-python -m pytest        # 153 tests
+python -m pytest        # 190 tests
 ```
 
 The suite encodes the invariants that matter: codon optimisation never changes
@@ -288,4 +399,10 @@ the encoded protein; reordering never increases junctional risk; junction
 scanning never flags a peptide contained in one bead; features tile the
 template; GenBank coordinates are 1-based inclusive and the ORIGIN block
 reproduces the sequence; N/P is exact; signal peptides are N-terminal and
-`GYQTI` ends the protein in every panel member.
+`GYQTI` ends the protein in every panel member; the 5' UTR plus Kozak
+reconstitutes the validated BNT162b2 leader exactly; multiplex arms are nested
+and share their anchor; uridine arms encode a byte-identical protein.
+
+Sources for the UTR sequences: the [assembled BNT162b2 sequence](https://github.com/NAalytics/Assemblies-of-putative-SARS-CoV2-spike-encoding-mRNA-sequences-for-vaccines-BNT-162b2-and-mRNA-1273),
+cross-read against [Xia 2021, *Vaccines*](https://pmc.ncbi.nlm.nih.gov/articles/PMC8310186/)
+for the α-globin / AES / mtRNR1 element identities.

@@ -3,6 +3,7 @@ import pytest
 from txv.constructs import ConstructSpec, build_construct
 from txv.epitopes import Antigen
 from txv.parts import Part, PartKind, PartRegistry, Provenance, default_registry
+from txv.codon import OptimizerConfig
 from txv.qc import QCThresholds, Severity, run_qc
 
 
@@ -16,10 +17,49 @@ def test_clean_construct_passes(construct):
     assert not report.failures
 
 
-def test_placeholders_fail_in_strict_mode(construct):
+def test_default_construct_passes_strict_mode(construct):
+    """Defaults are real sequences, so strict mode is clean out of the box."""
+    report = run_qc(construct, allow_placeholders=False)
+    assert report.passed, report.to_text()
+    assert severity(report, "design.placeholders") is Severity.PASS
+
+
+def test_placeholders_fail_in_strict_mode(antigens):
+    from txv.constructs import build_construct
+
+    construct = build_construct(
+        "ph", antigens, spec=ConstructSpec(name="ph", utr3="UTR3_placeholder")
+    )
     report = run_qc(construct, allow_placeholders=False)
     assert not report.passed
     assert severity(report, "design.placeholders") is Severity.FAIL
+    assert run_qc(construct, allow_placeholders=True).passed
+
+
+def test_validated_utr_motifs_are_attributed_not_blamed_on_the_orf(construct):
+    """The real UTRs carry AAUAAA and cloning scars; that is not an ORF defect."""
+    report = run_qc(construct)
+    assert severity(report, "motif.forbidden") is Severity.PASS
+    assert severity(report, "mfg.cryptic_polya") is Severity.PASS
+    fixed = next(c for c in report.checks if c.name == "motif.fixed_parts")
+    owners = {owner for _, _, owner in fixed.detail["hits"]}
+    assert owners <= {"UTR5_hAg", "UTR3_AES_mtRNR1"}
+
+
+def test_aauaaa_inside_the_orf_still_warns(antigens):
+    from txv.constructs import build_construct
+    from txv.epitopes import Antigen
+
+    # NKID encodes AAUAAA-compatible codons; force it with a narrow table.
+    construct = build_construct(
+        "x", [Antigen("forced", "MNKNKNKNK")],
+        spec=ConstructSpec(name="x", signal_peptide=None),
+        optimizer_config=OptimizerConfig(forbidden=(), w_uridine=0.0),
+    )
+    report = run_qc(construct)
+    check = next(c for c in report.checks if c.name == "mfg.cryptic_polya")
+    if check.detail["in_orf"]:
+        assert check.severity is Severity.WARN
 
 
 def test_upstream_aug_in_the_utr_is_a_failure(antigens):

@@ -311,16 +311,30 @@ def check_manufacturability(construct: Construct, t: QCThresholds) -> list[Check
                   {"positions": hits})
         )
 
-    # Cryptic poly(A) signal inside the transcript.
+    # Cryptic poly(A) signal, attributed to its feature. AAUAAA only directs
+    # cleavage and polyadenylation in the nucleus, so in a cytoplasmically
+    # delivered transcript it is inert -- and the validated BNT162b2 UTRs each
+    # contain one. It is a warning only when the optimiser put it in the ORF.
     transcript = construct.transcript
+    orf = construct.feature("ORF")
     paus = find_all(transcript, "AATAAA")
+    in_orf = [p for p in paus
+              if orf.start <= construct.transcript_start + p < orf.end]
+    elsewhere = [(p, _owning_feature(construct, p)) for p in paus if p not in in_orf]
+    if in_orf:
+        message = (f"AAUAAA at {in_orf} inside the ORF: premature "
+                   "polyadenylation risk if the template is ever transcribed in "
+                   "a nucleus")
+    elif elsewhere:
+        message = ("AAUAAA present only in fixed parts ("
+                   + ", ".join(f"{owner}@{p}" for p, owner in elsewhere[:6])
+                   + "); inert for a cytoplasmic transcript")
+    else:
+        message = "no AAUAAA in the transcript"
     checks.append(
         Check("mfg.cryptic_polya",
-              Severity.PASS if not paus else Severity.WARN,
-              "no AAUAAA in the transcript" if not paus
-              else f"AAUAAA at {paus}: premature polyadenylation risk if the "
-                   "template is ever transcribed in a nucleus",
-              {"positions": paus})
+              Severity.WARN if in_orf else Severity.PASS, message,
+              {"in_orf": in_orf, "elsewhere": elsewhere})
     )
     return checks
 
@@ -353,7 +367,29 @@ def check_cap_proximal(construct: Construct, t: QCThresholds) -> list[Check]:
     return checks
 
 
+def _owning_feature(construct: Construct, transcript_pos: int) -> str:
+    """Name the smallest annotated feature containing a transcript position."""
+    absolute = construct.transcript_start + transcript_pos
+    owners = [
+        f for f in construct.features
+        if f.start <= absolute < f.end and f.kind not in ("orf",)
+    ]
+    if not owners:
+        return "ORF" if construct.feature("ORF").start <= absolute < \
+            construct.feature("ORF").end else "?"
+    return min(owners, key=len).name
+
+
 def check_motifs(construct: Construct, optimizer: CodonOptimizer | None = None) -> list[Check]:
+    """Screen the transcript for forbidden motifs, attributed to their feature.
+
+    Attribution matters because a validated UTR is a fixed part you chose, not
+    something the optimiser can rewrite. The BNT162b2 UTRs, for instance, carry
+    XhoI and NheI cloning scars and an AAUAAA inside mtRNR1 -- all in the
+    clinical sequence. A hit there is a fact to know before you pick a
+    restriction enzyme; a hit in the ORF is a miss by the optimiser. Only the
+    latter is a warning.
+    """
     optimizer = optimizer or CodonOptimizer()
     # Mask the poly(A) tail: a long A-tract matches pyrimidine-tract motifs on
     # the reverse strand by construction, which is noise, not a finding.
@@ -364,14 +400,35 @@ def check_motifs(construct: Construct, optimizer: CodonOptimizer | None = None) 
             if 0 <= i < len(masked):
                 masked[i] = "N"
     transcript = "".join(masked)
-    hits = optimizer.find_forbidden(transcript)
-    return [
-        Check("motif.forbidden", Severity.PASS if not hits else Severity.WARN,
-              "no forbidden motif in the transcript" if not hits
-              else f"{len(hits)} forbidden motif(s) survive in the transcript: "
-                   + ", ".join(f"{m}@{p}" for m, p in hits[:8]),
-              {"hits": hits[:40]})
+
+    orf = construct.feature("ORF")
+    in_orf: list[tuple[str, int, str]] = []
+    in_fixed: list[tuple[str, int, str]] = []
+    for motif, position in optimizer.find_forbidden(transcript):
+        owner = _owning_feature(construct, position)
+        absolute = offset + position
+        record = (motif, position, owner)
+        (in_orf if orf.start <= absolute < orf.end else in_fixed).append(record)
+
+    checks = [
+        Check("motif.forbidden",
+              Severity.PASS if not in_orf else Severity.WARN,
+              "no forbidden motif in the ORF" if not in_orf
+              else f"{len(in_orf)} forbidden motif(s) survive in the ORF: "
+                   + ", ".join(f"{m}@{p}" for m, p, _ in in_orf[:8]),
+              {"hits": in_orf[:40]})
     ]
+    if in_fixed:
+        checks.append(
+            Check("motif.fixed_parts", Severity.PASS,
+                  f"{len(in_fixed)} motif(s) present in fixed parts you chose "
+                  "(not optimiser-editable): "
+                  + ", ".join(f"{m}@{o}" for m, _, o in in_fixed[:8])
+                  + ". Confirm none clashes with your cloning or linearisation "
+                    "enzymes",
+                  {"hits": in_fixed[:40]})
+        )
+    return checks
 
 
 def check_placeholders(construct: Construct) -> list[Check]:
