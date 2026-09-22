@@ -287,8 +287,10 @@ Benchling import. The GenBank records deliberately show only what you are
 buying — in ORF mode the UTRs come from the backbone, so a record displaying
 them would misrepresent the order.
 
-A generated order for the P0-P8 panel, with a step-by-step cloning protocol, is
-checked in at [`orders/pvax1_ag_panel/`](orders/pvax1_ag_panel/).
+A generated order for the P0-P8 panel, with a step-by-step cloning protocol and
+the nine assembled plasmid maps, is checked in at
+[`orders/pvax1_ag_panel/`](orders/pvax1_ag_panel/). The design rationale, with
+figures, is in [`docs/design_rationale.html`](docs/design_rationale.html).
 
 `assemble_into_backbone()` simulates the assembly against the parent plasmid and
 returns the full circular sequence. It refuses rather than guessing if either
