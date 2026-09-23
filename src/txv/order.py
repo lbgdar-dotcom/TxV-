@@ -308,7 +308,8 @@ def fragment_genbank(fragment: OrderFragment, construct: Construct) -> str:
     keep = {
         "orf": "CDS", "signal_peptide": "sig_peptide", "trafficking": "misc_feature",
         "linker": "misc_feature", "neoepitope": "misc_feature", "tag": "misc_feature",
-        "degron": "misc_feature", "start": "misc_feature", "stop": "terminator",
+        "degron": "misc_feature", "skip_peptide": "misc_feature",
+        "start": "misc_feature", "stop": "terminator",
         "tumor_associated": "misc_feature", "helper": "misc_feature",
         "full_length": "misc_feature",
     }

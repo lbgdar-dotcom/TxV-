@@ -26,7 +26,8 @@ from .seqops import find_all, translate
 _INSERT_KEYS = {
     "orf": "CDS", "signal_peptide": "sig_peptide", "trafficking": "misc_feature",
     "linker": "misc_feature", "neoepitope": "misc_feature", "tag": "misc_feature",
-    "degron": "misc_feature", "start": "misc_feature", "stop": "misc_feature",
+    "degron": "misc_feature", "skip_peptide": "misc_feature",
+    "start": "misc_feature", "stop": "misc_feature",
     "tumor_associated": "misc_feature", "helper": "misc_feature",
     "full_length": "misc_feature",
 }

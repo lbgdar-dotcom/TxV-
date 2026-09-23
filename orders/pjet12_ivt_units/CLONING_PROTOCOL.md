@@ -107,3 +107,37 @@ become sequence hygiene rather than functional constraints. They still pass.
 one element that is genuinely hard to synthesise, and it is why these fragments
 order cleanly. If you would rather have it in the plasmid, say so — a segmented
 A30–linker–A70 tract is synthesisable where a flat A120 is not.
+
+## Sanity-checking before you order
+
+Three views of the same nine molecules, so a mistake has to survive all three:
+
+| file | what it is for |
+|---|---|
+| `P0.gb` … `P8.gb` | annotated maps — import into Benchling and look |
+| `element_manifest.csv` | one row per construct, one column per element |
+| `ELEMENT_CHECKLIST.md` | the same, written out with coordinates |
+
+Counts in the manifest are of the peptide **found in the translated protein**,
+not of what the design file claims — so a module that was declared but dropped
+shows as absent.
+
+```bash
+python audit/audit_pjet.py           # 625 checks; exit 1 blocks ordering
+python -m pytest audit/              # 34 negative controls
+```
+
+`audit/audit_pjet.py` imports nothing from the design library. It restates the
+design from scratch and checks, per construct: the reading frame and translated
+protein; every module intact at its expected position; SIINFEKL and the class II
+core present; `GYQTI` ending the protein on LAMP1 constructs; E5 terminal where
+it has a free C-terminus and internal in P7/P8; P2A present only in P7/P8; the
+T7 promoter, the AGG start, the Kozak junction, the 3' UTR and both handles;
+that no poly(A) is encoded; and that **the manifest and the GenBank record both
+describe the molecule actually being ordered**. Across constructs it checks that
+every module has exactly one DNA encoding.
+
+The negative controls delete a signal peptide, E5, P2A, an antigen and the HA
+tag; swap the antigen order in P3; break the T7 promoter, the AGG start and the
+Kozak; frameshift an ORF; damage SIINFEKL; and make the manifest and the GenBank
+disagree with the sequence. Each must block.

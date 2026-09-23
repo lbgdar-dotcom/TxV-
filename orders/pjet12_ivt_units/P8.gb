@@ -1,0 +1,119 @@
+LOCUS       P8               755 bp    DNA     linear   SYN 23-SEP-2026
+DEFINITION  P8 IVT transcription unit for blunt cloning into pJET1.2; 183 aa ORF.
+ACCESSION   P8
+VERSION     .
+KEYWORDS    IVT mRNA; T7; antigen cassette; pJET1.2.
+SOURCE      synthetic construct
+  ORGANISM  synthetic construct
+FEATURES             Location/Qualifiers
+     source          1..755
+                     /organism="synthetic construct"
+                     /mol_type="other DNA"
+     primer_bind     1..20
+                     /label="IVT_F_handle"
+                     /note="Forward PCR primer site. Also
+                     supplies the upstream duplex T7
+                     needs; a promoter flush with the end
+                     of a PCR product transcribes poorly."
+                     /ApEinfo_fwdcolor="#C8C8C8"
+     promoter        21..37
+                     /label="T7_promoter"
+                     /note="T7 class III promoter,
+                     -17..-1. The next base is +1."
+                     /ApEinfo_fwdcolor="#B3E0A6"
+     5'UTR           38..78
+                     /label="5'UTR"
+                     /note="Transcript begins AGG at +1
+                     (CleanCap AG compatible). No upstream
+                     AUG."
+                     /ApEinfo_fwdcolor="#C9D7F8"
+     regulatory      79..84
+                     /label="Kozak"
+                     /note="GCCACC: purine at -3 and G at
+                     +4, the strong consensus."
+                     /ApEinfo_fwdcolor="#F7D08A"
+     CDS             85..636
+                     /label="ORF"
+                     /codon_start="1"
+                     /translation="MYPYDVPDYAGGGGSEEFAKFAS
+                     FEAQGALANIAVDKANLDVMKGGGGSEEEEEGSGATN
+                     FSLLKQAGDVEENPGPMAAPGARRPLLLLLLAGLAHG
+                     ASADYKDDDDKGGGGSEVSGLEQLESIINFEKLTEWT
+                     SSNVMEERGGGGSMLIPIAVGGALAGLVLIVLIAYLI
+                     GRKRSHAGYQTI"
+                     /note="183 aa. Single stop codon."
+                     /ApEinfo_fwdcolor="#FFE9A8"
+     misc_feature    85..87
+                     /label="M"
+                     /ApEinfo_fwdcolor="#9E9E9E"
+     misc_feature    88..114
+                     /label="HA"
+                     /ApEinfo_fwdcolor="#A3D9C9"
+     misc_feature    115..129
+                     /label="L_2"
+                     /ApEinfo_fwdcolor="#E3E3E3"
+     misc_feature    130..216
+                     /label="B"
+                     /ApEinfo_fwdcolor="#9BD1E5"
+     misc_feature    217..231
+                     /label="L_4"
+                     /ApEinfo_fwdcolor="#E3E3E3"
+     misc_feature    232..246
+                     /label="E5"
+                     /ApEinfo_fwdcolor="#F2A0A0"
+     misc_feature    247..312
+                     /label="P2A"
+                     /ApEinfo_fwdcolor="#F7B267"
+     sig_peptide     313..384
+                     /label="LAMP1_SP"
+                     /ApEinfo_fwdcolor="#F5C6E0"
+     misc_feature    385..408
+                     /label="FLAG"
+                     /ApEinfo_fwdcolor="#A3D9C9"
+     misc_feature    409..423
+                     /label="L_9"
+                     /ApEinfo_fwdcolor="#E3E3E3"
+     misc_feature    424..510
+                     /label="A"
+                     /ApEinfo_fwdcolor="#9BD1E5"
+     misc_feature    511..525
+                     /label="L_11"
+                     /ApEinfo_fwdcolor="#E3E3E3"
+     misc_feature    526..633
+                     /label="LAMP1_TMT"
+                     /ApEinfo_fwdcolor="#D8C3F0"
+     terminator      634..636
+                     /label="stop"
+                     /ApEinfo_fwdcolor="#9E9E9E"
+     3'UTR           637..735
+                     /label="3'UTR"
+                     /note="Globin-derived 3' UTR; carries
+                     its own native AAUAAA, which is inert
+                     for a cytoplasmic transcript."
+                     /ApEinfo_fwdcolor="#C9D7F8"
+     primer_bind     736..755
+                     /label="IVT_R_handle"
+                     /note="Reverse PCR primer site. The
+                     IVT reverse primer is its reverse
+                     complement plus a poly(T) tail."
+                     /ApEinfo_fwdcolor="#C8C8C8"
+COMMENT     Route: dual: B cytosolic + A lysosomal
+COMMENT     Asks: Swap control for P7: is the effect about the route
+            or about the antigen?
+COMMENT     Blunt-ligate into pJET1.2 in either orientation; recover the IVT
+            template by PCR with IVT_F and IVT_R.
+ORIGIN
+        1 cagtcacgta gcatcgactg taatacgact cactataagg aaataagaga gaaaagaaga
+       61 gtaagaagaa atataagagc caccatgtac ccctacgacg tgcccgacta cgccggaggc
+      121 ggaggcagcg aagagttcgc caagttcgcc agcttcgaag cccagggagc cctggccaac
+      181 atcgccgtgg acaaagccaa cctggacgtg atgaagggcg gaggcgggtc cgaggaggaa
+      241 gaggagggca gcggcgccac aaacttcagc ctgctcaagc aggccggcga cgtggaggaa
+      301 aacccaggcc ccatggccgc acccggcgcc agaaggccac tgctcctgct cctgctcgcc
+      361 ggcctggccc atggagcaag cgccgactac aaggacgatg acgataaggg cggtggcgga
+      421 agtgaggtga gcggcctgga gcagctggag agcatcatta acttcgagaa gctgaccgag
+      481 tggaccagct ccaacgtgat ggaggaacgg ggtggcggtg gctctatgct gatcccaatc
+      541 gccgtgggcg gagccctggc cggactggtg ctgatcgtgc tgatcgcata cctgatcggc
+      601 agaaagagga gccacgccgg ctaccagacc atctgagctg ccttctgcgg ggcttgcctt
+      661 ctggccatgc ccttcttctc tcccttgcac ctgtacctct tggtctttga ataaagcctg
+      721 agtaggaagg gatccgtcat gcagtcgatc actga
+//

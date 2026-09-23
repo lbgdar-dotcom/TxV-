@@ -499,7 +499,7 @@ MODULE_KIND: dict[str, str] = {
     "FLAG": "tag",
     "E5": "degron",
     "CL1": "degron",
-    "P2A": "linker",
+    "P2A": "skip_peptide",
     "L": "linker",
 }
 

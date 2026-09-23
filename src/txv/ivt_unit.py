@@ -255,9 +255,140 @@ def screen_handles(forward: str = FWD_HANDLE, reverse: str = REV_HANDLE,
     return problems
 
 
+
+
+
+# ---------------------------------------------------------------------------
+# Annotated records
+# ---------------------------------------------------------------------------
+
+#: Element kind -> GenBank feature key, for the records Benchling imports.
+_KEY = {
+    "handle": "primer_bind", "promoter": "promoter", "utr5": "5'UTR",
+    "kozak": "regulatory", "orf": "CDS", "signal_peptide": "sig_peptide",
+    "trafficking": "misc_feature", "linker": "misc_feature",
+    "neoepitope": "misc_feature", "tag": "misc_feature", "degron": "misc_feature",
+    "start": "misc_feature", "stop": "terminator", "utr3": "3'UTR",
+    "skip_peptide": "misc_feature",
+    "full_length": "misc_feature",
+}
+
+_COLOR = {
+    "handle": "#C8C8C8", "promoter": "#B3E0A6", "utr5": "#C9D7F8",
+    "kozak": "#F7D08A", "signal_peptide": "#F5C6E0", "trafficking": "#D8C3F0",
+    "linker": "#E3E3E3", "neoepitope": "#9BD1E5", "tag": "#A3D9C9",
+    "degron": "#F2A0A0", "skip_peptide": "#F7B267", "start": "#9E9E9E",
+    "stop": "#9E9E9E",
+    "utr3": "#C9D7F8", "orf": "#FFE9A8",
+}
+
+
+def unit_elements(unit: "IVTUnit", construct) -> list[tuple]:
+    """Every annotatable element of the fragment, as (name, start, end, kind, note).
+
+    Coordinates are 0-based half-open into ``unit.sequence``.
+    """
+    s = unit.sequence
+    orf_offset = len(FWD_HANDLE) + len(T7_CORE) + len(LEADER)
+    leader_start = len(FWD_HANDLE) + len(T7_CORE)
+
+    elements: list[tuple] = [
+        ("IVT_F_handle", 0, len(FWD_HANDLE), "handle",
+         "Forward PCR primer site. Also supplies the upstream duplex T7 needs; "
+         "a promoter flush with the end of a PCR product transcribes poorly."),
+        ("T7_promoter", len(FWD_HANDLE), leader_start, "promoter",
+         "T7 class III promoter, -17..-1. The next base is +1."),
+        ("5'UTR", leader_start, leader_start + len(LEADER) - 6, "utr5",
+         "Transcript begins AGG at +1 (CleanCap AG compatible). No upstream AUG."),
+        ("Kozak", orf_offset - 6, orf_offset, "kozak",
+         "GCCACC: purine at -3 and G at +4, the strong consensus."),
+    ]
+
+    skip = {"orf", "promoter", "utr5", "utr3", "kozak", "polya", "linearization"}
+    orf_start = construct.feature("ORF").start
+    for f in construct.features:
+        if f.kind in skip:
+            continue
+        elements.append((
+            f.name,
+            f.start - orf_start + orf_offset,
+            f.end - orf_start + orf_offset,
+            f.kind,
+            f.note,
+        ))
+
+    orf_end = orf_offset + len(unit.orf)
+    elements.append(("ORF", orf_offset, orf_end, "orf",
+                     f"{len(unit.protein)} aa. Single stop codon."))
+    elements.append(("3'UTR", orf_end, orf_end + len(UTR3), "utr3",
+                     "Globin-derived 3' UTR; carries its own native AAUAAA, "
+                     "which is inert for a cytoplasmic transcript."))
+    elements.append(("IVT_R_handle", len(s) - len(REV_HANDLE), len(s), "handle",
+                     "Reverse PCR primer site. The IVT reverse primer is its "
+                     "reverse complement plus a poly(T) tail."))
+    return sorted(elements, key=lambda e: (e[1], -(e[2] - e[1])))
+
+
+def unit_genbank(unit: "IVTUnit", construct, route: str = "",
+                 question: str = "") -> str:
+    """Annotated GenBank of the fragment as ordered, for import into Benchling."""
+    import textwrap
+    from datetime import date
+
+    s = unit.sequence
+    lines = [
+        f"LOCUS       {unit.name[:16]:<16} {len(s)} bp    DNA     linear   SYN "
+        f"{date.today().strftime('%d-%b-%Y').upper()}",
+        f"DEFINITION  {unit.name} IVT transcription unit for blunt cloning into "
+        f"pJET1.2; {len(unit.protein)} aa ORF.",
+        f"ACCESSION   {unit.name}",
+        "VERSION     .",
+        "KEYWORDS    IVT mRNA; T7; antigen cassette; pJET1.2.",
+        "SOURCE      synthetic construct",
+        "  ORGANISM  synthetic construct",
+        "FEATURES             Location/Qualifiers",
+        f"     {'source':<16}1..{len(s)}",
+        '                     /organism="synthetic construct"',
+        '                     /mol_type="other DNA"',
+    ]
+
+    def qual(key, value):
+        body = f'/{key}="{str(value).replace(chr(34), chr(39))}"'
+        return textwrap.wrap(body, width=58, initial_indent=" " * 21,
+                             subsequent_indent=" " * 21) or [" " * 21 + body]
+
+    for name, start, end, kind, note in unit_elements(unit, construct):
+        lines.append(f"     {_KEY.get(kind, 'misc_feature'):<16}{start + 1}..{end}")
+        lines += qual("label", name)
+        if kind == "orf":
+            lines += qual("codon_start", "1")
+            lines += qual("translation", unit.protein)
+        if note:
+            lines += qual("note", note[:300])
+        lines.append(f'                     /ApEinfo_fwdcolor="{_COLOR.get(kind, "#E3E3E3")}"')
+
+    if route:
+        lines.append(f"COMMENT     Route: {route}")
+    if question:
+        lines += textwrap.wrap(f"Asks: {question}", width=68,
+                               initial_indent="COMMENT     ",
+                               subsequent_indent="            ")
+    lines.append("COMMENT     Blunt-ligate into pJET1.2 in either orientation; "
+                 "recover the IVT")
+    lines.append("            template by PCR with IVT_F and IVT_R.")
+    lines.append("ORIGIN")
+    for i in range(0, len(s), 60):
+        chunk = s[i:i + 60].lower()
+        groups = " ".join(chunk[j:j + 10] for j in range(0, len(chunk), 10))
+        lines.append(f"{i + 1:>9} {groups}")
+    lines.append("//")
+    return "\n".join(lines) + "\n"
+
+
 __all__ = [
     "T7_CORE", "LEADER", "UTR3", "FWD_HANDLE", "REV_HANDLE",
     "FWD_PRIMER", "reverse_primer",
     "IVTUnit", "make_unit", "simulate_pcr",
     "verify_unit", "verify_orientation_independence", "screen_handles",
+    "unit_elements", "unit_genbank",
 ]
