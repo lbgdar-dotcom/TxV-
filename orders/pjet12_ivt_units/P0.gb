@@ -1,4 +1,4 @@
-LOCUS       P0               554 bp    DNA     linear   SYN 23-SEP-2026
+LOCUS       P0               751 bp    DNA     linear   SYN 23-SEP-2026
 DEFINITION  P0 IVT transcription unit for blunt cloning into pJET1.2; 116 aa ORF.
 ACCESSION   P0
 VERSION     .
@@ -6,7 +6,7 @@ KEYWORDS    IVT mRNA; T7; antigen cassette; pJET1.2.
 SOURCE      synthetic construct
   ORGANISM  synthetic construct
 FEATURES             Location/Qualifiers
-     source          1..554
+     source          1..751
                      /organism="synthetic construct"
                      /mol_type="other DNA"
      primer_bind     1..20
@@ -59,13 +59,13 @@ FEATURES             Location/Qualifiers
      terminator      433..435
                      /label="stop"
                      /ApEinfo_fwdcolor="#9E9E9E"
-     3'UTR           436..534
+     3'UTR           436..731
                      /label="3'UTR"
                      /note="Globin-derived 3' UTR; carries
                      its own native AAUAAA, which is inert
                      for a cytoplasmic transcript."
                      /ApEinfo_fwdcolor="#C9D7F8"
-     primer_bind     535..554
+     primer_bind     732..751
                      /label="IVT_R_handle"
                      /note="Reverse PCR primer site. The
                      IVT reverse primer is its reverse
@@ -78,13 +78,16 @@ COMMENT     Blunt-ligate into pJET1.2 in either orientation; recover the IVT
             template by PCR with IVT_F and IVT_R.
 ORIGIN
         1 cagtcacgta gcatcgactg taatacgact cactataagg aaataagaga gaaaagaaga
-       61 gtaagaagaa atataagagc caccatggca tgtctgggcc tgaggagata caaagcacag
-      121 ctgcagctgc caagcagaac atggccattc gtggcactgc tcacactcct gttcatccca
-      181 gtgttcagct acccatacga cgtgccagac tacgccggag gcggaggcag cttcctcctg
-      241 tggattctgg tggcagtgag tctgggactg ttcttttaca gcttcctggt gagcgcagtg
-      301 agcctgagca aaatgctgaa gaaaaggagc ccactgacca caggagtgta cgtgaaaatg
-      361 ccacctacag agccagagtg cgagaaacag ttccagccat acttcatccc catcaacgag
-      421 gaggaagagg agtgagctgc cttctgcggg gcttgccttc tggccatgcc cttcttctct
-      481 cccttgcacc tgtacctctt ggtctttgaa taaagcctga gtaggaaggg atccgtcatg
-      541 cagtcgatca ctga
+       61 gtaagaagaa atataagagc caccatggca tgcctgggcc tcaggagata taaagcacaa
+      121 ctgcagctgc caagcagaac ctggccattt gtggcacttc tgacactcct gttcatccca
+      181 gtgttcagct acccatacga cgtgccagat tacgccggag gcggaggcag cttcctgctc
+      241 tggattctgg tggcagtgag tctgggactg ttcttttaca gctttctggt gagcgcagtg
+      301 agcctgagca aaatgctgaa gaaaagaagc ccactgacca caggagtgta cgtgaagatg
+      361 ccacctacag aaccagaatg cgagaagcag ttccagccat acttcatccc catcaacgag
+      421 gaggaagagg agtgactcga gctggtactg catgcacgca atgctagctg cccctttccc
+      481 gtcctgggta ccccgagtct cccccgacct cgggtcccag gtatgctccc acctccacct
+      541 gccccactca ccacctctgc tagttccaga cacctcccaa gcacgcagca atgcagctca
+      601 aaacgcttag cctagccaca cccccacggg aaacagcagt gattaacctt tagcaataaa
+      661 cgaaagttta actaagctat actaacccca gggttggtca atttcgtgcc agccacaccc
+      721 tggagctagc agtcatgcag tcgatcactg a
 //

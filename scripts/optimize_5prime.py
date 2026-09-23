@@ -58,6 +58,12 @@ GC_BAND = (0.40, 0.66)
 ACCESS_TOLERANCE = 0.05
 #: Resolution at which two accessibilities count as different.
 ACCESS_RESOLUTION = 0.02
+#: Bases either side of the tunable codons that a junction defect could
+#: span. The longest screened motif is 8 nt (NotI).
+JUNCTION_MARGIN = 8
+#: Longest single-base run allowed in the tuned region, matching
+#: OptimizerConfig.max_homopolymer.
+MAX_HOMOPOLYMER = 5
 #: Window centred on the AUG over which mean unpaired probability is taken.
 AUG_WINDOW = 15
 
@@ -93,13 +99,23 @@ def search(module: str, target: float, optimizer) -> list[tuple]:
             continue
         variant = current[:head] + "".join(combo) + current[head + N_FREE * 3:]
         candidate = variant + context[len(current):]
-        window = candidate[:120]
-        if optimizer.find_forbidden(window):
+
+        # Judge only what the search can actually change, plus a margin so a
+        # defect straddling the junction is still caught. Scoring the whole
+        # 120-nt window instead rejects every candidate over a defect none of
+        # them can fix: LAMP1_SP's poly-Leu carries a TTTT run at nt 31, well
+        # outside the six tunable codons, and that alone zeroed the search.
+        lo, hi = max(0, head - JUNCTION_MARGIN), head + N_FREE * 3 + JUNCTION_MARGIN
+        region = candidate[lo:hi]
+        if optimizer.find_forbidden(region):
             rejected["forbidden motif"] += 1
             continue
-        if re.search(r"(A|C|G|T)\1{3,}", window):
-            rejected["homopolymer >=4"] += 1
+        # Threshold matches the optimiser's own max_homopolymer rather than
+        # being stricter than the design it is tuning.
+        if re.search(r"(A|C|G|T)\1{%d,}" % (MAX_HOMOPOLYMER - 1), region):
+            rejected[f"homopolymer >={MAX_HOMOPOLYMER}"] += 1
             continue
+        window = candidate[:120]
         if not GC_BAND[0] <= gc_fraction(window) <= GC_BAND[1]:
             rejected[f"GC outside {GC_BAND}"] += 1
             continue

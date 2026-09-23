@@ -64,14 +64,14 @@ COMMENT     ORF only: drops between the backbone's existing UTR
 COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
             starts at ATG and must not repeat it.
 ORIGIN
-        1 gaagaaatat aagagccacc atggcatacc catacgacgt gccagactac gccggaggcg
-       61 gaggcagcga agagttcgcc aaattcgcca gcttcgaagc acagggagca ctggcaaata
-      121 tcgcagtgga caaagccaac ctggacgtga tgaagggcgg aggcgggtcc gaggaggaag
-      181 aggagggaag tggagcaaca aacttcagcc tcctgaaaca ggccggcgat gtggaagaga
-      241 atccaggacc aatggcagct ccaggagcca gaaggccact tctgcttctg cttctggcag
-      301 gactggcaca tggagccagc gccgactaca aggacgatga cgataagggc ggtggcggaa
-      361 gtgaagtgag cggactggaa cagctggaga gcatcattaa cttcgagaag ctgaccgagt
-      421 ggacaagctc caacgtgatg gaagagagag gtggcggtgg ctctatgctg atcccaatcg
-      481 cagtgggagg tgcactggca ggattggtgc tgattgtgct gatcgcctac ctgatcggaa
-      541 gaaagagaag ccacgcagga taccagacca tctgagctgc cttctgcggg gcttg
+        1 gaagaaatat aagagccacc atggcatacc catacgacgt gccagattac gccggaggcg
+       61 gaggcagcga agagttcgcc aaattcgcca gcttcgaagc acagggagca cttgcaaaca
+      121 ttgcagtgga caaagccaac ctggacgtga tgaagggcgg aggcgggtcc gaggaggaag
+      181 aggagggaag tggagcaaca aacttcagcc tgctcaaaca ggccggagat gtggaagaga
+      241 atccaggacc aatggcagcc ccaggagcca gaaggccatt gcttttgctt ttgctggcag
+      301 gactggcaca tggagcaagc gccgactaca aggacgatga cgataagggc ggtggcggaa
+      361 gtgaagtgag tggactggaa cagctggaga gcatcattaa cttcgagaag ctgaccgagt
+      421 ggacaagctc caatgtgatg gaagagagag gtggcggtgg ctctatgctg atcccaatcg
+      481 cagtgggagg tgcactggca ggattggtgt tgattgtgct gattgcctac ctgatcggca
+      541 gaaagagaag ccatgcagga taccagacaa tctgagctgc cttctgcggg gcttg
 //

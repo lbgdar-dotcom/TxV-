@@ -43,13 +43,45 @@ from .seqops import clean, find_all, gc_fraction, revcomp, translate
 #: T7 class III promoter, positions -17..-1. The next base is +1.
 T7_CORE = "TAATACGACTCACTATA"
 
-#: Transcript from +1 to just before the ATG: begins AGG (which is what
-#: CleanCap AG requires) and ends in the strong Kozak.
+#: Transcript from +1 to just before the ATG, taken verbatim from pVax1_AG.
+#:
+#: Kept rather than replaced with the BNT162b2 alpha-globin leader, and the
+#: reason is the capping chemistry, not inertia. Co-transcriptional CleanCap AG
+#: requires the transcript to begin A then G. This leader begins AG; the
+#: BNT162b2 leader begins GA and the alpha-globin core variant begins GGG, so
+#: either would have to be re-headed to cap at all -- at which point it is no
+#: longer the verbatim validated sequence and its provenance argument is spent.
+#: That AG start is what the vector's name refers to.
+#:
+#: It also stands on its own: 34% GC, no upstream AUG, no AATAAA, and the
+#: lowest secondary structure over the start codon of anything considered here
+#: (see scripts/validate_in_silico.py).
 LEADER = "AGGAAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGAGCCACC"
 
-#: From the stop codon to where the encoded poly(A) began in pVax1_AG.
-UTR3 = ("GCTGCCTTCTGCGGGGCTTGCCTTCTGGCCATGCCCTTCTTCTCTCCCTTGCACCTGTACC"
-        "TCTTGGTCTTTGAATAAAGCCTGAGTAGGAAGGGATCC")
+#: BNT162b2 3' UTR, verbatim: the amino-terminal enhancer of split (AES) 3' UTR
+#: followed by the mitochondrially encoded 12S rRNA (mtRNR1) element, 296 nt.
+#:
+#: This replaces the 99 nt pVax1_AG carried over when these units were first
+#: made self-contained. That carry-over was a mistake: the units no longer
+#: inherit anything from the vector, so the compatibility argument for keeping
+#: the vector's 3' UTR had already expired, and the sequence is a superset of
+#: the one the parts registry itself marks Provenance.PLACEHOLDER. The auditors
+#: never caught it because they check the 3' UTR is present and intact, never
+#: that it is the right one.
+#:
+#: Unlike the 5' UTR this carries no capping constraint, so the validated
+#: sequence goes in unmodified. It costs +197 nt on every fragment.
+#:
+#: It carries its clinical cloning scars -- XhoI at 0, NheI at 27 and 289,
+#: AATAAA at 219 inside mtRNR1, and four downstream AUGs. All are inert here:
+#: nothing in this workflow cuts with those enzymes, there is no
+#: polyadenylation machinery in an IVT reaction, and the AUGs are 3' of the
+#: stop codon.
+UTR3 = ("CTCGAGCTGGTACTGCATGCACGCAATGCTAGCTGCCCCTTTCCCGTCCTGGGTACCCCGAG"
+        "TCTCCCCCGACCTCGGGTCCCAGGTATGCTCCCACCTCCACCTGCCCCACTCACCACCTCTG"
+        "CTAGTTCCAGACACCTCCCAAGCACGCAGCAATGCAGCTCAAAACGCTTAGCCTAGCCACAC"
+        "CCCCACGGGAAACAGCAGTGATTAACCTTTAGCAATAAACGAAAGTTTAACTAAGCTATACT"
+        "AACCCCAGGGTTGGTCAATTTCGTGCCAGCCACACCCTGGAGCTAGCA")
 
 #: Primer-binding handles, identical on all nine fragments so one primer pair
 #: amplifies every construct. The forward handle also gives T7 RNA polymerase

@@ -31,7 +31,7 @@ protein, not of what the design file claims.
 
 Scaffold-only control: does the routing module alone produce signal?
 
-Fragment **554 bp** · transcript **497 nt** · protein **116 aa** · antigens **none**
+Fragment **751 bp** · transcript **694 nt** · protein **116 aa** · antigens **none**
 
 | position | element | kind |
 |---|---|---|
@@ -45,8 +45,8 @@ Fragment **554 bp** · transcript **497 nt** · protein **116 aa** · antigens *
 | 232–417 | `CTLA4_TMT` | trafficking |
 | 418–432 | `E5` | degron |
 | 433–435 | `stop` | stop |
-| 436–534 | `3'UTR` | utr3 |
-| 535–554 | `IVT_R_handle` | handle |
+| 436–731 | `3'UTR` | utr3 |
+| 732–751 | `IVT_R_handle` | handle |
 
 **Present:** `CTLA4_SP`, `HA`, `L`, `E5`, `CTLA4_TMT`
 
@@ -56,7 +56,7 @@ Fragment **554 bp** · transcript **497 nt** · protein **116 aa** · antigens *
 
 Single-antigen (A) scaffold control.
 
-Fragment **656 bp** · transcript **599 nt** · protein **150 aa** · antigens **A**
+Fragment **853 bp** · transcript **796 nt** · protein **150 aa** · antigens **A**
 
 | position | element | kind |
 |---|---|---|
@@ -72,8 +72,8 @@ Fragment **656 bp** · transcript **599 nt** · protein **150 aa** · antigens *
 | 334–519 | `CTLA4_TMT` | trafficking |
 | 520–534 | `E5` | degron |
 | 535–537 | `stop` | stop |
-| 538–636 | `3'UTR` | utr3 |
-| 637–656 | `IVT_R_handle` | handle |
+| 538–833 | `3'UTR` | utr3 |
+| 834–853 | `IVT_R_handle` | handle |
 
 **Present:** `CTLA4_SP`, `HA`, `A`, `L`, `E5`, `CTLA4_TMT`
 
@@ -83,7 +83,7 @@ Fragment **656 bp** · transcript **599 nt** · protein **150 aa** · antigens *
 
 Single-antigen (B) scaffold control.
 
-Fragment **656 bp** · transcript **599 nt** · protein **150 aa** · antigens **B**
+Fragment **853 bp** · transcript **796 nt** · protein **150 aa** · antigens **B**
 
 | position | element | kind |
 |---|---|---|
@@ -99,8 +99,8 @@ Fragment **656 bp** · transcript **599 nt** · protein **150 aa** · antigens *
 | 334–519 | `CTLA4_TMT` | trafficking |
 | 520–534 | `E5` | degron |
 | 535–537 | `stop` | stop |
-| 538–636 | `3'UTR` | utr3 |
-| 637–656 | `IVT_R_handle` | handle |
+| 538–833 | `3'UTR` | utr3 |
+| 834–853 | `IVT_R_handle` | handle |
 
 **Present:** `CTLA4_SP`, `HA`, `B`, `L`, `E5`, `CTLA4_TMT`
 
@@ -110,7 +110,7 @@ Fragment **656 bp** · transcript **599 nt** · protein **150 aa** · antigens *
 
 Can one transcript drive simultaneous class I and class II presentation? Order A-then-B.
 
-Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens **A+B**
+Fragment **955 bp** · transcript **898 nt** · protein **184 aa** · antigens **A+B**
 
 | position | element | kind |
 |---|---|---|
@@ -128,8 +128,8 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 | 436–621 | `CTLA4_TMT` | trafficking |
 | 622–636 | `E5` | degron |
 | 637–639 | `stop` | stop |
-| 640–738 | `3'UTR` | utr3 |
-| 739–758 | `IVT_R_handle` | handle |
+| 640–935 | `3'UTR` | utr3 |
+| 936–955 | `IVT_R_handle` | handle |
 
 **Present:** `CTLA4_SP`, `HA`, `A`, `B`, `L`, `E5`, `CTLA4_TMT`
 
@@ -139,7 +139,7 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 
 Order control for P3: does cassette order change the outcome?
 
-Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens **B+A**
+Fragment **955 bp** · transcript **898 nt** · protein **184 aa** · antigens **B+A**
 
 | position | element | kind |
 |---|---|---|
@@ -157,8 +157,8 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 | 436–621 | `CTLA4_TMT` | trafficking |
 | 622–636 | `E5` | degron |
 | 637–639 | `stop` | stop |
-| 640–738 | `3'UTR` | utr3 |
-| 739–758 | `IVT_R_handle` | handle |
+| 640–935 | `3'UTR` | utr3 |
+| 936–955 | `IVT_R_handle` | handle |
 
 **Present:** `CTLA4_SP`, `HA`, `A`, `B`, `L`, `E5`, `CTLA4_TMT`
 
@@ -168,7 +168,7 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 
 Cytosolic baseline, and the only construct where the degron has a free C-terminus -- so this is the degron-positive comparator.
 
-Fragment **473 bp** · transcript **416 nt** · protein **89 aa** · antigens **A+B**
+Fragment **670 bp** · transcript **613 nt** · protein **89 aa** · antigens **A+B**
 
 | position | element | kind |
 |---|---|---|
@@ -185,8 +185,8 @@ Fragment **473 bp** · transcript **416 nt** · protein **89 aa** · antigens **
 | 322–336 | `L_6` | linker |
 | 337–351 | `E5` | degron |
 | 352–354 | `stop` | stop |
-| 355–453 | `3'UTR` | utr3 |
-| 454–473 | `IVT_R_handle` | handle |
+| 355–650 | `3'UTR` | utr3 |
+| 651–670 | `IVT_R_handle` | handle |
 
 **Present:** `MA`, `HA`, `A`, `B`, `L`, `E5`
 
@@ -196,7 +196,7 @@ Fragment **473 bp** · transcript **416 nt** · protein **89 aa** · antigens **
 
 Does the direct TGN -> lysosome route beat the detour via the cell surface that P0-P4 take?
 
-Fragment **632 bp** · transcript **575 nt** · protein **142 aa** · antigens **A+B**
+Fragment **829 bp** · transcript **772 nt** · protein **142 aa** · antigens **A+B**
 
 | position | element | kind |
 |---|---|---|
@@ -213,8 +213,8 @@ Fragment **632 bp** · transcript **575 nt** · protein **142 aa** · antigens *
 | 388–402 | `L_6` | linker |
 | 403–510 | `LAMP1_TMT` | trafficking |
 | 511–513 | `stop` | stop |
-| 514–612 | `3'UTR` | utr3 |
-| 613–632 | `IVT_R_handle` | handle |
+| 514–809 | `3'UTR` | utr3 |
+| 810–829 | `IVT_R_handle` | handle |
 
 **Present:** `LAMP1_SP`, `HA`, `A`, `B`, `L`, `LAMP1_TMT`
 
@@ -224,7 +224,7 @@ Fragment **632 bp** · transcript **575 nt** · protein **142 aa** · antigens *
 
 Dual route from one transcript: A to the proteasome, B to the endolysosome. Note E5 is internal here, upstream of P2A, so it has no free C-terminus and is expected to be weak.
 
-Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens **A+B**
+Fragment **955 bp** · transcript **898 nt** · protein **184 aa** · antigens **A+B**
 
 | position | element | kind |
 |---|---|---|
@@ -246,8 +246,8 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 | 514–528 | `L_11` | linker |
 | 529–636 | `LAMP1_TMT` | trafficking |
 | 637–639 | `stop` | stop |
-| 640–738 | `3'UTR` | utr3 |
-| 739–758 | `IVT_R_handle` | handle |
+| 640–935 | `3'UTR` | utr3 |
+| 936–955 | `IVT_R_handle` | handle |
 
 **Present:** `LAMP1_SP`, `MA`, `HA`, `FLAG`, `A`, `B`, `L`, `E5`, `P2A`, `LAMP1_TMT`
 
@@ -257,7 +257,7 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 
 Swap control for P7: is the effect about the route or about the antigen?
 
-Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens **B+A**
+Fragment **955 bp** · transcript **898 nt** · protein **184 aa** · antigens **B+A**
 
 | position | element | kind |
 |---|---|---|
@@ -279,8 +279,8 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 | 514–528 | `L_11` | linker |
 | 529–636 | `LAMP1_TMT` | trafficking |
 | 637–639 | `stop` | stop |
-| 640–738 | `3'UTR` | utr3 |
-| 739–758 | `IVT_R_handle` | handle |
+| 640–935 | `3'UTR` | utr3 |
+| 936–955 | `IVT_R_handle` | handle |
 
 **Present:** `LAMP1_SP`, `MA`, `HA`, `FLAG`, `A`, `B`, `L`, `E5`, `P2A`, `LAMP1_TMT`
 

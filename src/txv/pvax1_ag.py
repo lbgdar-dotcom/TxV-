@@ -196,13 +196,13 @@ def _choose_e5(canon: dict[str, str], linkers: list[str]) -> str:
 #: which belong to whichever module starts the construct. The panel has three
 #: distinct 5' ends -- CTLA4_SP (P0-P4), LAMP1_SP (P6) and MA+HA (P5/P7/P8) --
 #: so it has three distinct start-codon accessibilities whether or not anyone
-#: chose them. Left to the general optimiser they came out at 0.43, 0.51 and
+#: chose them. Left to the general optimiser they came out at 0.37, 0.50 and
 #: 0.52 (mean unpaired probability over a 15-nt window on the AUG, RNAplfold,
 #: 40-nt maximum span), which puts an initiation-rate difference alongside the
 #: route difference the panel exists to measure.
 #:
-#: These encodings bring the two signal peptides to 0.47 and 0.50 against the
-#: 0.52 of the untuned group, halving the spread. They were picked from the
+#: These encodings bring the two signal peptides to 0.516 and 0.524 against the
+#: 0.515 of the untuned group -- 0.009 across the panel. They were picked from the
 #: candidates inside a +/-0.05 band by lowest CpG and then highest codon usage,
 #: not by maximising accessibility: past about 0.02 the differences are below
 #: the folding model's resolution, and buying them with rare codons and a CpG
@@ -217,8 +217,8 @@ def _choose_e5(canon: dict[str, str], linkers: list[str]) -> str:
 #: ViennaRNA; ``scripts/validate_in_silico.py`` re-measures them and fails if
 #: they drift.
 FIVE_PRIME_CODONS: dict[str, str] = {
-    "CTLA4_SP": "TGTCTGGGCCTGAGGAGA",
-    "LAMP1_SP": "GCTCCAGGAGCCAGAAGG",
+    "CTLA4_SP": "TGCCTGGGCCTCAGGAGA",
+    "LAMP1_SP": "GCCCCAGGAGCCAGAAGG",
 }
 
 #: First residue index that FIVE_PRIME_CODONS applies to (codon 1 is ATG,
@@ -257,24 +257,30 @@ def panel_optimizer_config():
     taking the knee of the curve, not by picking a round number. Measured over
     the assembled panel:
 
-    ==========  ========  =====  ========  =========
-    target_gc   ORF GC    U      repeats   forbidden
-    ==========  ========  =====  ========  =========
-    0.60 (old)  60.4-63.6 15.6%  3         0
-    0.54        56.7-60.0 15.7%  0         0
-    **0.52**    54.1-58.1 16.7%  **0**     0
-    0.50        53.3-57.8 17.5%  3         0
-    0.48        51.6-56.3 18.2%  6         0
-    ==========  ========  =====  ========  =========
+    ==========  ========  =====  ======  ========  =========
+    target_gc   ORF GC    U      CAI     repeats   forbidden
+    ==========  ========  =====  ======  ========  =========
+    0.60 (old)  60.4-63.6 15.6%  --      3         0
+    0.52        54.7-57.8 16.7%  0.881   0         0
+    **0.50**    53.0-56.3 18.2%  0.859   **0**     0
+    0.48        51.0-54.8 19.1%  0.836   0         0
+    0.46        49.6-53.7 23.4%  0.824   3         0
+    ==========  ========  =====  ======  ========  =========
 
-    0.52 is the lowest setting that still yields **zero direct repeats** across
-    the panel, and it costs about one percentage point of uridine to get six
-    points of GC. Below it, GC falls another two points but direct repeats
-    reappear -- and a repeat is a hard synthesis and plasmid-stability failure,
-    where a point of GC is a soft preference. Uridine depletion is deliberately
-    *not* traded away here (``w_uridine`` is unchanged): U-depletion also
-    serves IVT fidelity, since T7 slips in U runs, and that argument holds
-    whether or not the transcript is m1-pseudouridylated.
+    The transcript is m1-pseudouridylated, which removes most of the innate-
+    sensing argument for uridine depletion: every U becomes m1-psi regardless.
+    ``w_uridine`` is therefore relaxed from 0.45 to 0.25 rather than to zero --
+    the *other* reason to avoid uridine survives modification, which is that T7
+    slips in U runs and produces aborted and +1 products. ``w_repeat`` is
+    doubled to 120 to pay for it: relaxing uridine frees the search to reuse
+    A/T-ending codons, and at the old repeat weight that reintroduced direct
+    repeats.
+
+    0.50 is the chosen point. 0.48 is also repeat-free and two points lower,
+    but costs a further 0.023 of CAI for it; below 0.46 repeats reappear and
+    codon adaptation falls off. A direct repeat is a hard synthesis and
+    plasmid-stability failure where a point of GC is a soft preference, so the
+    repeat-free band is the one worth staying inside.
 
     ``gc_window`` is 40 rather than 60 so local GC is steered over a window
     closer to the length of the structural elements that actually stall
@@ -284,9 +290,10 @@ def panel_optimizer_config():
 
     return OptimizerConfig(
         repeat_k=REPEAT_K,
-        w_repeat=60.0,
-        target_gc=0.52,
-        w_gc=90.0,
+        w_repeat=120.0,
+        target_gc=0.50,
+        w_gc=120.0,
+        w_uridine=0.25,
         gc_window=40,
     )
 
