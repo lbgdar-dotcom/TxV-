@@ -66,19 +66,46 @@ constructs and every future prep, so the cost is a one-off.
 2. **Transform and plate on ampicillin.** pJET1.2 is AmpR, not Kan — different
    from pVax1_AG. The lethal `eco47IR` gene means >99% of colonies carry an
    insert, so no blue/white and no no-insert control is needed.
-3. **Screen for orientation only if you care.** You don't, for IVT. If you want
-   to know anyway, `IVT_F` paired with a pJET1.2 sequencing primer gives a
-   product in one orientation and not the other.
-4. **Sequence.** The pJET1.2 forward and reverse sequencing primers read into
-   the insert from both sides; at 670–955 bp a single read from each end covers
-   the fragment with overlap to spare. Confirm: the `GCCACC`**`ATG`** junction, no indels in the ORF,
-   `GYQTI` ending the protein in P6/P7/P8, and P2A intact in P7/P8.
-5. **Make the IVT template.** PCR with `IVT_F` + `IVT_R_polyA120` off the
+3. **Check an insert went in, if you want a cheap screen.** `BglII` cuts twice
+   in pJET1.2, once either side of the cloning site, and **none of the nine
+   fragments contains a BglII site** — checked, and enforced by a test. So a
+   BglII digest drops the whole insert out in one piece against a constant
+   2928 bp backbone band. The insert band is the fragment size plus 46 bp of
+   flanking vector; sizes are in the table below.
+4. **Screen for orientation only if you care.** You don't, for IVT — the PCR in
+   step 6 recovers the unit whichever way it went in. If you want to know
+   anyway: **`IVT_F` + the pJET1.2 reverse sequencing primer** gives a product
+   in the designed orientation and **nothing** in the flipped one. Sizes below;
+   this is simulated against both finished maps, not guessed.
+5. **Sequence.** The two stock pJET1.2 primers read in from either side and
+   between them cover every insert, including the 955 bp ones — verified per
+   construct, not assumed from the read length. Confirm: the
+   `GCCACC`**`ATG`** junction, no indels in the ORF, `GYQTI` ending the protein
+   in P6/P7/P8, and P2A intact in P7/P8.
+
+<!-- BEGIN GENERATED VERIFICATION TABLE -->
+| | plasmid | BglII insert band | BglII backbone band | orientation PCR (designed) | (flipped) |
+|---|---|---|---|---|---|
+| P0 | 3725 bp | 797 bp | 2928 bp | 808 bp | none |
+| P1 | 3827 bp | 899 bp | 2928 bp | 910 bp | none |
+| P2 | 3827 bp | 899 bp | 2928 bp | 910 bp | none |
+| P3 | 3929 bp | 1001 bp | 2928 bp | 1012 bp | none |
+| P4 | 3929 bp | 1001 bp | 2928 bp | 1012 bp | none |
+| P5 | 3644 bp | 716 bp | 2928 bp | 727 bp | none |
+| P6 | 3803 bp | 875 bp | 2928 bp | 886 bp | none |
+| P7 | 3929 bp | 1001 bp | 2928 bp | 1012 bp | none |
+| P8 | 3929 bp | 1001 bp | 2928 bp | 1012 bp | none |
+<!-- END GENERATED VERIFICATION TABLE -->
+
+Finished maps for all nine, in **both** orientations, are in `plasmids/`. Open
+them in SnapGene or Benchling: `eco47IR` is annotated as disrupted, which is
+the selection working, and `AmpR` and `ori` are annotated intact.
+6. **Make the IVT template.** PCR with `IVT_F` + `IVT_R_polyA120` off the
    miniprep. The product is the transcription unit with a 120-bp A/T tract on
    the end. **Column-purify it** — the kit manual allows a PCR mixture to be
    used directly but states yields are better from a purified product. Quantify;
    the reaction wants template at 25–50 ng/µl.
-6. **Transcribe.** These fragments are built for the VENI all-in-one kit with
+7. **Transcribe.** These fragments are built for the VENI all-in-one kit with
    Cap1 analog, whose manual specifies the minimum promoter
    `5'-TAATACGACTCACTATAAGG`. Every fragment carries that exact sequence, and
    both the design verifier and the auditor enforce it — the cap1 analog is the

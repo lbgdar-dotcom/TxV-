@@ -357,3 +357,103 @@ __all__ = [
     "PlasmidBuild", "PlasmidCheck",
     "build_plasmid", "verify_plasmid", "annotate_transcription_unit",
 ]
+
+
+# --- blunt insertion into a linearised vector ------------------------------
+
+@dataclass
+class BluntInsertion:
+    """A finished plasmid built by dropping a blunt fragment into a cut site."""
+
+    record: GenBankRecord
+    site: int                 #: 0-based cut position in the parent vector
+    insert_start: int
+    insert_end: int
+    orientation: int          #: +1 as designed, -1 flipped
+    disrupted: list[str] = field(default_factory=list)
+
+    @property
+    def insert(self) -> str:
+        return self.record.sequence[self.insert_start : self.insert_end]
+
+    def __len__(self) -> int:
+        return len(self.record.sequence)
+
+
+def insert_blunt(
+    vector: GenBankRecord,
+    fragment: str,
+    site: int,
+    name: str,
+    orientation: int = 1,
+    definition: str = "",
+) -> BluntInsertion:
+    """Insert ``fragment`` into ``vector`` at the blunt cut ``site``.
+
+    Unlike :func:`build_plasmid` nothing is removed: a blunt ligation adds
+    sequence at a point. Features are remapped accordingly --
+
+    * entirely before the site: unchanged;
+    * entirely at or after it: shifted by the fragment length;
+    * **spanning** it: extended to cover the fragment and flagged as disrupted.
+
+    That last case is not a defect to be tidied away. In pJET1.2 the cut site
+    sits inside *eco47IR*, whose product is lethal, and interrupting it is the
+    entire selection mechanism: a colony that grows is one that took an insert.
+    A map that quietly kept the CDS intact would be describing a cell that
+    cannot exist.
+
+    ``orientation`` of -1 inserts the reverse complement. Blunt cloning gives no
+    control over which way a fragment goes in, so both are real products and
+    both maps are worth having.
+    """
+    from .seqops import revcomp
+
+    if not 0 <= site <= len(vector.sequence):
+        raise ValueError(f"cut site {site} is outside the vector")
+    if orientation not in (1, -1):
+        raise ValueError("orientation must be +1 or -1")
+
+    payload = fragment if orientation == 1 else revcomp(fragment)
+    sequence = vector.sequence[:site] + payload + vector.sequence[site:]
+    shift = len(payload)
+
+    features, disrupted = [], []
+    for feature in vector.features:
+        start, end = feature.start, feature.end
+        if end <= site:
+            new_start, new_end = start, end
+        elif start >= site:
+            new_start, new_end = start + shift, end + shift
+        else:
+            new_start, new_end = start, end + shift
+            label = feature.qualifiers.get("label", feature.key)
+            disrupted.append(label)
+            qualifiers = dict(feature.qualifiers)
+            qualifiers["note"] = (
+                f"DISRUPTED by the insert at {site + 1}. "
+                + qualifiers.get("note", "")
+            ).strip()
+            features.append(GenBankFeature(feature.key, new_start, new_end,
+                                           feature.strand, qualifiers))
+            continue
+        features.append(GenBankFeature(feature.key, new_start, new_end,
+                                       feature.strand, dict(feature.qualifiers)))
+
+    features.append(GenBankFeature(
+        "misc_feature", site, site + shift, orientation,
+        {"label": "insert",
+         "note": f"blunt insert, {shift} bp, "
+                 f"{'as designed' if orientation == 1 else 'reverse orientation'}"},
+    ))
+    features.sort(key=lambda f: (f.start, f.end))
+
+    record = GenBankRecord(
+        name=name,
+        sequence=sequence,
+        features=features,
+        is_circular=vector.is_circular,
+        definition=definition or vector.definition,
+    )
+    return BluntInsertion(record, site, site, site + shift, orientation,
+                          disrupted)

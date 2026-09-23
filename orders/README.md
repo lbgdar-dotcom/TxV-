@@ -22,6 +22,7 @@ change:
 
 ```
 python scripts/build_pjet_package.py
+python scripts/build_pjet_plasmids.py backbone/pJET1.2.gb
 python scripts/build_goldengate_package.py
 python -m txv.cli order --out orders/pvax1_ag_panel
 python -m txv.cli plasmids backbone/pvax1_ag_egfp.gb \

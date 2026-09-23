@@ -1,0 +1,10 @@
+construct,plasmid_bp,insert_bp,insert_at,disrupted,BglII_sites,BglII_insert_fragment_bp,BglII_backbone_fragment_bp,sequencing_covers_insert,orientation_PCR_fwd_bp,orientation_PCR_rev_bp
+P0,3725,751,372,Eco47I/T7; MCS,2,797,2928,yes,808,none
+P1,3827,853,372,Eco47I/T7; MCS,2,899,2928,yes,910,none
+P2,3827,853,372,Eco47I/T7; MCS,2,899,2928,yes,910,none
+P3,3929,955,372,Eco47I/T7; MCS,2,1001,2928,yes,1012,none
+P4,3929,955,372,Eco47I/T7; MCS,2,1001,2928,yes,1012,none
+P5,3644,670,372,Eco47I/T7; MCS,2,716,2928,yes,727,none
+P6,3803,829,372,Eco47I/T7; MCS,2,875,2928,yes,886,none
+P7,3929,955,372,Eco47I/T7; MCS,2,1001,2928,yes,1012,none
+P8,3929,955,372,Eco47I/T7; MCS,2,1001,2928,yes,1012,none
