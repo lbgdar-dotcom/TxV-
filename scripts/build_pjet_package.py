@@ -188,6 +188,30 @@ def main() -> int:
     ]
     (OUT / "ELEMENT_CHECKLIST.md").write_text("\n".join(lines) + "\n")
 
+    # -- the size table inside the hand-written protocol ---------------------
+    # The protocol is prose and stays hand-written, but its table of fragment
+    # sizes is data and had gone stale by two revisions -- every number in it
+    # was wrong. Generated between markers so the prose stays editable and the
+    # numbers cannot drift again.
+    protocol = OUT / "CLONING_PROTOCOL.md"
+    if protocol.exists():
+        text = protocol.read_text()
+        begin, end = "<!-- BEGIN GENERATED TABLE -->", "<!-- END GENERATED TABLE -->"
+        if begin in text and end in text:
+            table = [begin, "| | fragment | transcript | protein | GC |",
+                     "|---|---|---|---|---|"]
+            for row in manifest_rows:
+                gc = float(next(r["gc"] for r in table_rows
+                                if r["name"] == row["construct"]))
+                table.append(
+                    f"| {row['construct']} | {row['fragment_bp']} bp | "
+                    f"{row['transcript_nt']} nt | {row['protein_aa']} aa | "
+                    f"{gc:.1%} |")
+            table.append(end)
+            head = text[:text.index(begin)]
+            tail = text[text.index(end) + len(end):]
+            protocol.write_text(head + "\n".join(table) + tail)
+
     # -- report --------------------------------------------------------------
     print(f"wrote {len(PANEL)} GenBank records, element_manifest.csv and "
           f"ELEMENT_CHECKLIST.md to {OUT}/\n")

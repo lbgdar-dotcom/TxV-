@@ -321,3 +321,17 @@ def read_orf(path, name: str) -> str:
         seq = "".join(buf)
     start = seq.index(audit_pjet.LEADER) + len(audit_pjet.LEADER)
     return seq[start:]
+
+
+def test_catches_a_promoter_the_ivt_kit_will_not_cap(sandbox):
+    """The kit's manual requires 5'-TAATACGACTCACTATAAGG.
+
+    Changing +1 from A to G leaves a perfectly good T7 promoter -- transcription
+    still works -- but the kit's cap1 analog is the AG-initiating trinucleotide,
+    so the RNA comes out uncapped. Nothing else in the audit would notice.
+    """
+    def to_gg(s):
+        i = s.index(audit_pjet.T7_CORE) + len(audit_pjet.T7_CORE)
+        return s[:i] + "GGG" + s[i + 3:]
+    rewrite(sandbox, "P1", to_gg)
+    assert blocks(sandbox)

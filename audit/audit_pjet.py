@@ -63,6 +63,12 @@ AUDITED_AA = {"P0": 116, "P1": 150, "P2": 150, "P3": 184, "P4": 184,
               "P5": 89, "P6": 142, "P7": 184, "P8": 184}
 
 T7_CORE = "TAATACGACTCACTATA"
+#: Quoted from the IVT kit manual's "Template requirements" section:
+#: "Minimum T7 promotor sequences: 5'-TAATACGACTCACTATAAGG"
+#: (VENI all-in-one mRNA Synthesis Kit with Cap1 Analog, Leish Bio). The kit's
+#: cap1 analog is the AG-initiating trinucleotide, so a transcript that does
+#: not begin AG will not cap.
+KIT_MIN_PROMOTER = "TAATACGACTCACTATAAGG"
 LEADER = "AGGAAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGAGCCACC"
 #: BNT162b2 3' UTR (AES + mtRNR1), 296 nt -- restated here from the published
 #: sequence, not imported, so a corrupted constant in txv cannot pass unseen.
@@ -191,6 +197,9 @@ def main(root: Path | None = None, quiet: bool = False) -> int:
 
         t7 = occ(frag, T7_CORE)
         r.check(len(t7) == 1, name, f"{len(t7)} T7 promoters, expected 1")
+        r.check(len(occ(frag, KIT_MIN_PROMOTER)) == 1, name,
+                f"the IVT kit's minimum promoter {KIT_MIN_PROMOTER} is not "
+                "present exactly once; the transcript would not cap")
         if t7:
             r.check(frag[t7[0] + 17:t7[0] + 20] == "AGG", name,
                     f"transcript starts {frag[t7[0]+17:t7[0]+20]}, not AGG")

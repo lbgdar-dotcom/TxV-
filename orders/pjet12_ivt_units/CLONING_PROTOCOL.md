@@ -29,17 +29,19 @@ nine constructs.
 
 ## What you are ordering
 
+<!-- BEGIN GENERATED TABLE -->
 | | fragment | transcript | protein | GC |
 |---|---|---|---|---|
-| P0 | 554 bp | 497 nt | 116 aa | 56.1% |
-| P1 | 656 bp | 599 nt | 150 aa | 57.2% |
-| P2 | 656 bp | 599 nt | 150 aa | 57.3% |
-| P3 | 758 bp | 701 nt | 184 aa | 57.8% |
-| P4 | 758 bp | 701 nt | 184 aa | 57.8% |
-| P5 | 470 bp | 413 nt | 88 aa | 56.4% |
-| P6 | 632 bp | 575 nt | 142 aa | 59.5% |
-| P7 | 755 bp | 698 nt | 183 aa | 60.0% |
-| P8 | 755 bp | 698 nt | 183 aa | 60.0% |
+| P0 | 751 bp | 694 nt | 116 aa | 52.7% |
+| P1 | 853 bp | 796 nt | 150 aa | 53.0% |
+| P2 | 853 bp | 796 nt | 150 aa | 53.2% |
+| P3 | 955 bp | 898 nt | 184 aa | 53.2% |
+| P4 | 955 bp | 898 nt | 184 aa | 53.2% |
+| P5 | 670 bp | 613 nt | 89 aa | 53.9% |
+| P6 | 829 bp | 772 nt | 142 aa | 54.0% |
+| P7 | 955 bp | 898 nt | 184 aa | 54.1% |
+| P8 | 955 bp | 898 nt | 184 aa | 54.1% |
+<!-- END GENERATED TABLE -->
 
 All pass synthesis screening. Order as **dsDNA gene fragments**; no
 phosphorylation is needed — pJET1.2/blunt supplies the 5' phosphates and the
@@ -68,14 +70,32 @@ constructs and every future prep, so the cost is a one-off.
    to know anyway, `IVT_F` paired with a pJET1.2 sequencing primer gives a
    product in one orientation and not the other.
 4. **Sequence.** The pJET1.2 forward and reverse sequencing primers read into
-   the insert from both sides; at 470–758 bp a single read from each end covers
-   the fragment. Confirm: the `GCCACC`**`ATG`** junction, no indels in the ORF,
+   the insert from both sides; at 670–955 bp a single read from each end covers
+   the fragment with overlap to spare. Confirm: the `GCCACC`**`ATG`** junction, no indels in the ORF,
    `GYQTI` ending the protein in P6/P7/P8, and P2A intact in P7/P8.
 5. **Make the IVT template.** PCR with `IVT_F` + `IVT_R_polyA120` off the
    miniprep. The product is the transcription unit with a 120-bp A/T tract on
-   the end. Column-clean it; that is your template.
-6. **Transcribe.** T7, CleanCap AG (the transcript begins `AGG`), m1Ψ if you are
-   substituting.
+   the end. **Column-purify it** — the kit manual allows a PCR mixture to be
+   used directly but states yields are better from a purified product. Quantify;
+   the reaction wants template at 25–50 ng/µl.
+6. **Transcribe.** These fragments are built for the VENI all-in-one kit with
+   Cap1 analog, whose manual specifies the minimum promoter
+   `5'-TAATACGACTCACTATAAGG`. Every fragment carries that exact sequence, and
+   both the design verifier and the auditor enforce it — the cap1 analog is the
+   AG-initiating trinucleotide, so a transcript not beginning `AG` does not cap.
+
+   Two things the kit does not supply and this design depends on:
+
+   - **No DNase.** The manual lists RNase-free DNase I under "to be provided by
+     user". You need it: the template is a PCR product and will otherwise carry
+     through.
+   - **No poly(A).** The kit adds no tail. Yours comes from `IVT_R_polyA120` on
+     the template, which is why the tail is on the primer and not encoded in
+     the fragment. The manual's alternative — post-transcriptional poly(A)
+     polymerase — is a fallback, not the plan.
+
+   The kit also asks for the 2 h 37 °C incubation to run **in the dark**, and
+   purifies by precipitation rather than column.
 
 ## Why there is no restriction enzyme step
 

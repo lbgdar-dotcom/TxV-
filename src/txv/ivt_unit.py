@@ -43,11 +43,30 @@ from .seqops import clean, find_all, gc_fraction, revcomp, translate
 #: T7 class III promoter, positions -17..-1. The next base is +1.
 T7_CORE = "TAATACGACTCACTATA"
 
+#: The minimum promoter the IVT kit's manual specifies, verbatim:
+#:
+#:     "Template requirements -- Minimum T7 promotor sequences:
+#:      5'-TAATACGACTCACTATAAGG"
+#:      -- VENI all-in-one mRNA Synthesis Kit with Cap1 Analog, Leish Bio
+#:
+#: This is T7_CORE plus the first three transcribed bases, and it settles a
+#: question that was open while the design was being built. Co-transcriptional
+#: cap1 comes from a trinucleotide analog in one of two flavours: the
+#: 2'OMe-A form needs the transcript to begin AG, the 2'OMe-G form needs GG,
+#: and they are not interchangeable. The manual specifying ...TATAAGG fixes the
+#: kit as the AG form, so the AGG start here is right -- by citation now rather
+#: than by inference from the vector's name.
+#:
+#: Every fragment is checked against this literal, so a future change to the
+#: leader that breaks capping cannot pass silently.
+KIT_MIN_PROMOTER = "TAATACGACTCACTATAAGG"
+
 #: Transcript from +1 to just before the ATG, taken verbatim from pVax1_AG.
 #:
 #: Kept rather than replaced with the BNT162b2 alpha-globin leader, and the
-#: reason is the capping chemistry, not inertia. Co-transcriptional CleanCap AG
-#: requires the transcript to begin A then G. This leader begins AG; the
+#: reason is the capping chemistry, not inertia. The kit's manual requires
+#: 5'-TAATACGACTCACTATAAGG (see KIT_MIN_PROMOTER), so the transcript must
+#: begin A then G. This leader begins AG; the
 #: BNT162b2 leader begins GA and the alpha-globin core variant begins GGG, so
 #: either would have to be re-headed to cap at all -- at which point it is no
 #: longer the verbatim validated sequence and its provenance argument is spent.
@@ -207,8 +226,14 @@ def verify_unit(unit: IVTUnit, expected_protein: str | None = None) -> list[str]
         if s[plus1:plus1 + 3] != "AGG":
             problems.append(
                 f"transcript begins {s[plus1:plus1 + 3]}, not AGG "
-                "(CleanCap AG needs AG)"
+                "(an AG-initiating cap1 analog needs A at +1 and G at +2)"
             )
+    kit = find_all(s, KIT_MIN_PROMOTER)
+    if len(kit) != 1:
+        problems.append(
+            f"the kit's minimum promoter {KIT_MIN_PROMOTER} occurs {len(kit)} "
+            "times, expected exactly 1"
+        )
 
     # A verifier must report a defect, not raise on it: anything located by
     # string search here is exactly what might be broken.
@@ -418,7 +443,8 @@ def unit_genbank(unit: "IVTUnit", construct, route: str = "",
 
 
 __all__ = [
-    "T7_CORE", "LEADER", "UTR3", "FWD_HANDLE", "REV_HANDLE",
+    "T7_CORE", "KIT_MIN_PROMOTER", "LEADER", "UTR3", "FWD_HANDLE",
+    "REV_HANDLE",
     "FWD_PRIMER", "reverse_primer",
     "IVTUnit", "make_unit", "simulate_pcr",
     "verify_unit", "verify_orientation_independence", "screen_handles",
