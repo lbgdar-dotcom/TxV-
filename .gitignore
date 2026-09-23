@@ -9,3 +9,8 @@ dist/
 .venv/
 docs/build/node_modules/
 docs/build/package*.json
+
+# Zip bundles built only to hand files to someone. Everything inside them is
+# already tracked (orders/**, backbone/**), so committing the archive would be
+# a binary duplicate that goes stale the moment its contents regenerate.
+*.zip
