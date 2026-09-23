@@ -1,0 +1,4 @@
+name,sequence,length_nt,use
+IVT_F,CAGTCACGTAGCATCGACTG,20,Forward - anneals to the forward handle on every construct
+IVT_R_plain,TCAGTGATCGACTGCATGAC,20,Reverse without tail - for colony PCR and sequencing checks
+IVT_R_polyA120,TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTCAGTGATCGACTGCATGAC,140,Reverse with T120 tail - adds the poly(A) to the IVT template (Ultramer)
