@@ -11,7 +11,11 @@ dependencies = []
 
 [project.optional-dependencies]
 benchling = ["benchling-sdk>=1.15"]
-dev = ["pytest>=7.4"]
+# In-silico validation. Kept optional so the design library itself stays
+# dependency-free: scripts/validate_in_silico.py needs it, txv.pvax1_ag does
+# not, and the 5'-codon choices it informs are pinned constants.
+insilico = ["ViennaRNA>=2.6"]
+dev = ["pytest>=7.4", "ViennaRNA>=2.6"]
 
 [project.scripts]
 txv = "txv.cli:main"

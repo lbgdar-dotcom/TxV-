@@ -34,7 +34,7 @@ ORDER_DIR, PLASMID_DIR, BACKBONE = _paths(ROOT)
 # ---------------------------------------------------------------------------
 
 MODULES = {
-    "M": "M",
+    "MA": "MA",
     "CTLA4_SP": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFS",
     "CTLA4_TMT": "FLLWILVAVSLGLFFYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPIN",
     "LAMP1_SP": "MAAPGARRPLLLLLLAGLAHGASA",
@@ -54,19 +54,24 @@ PANEL = {
     "P2": ("CTLA4_SP", "HA", "L", "B", "L", "CTLA4_TMT", "E5"),
     "P3": ("CTLA4_SP", "HA", "L", "A", "L", "B", "L", "CTLA4_TMT", "E5"),
     "P4": ("CTLA4_SP", "HA", "L", "B", "L", "A", "L", "CTLA4_TMT", "E5"),
-    "P5": ("M", "HA", "L", "A", "L", "B", "L", "E5"),
+    "P5": ("MA", "HA", "L", "A", "L", "B", "L", "E5"),
     "P6": ("LAMP1_SP", "HA", "L", "A", "L", "B", "L", "LAMP1_TMT"),
-    "P7": ("M", "HA", "L", "A", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "B",
+    "P7": ("MA", "HA", "L", "A", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "B",
            "L", "LAMP1_TMT"),
-    "P8": ("M", "HA", "L", "B", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "A",
+    "P8": ("MA", "HA", "L", "B", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "A",
            "L", "LAMP1_TMT"),
 }
 
 #: From construct_architecture: protein aa, ORF nt, finished plasmid bp.
+#:
+#: P5, P7 and P8 are each one residue (three nt) longer than the original
+#: architecture table, because the Kozak alanine was added to them so the whole
+#: panel shares one Kozak context. Their original values were
+#: (88, 267, 3402), (183, 552, 3687) and (183, 552, 3687).
 AUDITED = {
     "P0": (116, 351, 3486), "P1": (150, 453, 3588), "P2": (150, 453, 3588),
-    "P3": (184, 555, 3690), "P4": (184, 555, 3690), "P5": (88, 267, 3402),
-    "P6": (142, 429, 3564), "P7": (183, 552, 3687), "P8": (183, 552, 3687),
+    "P3": (184, 555, 3690), "P4": (184, 555, 3690), "P5": (89, 270, 3405),
+    "P6": (142, 429, 3564), "P7": (184, 555, 3690), "P8": (184, 555, 3690),
 }
 
 LEFT_ARM = "GAAGAAATATAAGAGCCACC"

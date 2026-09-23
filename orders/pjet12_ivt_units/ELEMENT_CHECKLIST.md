@@ -14,7 +14,7 @@ protein, not of what the design file claims.
 |---|---|---|
 | `CTLA4_SP` | CTLA-4 signal peptide | routes into the ER; N-terminal only |
 | `LAMP1_SP` | LAMP1 signal peptide | routes into the ER; N-terminal only |
-| `M` | bare initiator Met | cytosolic constructs, no signal peptide |
+| `MA` | Met-Ala start | cytosolic constructs; supplies the shared Kozak +4 G |
 | `HA` | HA tag | detects expression, independently of presentation |
 | `FLAG` | FLAG tag | detects the second cistron in the dual-route pair |
 | `A` | antigen A (SIINFEKL, 29-aa flanks) | MHC-I readout |
@@ -50,7 +50,7 @@ Fragment **554 bp** · transcript **497 nt** · protein **116 aa** · antigens *
 
 **Present:** `CTLA4_SP`, `HA`, `L`, `E5`, `CTLA4_TMT`
 
-**Absent (by design):** `LAMP1_SP`, `M`, `FLAG`, `A`, `B`, `P2A`, `LAMP1_TMT`
+**Absent (by design):** `LAMP1_SP`, `MA`, `FLAG`, `A`, `B`, `P2A`, `LAMP1_TMT`
 
 ### P1 — CTLA-4 (AP-2, via surface)
 
@@ -77,7 +77,7 @@ Fragment **656 bp** · transcript **599 nt** · protein **150 aa** · antigens *
 
 **Present:** `CTLA4_SP`, `HA`, `A`, `L`, `E5`, `CTLA4_TMT`
 
-**Absent (by design):** `LAMP1_SP`, `M`, `FLAG`, `B`, `P2A`, `LAMP1_TMT`
+**Absent (by design):** `LAMP1_SP`, `MA`, `FLAG`, `B`, `P2A`, `LAMP1_TMT`
 
 ### P2 — CTLA-4 (AP-2, via surface)
 
@@ -104,7 +104,7 @@ Fragment **656 bp** · transcript **599 nt** · protein **150 aa** · antigens *
 
 **Present:** `CTLA4_SP`, `HA`, `B`, `L`, `E5`, `CTLA4_TMT`
 
-**Absent (by design):** `LAMP1_SP`, `M`, `FLAG`, `A`, `P2A`, `LAMP1_TMT`
+**Absent (by design):** `LAMP1_SP`, `MA`, `FLAG`, `A`, `P2A`, `LAMP1_TMT`
 
 ### P3 — CTLA-4 (AP-2, via surface)
 
@@ -133,7 +133,7 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 
 **Present:** `CTLA4_SP`, `HA`, `A`, `B`, `L`, `E5`, `CTLA4_TMT`
 
-**Absent (by design):** `LAMP1_SP`, `M`, `FLAG`, `P2A`, `LAMP1_TMT`
+**Absent (by design):** `LAMP1_SP`, `MA`, `FLAG`, `P2A`, `LAMP1_TMT`
 
 ### P4 — CTLA-4 (AP-2, via surface)
 
@@ -162,13 +162,13 @@ Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens *
 
 **Present:** `CTLA4_SP`, `HA`, `A`, `B`, `L`, `E5`, `CTLA4_TMT`
 
-**Absent (by design):** `LAMP1_SP`, `M`, `FLAG`, `P2A`, `LAMP1_TMT`
+**Absent (by design):** `LAMP1_SP`, `MA`, `FLAG`, `P2A`, `LAMP1_TMT`
 
 ### P5 — cytosolic (+E5 degron, free C-terminus)
 
 Cytosolic baseline, and the only construct where the degron has a free C-terminus -- so this is the degron-positive comparator.
 
-Fragment **470 bp** · transcript **413 nt** · protein **88 aa** · antigens **A+B**
+Fragment **473 bp** · transcript **416 nt** · protein **89 aa** · antigens **A+B**
 
 | position | element | kind |
 |---|---|---|
@@ -176,19 +176,19 @@ Fragment **470 bp** · transcript **413 nt** · protein **88 aa** · antigens **
 | 21–37 | `T7_promoter` | promoter |
 | 38–78 | `5'UTR` | utr5 |
 | 79–84 | `Kozak` | kozak |
-| 85–87 | `M` | start |
-| 88–114 | `HA` | tag |
-| 115–129 | `L_2` | linker |
-| 130–216 | `A` | neoepitope |
-| 217–231 | `L_4` | linker |
-| 232–318 | `B` | neoepitope |
-| 319–333 | `L_6` | linker |
-| 334–348 | `E5` | degron |
-| 349–351 | `stop` | stop |
-| 352–450 | `3'UTR` | utr3 |
-| 451–470 | `IVT_R_handle` | handle |
+| 85–90 | `MA` | start |
+| 91–117 | `HA` | tag |
+| 118–132 | `L_2` | linker |
+| 133–219 | `A` | neoepitope |
+| 220–234 | `L_4` | linker |
+| 235–321 | `B` | neoepitope |
+| 322–336 | `L_6` | linker |
+| 337–351 | `E5` | degron |
+| 352–354 | `stop` | stop |
+| 355–453 | `3'UTR` | utr3 |
+| 454–473 | `IVT_R_handle` | handle |
 
-**Present:** `M`, `HA`, `A`, `B`, `L`, `E5`
+**Present:** `MA`, `HA`, `A`, `B`, `L`, `E5`
 
 **Absent (by design):** `CTLA4_SP`, `LAMP1_SP`, `FLAG`, `P2A`, `CTLA4_TMT`, `LAMP1_TMT`
 
@@ -218,13 +218,13 @@ Fragment **632 bp** · transcript **575 nt** · protein **142 aa** · antigens *
 
 **Present:** `LAMP1_SP`, `HA`, `A`, `B`, `L`, `LAMP1_TMT`
 
-**Absent (by design):** `CTLA4_SP`, `M`, `FLAG`, `E5`, `P2A`, `CTLA4_TMT`
+**Absent (by design):** `CTLA4_SP`, `MA`, `FLAG`, `E5`, `P2A`, `CTLA4_TMT`
 
 ### P7 — dual: A cytosolic + B lysosomal
 
 Dual route from one transcript: A to the proteasome, B to the endolysosome. Note E5 is internal here, upstream of P2A, so it has no free C-terminus and is expected to be weak.
 
-Fragment **755 bp** · transcript **698 nt** · protein **183 aa** · antigens **A+B**
+Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens **A+B**
 
 | position | element | kind |
 |---|---|---|
@@ -232,24 +232,24 @@ Fragment **755 bp** · transcript **698 nt** · protein **183 aa** · antigens *
 | 21–37 | `T7_promoter` | promoter |
 | 38–78 | `5'UTR` | utr5 |
 | 79–84 | `Kozak` | kozak |
-| 85–87 | `M` | start |
-| 88–114 | `HA` | tag |
-| 115–129 | `L_2` | linker |
-| 130–216 | `A` | neoepitope |
-| 217–231 | `L_4` | linker |
-| 232–246 | `E5` | degron |
-| 247–312 | `P2A` | skip_peptide |
-| 313–384 | `LAMP1_SP` | signal_peptide |
-| 385–408 | `FLAG` | tag |
-| 409–423 | `L_9` | linker |
-| 424–510 | `B` | neoepitope |
-| 511–525 | `L_11` | linker |
-| 526–633 | `LAMP1_TMT` | trafficking |
-| 634–636 | `stop` | stop |
-| 637–735 | `3'UTR` | utr3 |
-| 736–755 | `IVT_R_handle` | handle |
+| 85–90 | `MA` | start |
+| 91–117 | `HA` | tag |
+| 118–132 | `L_2` | linker |
+| 133–219 | `A` | neoepitope |
+| 220–234 | `L_4` | linker |
+| 235–249 | `E5` | degron |
+| 250–315 | `P2A` | skip_peptide |
+| 316–387 | `LAMP1_SP` | signal_peptide |
+| 388–411 | `FLAG` | tag |
+| 412–426 | `L_9` | linker |
+| 427–513 | `B` | neoepitope |
+| 514–528 | `L_11` | linker |
+| 529–636 | `LAMP1_TMT` | trafficking |
+| 637–639 | `stop` | stop |
+| 640–738 | `3'UTR` | utr3 |
+| 739–758 | `IVT_R_handle` | handle |
 
-**Present:** `LAMP1_SP`, `M`, `HA`, `FLAG`, `A`, `B`, `L`, `E5`, `P2A`, `LAMP1_TMT`
+**Present:** `LAMP1_SP`, `MA`, `HA`, `FLAG`, `A`, `B`, `L`, `E5`, `P2A`, `LAMP1_TMT`
 
 **Absent (by design):** `CTLA4_SP`, `CTLA4_TMT`
 
@@ -257,7 +257,7 @@ Fragment **755 bp** · transcript **698 nt** · protein **183 aa** · antigens *
 
 Swap control for P7: is the effect about the route or about the antigen?
 
-Fragment **755 bp** · transcript **698 nt** · protein **183 aa** · antigens **B+A**
+Fragment **758 bp** · transcript **701 nt** · protein **184 aa** · antigens **B+A**
 
 | position | element | kind |
 |---|---|---|
@@ -265,24 +265,24 @@ Fragment **755 bp** · transcript **698 nt** · protein **183 aa** · antigens *
 | 21–37 | `T7_promoter` | promoter |
 | 38–78 | `5'UTR` | utr5 |
 | 79–84 | `Kozak` | kozak |
-| 85–87 | `M` | start |
-| 88–114 | `HA` | tag |
-| 115–129 | `L_2` | linker |
-| 130–216 | `B` | neoepitope |
-| 217–231 | `L_4` | linker |
-| 232–246 | `E5` | degron |
-| 247–312 | `P2A` | skip_peptide |
-| 313–384 | `LAMP1_SP` | signal_peptide |
-| 385–408 | `FLAG` | tag |
-| 409–423 | `L_9` | linker |
-| 424–510 | `A` | neoepitope |
-| 511–525 | `L_11` | linker |
-| 526–633 | `LAMP1_TMT` | trafficking |
-| 634–636 | `stop` | stop |
-| 637–735 | `3'UTR` | utr3 |
-| 736–755 | `IVT_R_handle` | handle |
+| 85–90 | `MA` | start |
+| 91–117 | `HA` | tag |
+| 118–132 | `L_2` | linker |
+| 133–219 | `B` | neoepitope |
+| 220–234 | `L_4` | linker |
+| 235–249 | `E5` | degron |
+| 250–315 | `P2A` | skip_peptide |
+| 316–387 | `LAMP1_SP` | signal_peptide |
+| 388–411 | `FLAG` | tag |
+| 412–426 | `L_9` | linker |
+| 427–513 | `A` | neoepitope |
+| 514–528 | `L_11` | linker |
+| 529–636 | `LAMP1_TMT` | trafficking |
+| 637–639 | `stop` | stop |
+| 640–738 | `3'UTR` | utr3 |
+| 739–758 | `IVT_R_handle` | handle |
 
-**Present:** `LAMP1_SP`, `M`, `HA`, `FLAG`, `A`, `B`, `L`, `E5`, `P2A`, `LAMP1_TMT`
+**Present:** `LAMP1_SP`, `MA`, `HA`, `FLAG`, `A`, `B`, `L`, `E5`, `P2A`, `LAMP1_TMT`
 
 **Absent (by design):** `CTLA4_SP`, `CTLA4_TMT`
 

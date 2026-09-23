@@ -110,7 +110,7 @@ def test_plasmid_size_arithmetic(backbone):
 #: Finished-plasmid sizes from the audited construct_architecture table.
 AUDITED_PLASMID_BP = {
     "P0": 3486, "P1": 3588, "P2": 3588, "P3": 3690, "P4": 3690,
-    "P5": 3402, "P6": 3564, "P7": 3687, "P8": 3687,
+    "P5": 3405, "P6": 3564, "P7": 3690, "P8": 3690,
 }
 
 

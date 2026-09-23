@@ -190,6 +190,107 @@ def _choose_e5(canon: dict[str, str], linkers: list[str]) -> str:
     return best[1]
 
 
+#: Codons 3-8 of each signal peptide, chosen for start-codon accessibility.
+#:
+#: Local mRNA structure over the AUG is set by the first ~40 nt of the ORF,
+#: which belong to whichever module starts the construct. The panel has three
+#: distinct 5' ends -- CTLA4_SP (P0-P4), LAMP1_SP (P6) and MA+HA (P5/P7/P8) --
+#: so it has three distinct start-codon accessibilities whether or not anyone
+#: chose them. Left to the general optimiser they came out at 0.43, 0.51 and
+#: 0.52 (mean unpaired probability over a 15-nt window on the AUG, RNAplfold,
+#: 40-nt maximum span), which puts an initiation-rate difference alongside the
+#: route difference the panel exists to measure.
+#:
+#: These encodings bring the two signal peptides to 0.47 and 0.50 against the
+#: 0.52 of the untuned group, halving the spread. They were picked from the
+#: candidates inside a +/-0.05 band by lowest CpG and then highest codon usage,
+#: not by maximising accessibility: past about 0.02 the differences are below
+#: the folding model's resolution, and buying them with rare codons and a CpG
+#: island would trade a real liability for a decimal place.
+#:
+#: MA+HA is deliberately not tuned: HA is carried by all nine constructs, so
+#: re-encoding it for the three that begin with it would perturb the six that
+#: do not.
+#:
+#: Re-derive with ``python scripts/optimize_5prime.py``. The values are pinned
+#: rather than computed at import so the design library does not depend on
+#: ViennaRNA; ``scripts/validate_in_silico.py`` re-measures them and fails if
+#: they drift.
+FIVE_PRIME_CODONS: dict[str, str] = {
+    "CTLA4_SP": "TGTCTGGGCCTGAGGAGA",
+    "LAMP1_SP": "GCTCCAGGAGCCAGAAGG",
+}
+
+#: First residue index that FIVE_PRIME_CODONS applies to (codon 1 is ATG,
+#: codon 2 is the pinned Kozak alanine).
+FIVE_PRIME_START: int = 2
+
+
+#: Modules that can occupy the first position of an ORF, and so carry the
+#: Kozak context. Every one of them begins Met-Ala.
+N_TERMINAL_MODULES: frozenset[str] = frozenset({"MA", "CTLA4_SP", "LAMP1_SP"})
+
+#: The alanine codon used at position 2 of every construct in the panel.
+#:
+#: The Kozak element proper is the -6..-1 ``GCCACC`` supplied by the 5' UTR,
+#: which is shared already. What was *not* shared was the +4 base, because +4
+#: is the first base of codon 2 and codon 2 belonged to whichever module
+#: started the ORF. Kozak's mutagenesis (Kozak, NAR 1987;15:8125) identifies
+#: -3 and +4 as the two dominant positions; all nine constructs have A at -3,
+#: but three of them had T at +4 and six had G.
+#:
+#: Pinning codon 2 to a single Ala codon makes -6..+6 byte-identical across the
+#: whole panel: ``GCCACCATGGCA``. That is the point. In a panel whose entire
+#: purpose is to compare routes against each other, an initiation-efficiency
+#: difference that tracks the route is a confound, and it is cheaper to remove
+#: it than to argue about its size.
+#:
+#: GCA rather than GCC because both give the G at +4 that Kozak scores, +5 and
+#: +6 are not part of the consensus, and GCA is the lower-GC of the two.
+KOZAK_CODON2: str = "GCA"
+
+
+def panel_optimizer_config():
+    """The codon-optimiser settings this panel is built with.
+
+    Chosen by sweeping ``target_gc`` against everything it trades against and
+    taking the knee of the curve, not by picking a round number. Measured over
+    the assembled panel:
+
+    ==========  ========  =====  ========  =========
+    target_gc   ORF GC    U      repeats   forbidden
+    ==========  ========  =====  ========  =========
+    0.60 (old)  60.4-63.6 15.6%  3         0
+    0.54        56.7-60.0 15.7%  0         0
+    **0.52**    54.1-58.1 16.7%  **0**     0
+    0.50        53.3-57.8 17.5%  3         0
+    0.48        51.6-56.3 18.2%  6         0
+    ==========  ========  =====  ========  =========
+
+    0.52 is the lowest setting that still yields **zero direct repeats** across
+    the panel, and it costs about one percentage point of uridine to get six
+    points of GC. Below it, GC falls another two points but direct repeats
+    reappear -- and a repeat is a hard synthesis and plasmid-stability failure,
+    where a point of GC is a soft preference. Uridine depletion is deliberately
+    *not* traded away here (``w_uridine`` is unchanged): U-depletion also
+    serves IVT fidelity, since T7 slips in U runs, and that argument holds
+    whether or not the transcript is m1-pseudouridylated.
+
+    ``gc_window`` is 40 rather than 60 so local GC is steered over a window
+    closer to the length of the structural elements that actually stall
+    synthesis.
+    """
+    from .codon import OptimizerConfig
+
+    return OptimizerConfig(
+        repeat_k=REPEAT_K,
+        w_repeat=60.0,
+        target_gc=0.52,
+        w_gc=90.0,
+        gc_window=40,
+    )
+
+
 def canonical_encodings(optimizer=None) -> dict[str, str]:
     """One DNA encoding per module, used in every construct that carries it.
 
@@ -211,13 +312,20 @@ def canonical_encodings(optimizer=None) -> dict[str, str]:
     # A tighter repeat window than the default is worth it here: these
     # encodings are reused in every construct, so a repeat inside one is a
     # repeat in eight plasmids.
-    optimizer = optimizer or CodonOptimizer(
-        OptimizerConfig(repeat_k=REPEAT_K, w_repeat=60.0)
-    )
+    optimizer = optimizer or CodonOptimizer(panel_optimizer_config())
     for name, protein in MODULES.items():
         if name in ("L", "E5"):
             continue
-        _CANON_CACHE[name] = optimizer.optimize(protein, add_stop=None).dna
+        # Every construct in the panel begins Met-Ala, so codon 2 is pinned to
+        # one Ala codon panel-wide. See KOZAK_CODON2.
+        pinned = None
+        if name in N_TERMINAL_MODULES:
+            pinned = {1: KOZAK_CODON2}
+            codons = FIVE_PRIME_CODONS.get(name, "")
+            for offset in range(0, len(codons), 3):
+                pinned[FIVE_PRIME_START + offset // 3] = codons[offset:offset + 3]
+        _CANON_CACHE[name] = optimizer.optimize(
+            protein, add_stop=None, pinned=pinned).dna
 
     _LINKER_CACHE.extend(_linker_variants(optimizer))
     _CANON_CACHE["E5"] = _choose_e5(_CANON_CACHE, _LINKER_CACHE)
@@ -394,7 +502,7 @@ PANEL: tuple[PanelConstruct, ...] = (
         ("B", "A"),
     ),
     PanelConstruct(
-        "P5", ("M", "HA", "L", "A", "L", "B", "L", "E5"),
+        "P5", ("MA", "HA", "L", "A", "L", "B", "L", "E5"),
         "cytosolic (+E5 degron, free C-terminus)",
         "Cytosolic baseline, and the only construct where the degron has a free "
         "C-terminus -- so this is the degron-positive comparator.",
@@ -408,7 +516,7 @@ PANEL: tuple[PanelConstruct, ...] = (
     ),
     PanelConstruct(
         "P7",
-        ("M", "HA", "L", "A", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "B",
+        ("MA", "HA", "L", "A", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "B",
          "L", "LAMP1_TMT"),
         "dual: A cytosolic + B lysosomal",
         "Dual route from one transcript: A to the proteasome, B to the "
@@ -417,7 +525,7 @@ PANEL: tuple[PanelConstruct, ...] = (
     ),
     PanelConstruct(
         "P8",
-        ("M", "HA", "L", "B", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "A",
+        ("MA", "HA", "L", "B", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "A",
          "L", "LAMP1_TMT"),
         "dual: B cytosolic + A lysosomal",
         "Swap control for P7: is the effect about the route or about the "

@@ -28,7 +28,7 @@ OUT = Path(__file__).resolve().parents[1] / "orders" / "pjet12_ivt_units"
 TRACKED = [
     ("CTLA4_SP", "SP:CTLA4", "CTLA-4 signal peptide", "routes into the ER; N-terminal only"),
     ("LAMP1_SP", "SP:LAMP1", "LAMP1 signal peptide", "routes into the ER; N-terminal only"),
-    ("M", "M", "bare initiator Met", "cytosolic constructs, no signal peptide"),
+    ("MA", "MA", "Met-Ala start", "cytosolic constructs; supplies the shared Kozak +4 G"),
     ("HA", "HA", "HA tag", "detects expression, independently of presentation"),
     ("FLAG", "FLAG", "FLAG tag", "detects the second cistron in the dual-route pair"),
     ("A", "agA", "antigen A (SIINFEKL, 29-aa flanks)", "MHC-I readout"),
@@ -77,6 +77,49 @@ def main() -> int:
         })
 
         checklist.append((panel, unit, construct, counts))
+
+    # -- the sequences you actually order -----------------------------------
+    # These three files were written once by hand when the package was first
+    # cut, which meant the primary deliverable -- the string you paste into a
+    # vendor's order form -- was the one artefact with no build step and no way
+    # to regenerate it after a design change. They are built here so the fasta,
+    # the table, the records and the manifest cannot drift apart.
+    fasta_lines, table_rows = [], []
+    for panel, unit, construct, _ in checklist:
+        seq = unit.sequence
+        risk = assess_synthesis(seq)
+        fasta_lines.append(
+            f">{panel.name}|pJET1.2_blunt|{len(seq)}bp|"
+            f"transcript={len(unit.transcript)}nt")
+        fasta_lines += [seq[i:i + 60] for i in range(0, len(seq), 60)]
+        table_rows.append({
+            "name": panel.name,
+            "fragment_bp": len(seq),
+            "gc": f"{risk.gc:.4f}",
+            "transcript_nt": len(unit.transcript),
+            "protein_aa": len(unit.protein),
+            "synthesis_flags": "; ".join(risk.flags) or "none",
+            "sequence": seq,
+        })
+    (OUT / "gblocks.fasta").write_text("\n".join(fasta_lines) + "\n")
+    with (OUT / "ordering_table.csv").open("w", newline="") as fh:
+        writer = csv.DictWriter(fh, fieldnames=list(table_rows[0]))
+        writer.writeheader()
+        writer.writerows(table_rows)
+
+    with (OUT / "primers.csv").open("w", newline="") as fh:
+        writer = csv.writer(fh)
+        writer.writerow(["name", "sequence", "length_nt", "use"])
+        writer.writerow([
+            "IVT_F", FWD_PRIMER, len(FWD_PRIMER),
+            "Forward - anneals to the forward handle on every construct"])
+        writer.writerow([
+            "IVT_R_plain", reverse_primer(0), len(reverse_primer(0)),
+            "Reverse without tail - for colony PCR and sequencing checks"])
+        writer.writerow([
+            "IVT_R_polyA120", reverse_primer(120), len(reverse_primer(120)),
+            "Reverse with a 120-nt poly(T) 5' tail - adds the poly(A) to the "
+            "IVT template. Order as an Ultramer or equivalent."])
 
     # -- manifest ----------------------------------------------------------
     with (OUT / "element_manifest.csv").open("w", newline="") as fh:

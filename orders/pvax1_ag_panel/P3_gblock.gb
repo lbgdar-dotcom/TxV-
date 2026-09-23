@@ -1,4 +1,4 @@
-LOCUS       P3               595 bp    DNA     linear   SYN 22-SEP-2026
+LOCUS       P3               595 bp    DNA     linear   SYN 23-SEP-2026
 DEFINITION  P3 synthesis fragment (orf mode), 595 bp, for homology assembly into the pVax1_AG backbone.
 ACCESSION   P3
 VERSION     .
@@ -56,14 +56,14 @@ COMMENT     ORF only: drops between the backbone's existing UTR
 COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
             starts at ATG and must not repeat it.
 ORIGIN
-        1 gaagaaatat aagagccacc atggcctgcc tgggcctgag gagatacaag gcccagctgc
-       61 agctgcccag cagaacctgg ccattcgtgg ccctgctcac actcctgttc atccccgtgt
-      121 tcagctaccc ctacgacgtg cccgactacg ccggaggcgg aggcagcgag gtgagcggcc
-      181 tggagcagct ggagagcatc attaacttcg agaagctgac cgagtggacc agctccaacg
-      241 tgatggagga acggggcgga ggcgggtccg aagagttcgc caagttcgcc agcttcgaag
-      301 cccagggagc cctggccaac atcgccgtgg acaaagccaa cctggacgtg atgaagggcg
-      361 gtggcggaag tttcctgctc tggattctgg tggccgtgtc cctgggcctg ttcttttaca
-      421 gcttcctggt gagcgccgtg agcctgagca agatgctgaa gaaacggagc ccactgacca
-      481 caggcgtgta cgtgaagatg ccacccaccg agccagagtg cgagaagcag ttccagccct
+        1 gaagaaatat aagagccacc atggcatgtc tgggcctgag gagatacaaa gcacagctgc
+       61 agctgccaag cagaacatgg ccattcgtgg cactgctcac actcctgttc atcccagtgt
+      121 tcagctaccc atacgacgtg ccagactacg ccggaggcgg aggcagcgaa gtgagcggac
+      181 tggaacagct ggagagcatc attaacttcg agaagctgac cgagtggaca agctccaacg
+      241 tgatggaaga gagaggcgga ggcgggtccg aagagttcgc caaattcgcc agcttcgaag
+      301 cacagggagc actggcaaat atcgcagtgg acaaagccaa cctggacgtg atgaagggcg
+      361 gtggcggaag tttcctcctg tggattctgg tggcagtgag tctgggactg ttcttttaca
+      421 gcttcctggt gagcgcagtg agcctgagca aaatgctgaa gaaaaggagc ccactgacca
+      481 caggagtgta cgtgaaaatg ccacctacag agccagagtg cgagaaacag ttccagccat
       541 acttcatccc catcaacgag gaggaagagg agtgagctgc cttctgcggg gcttg
 //

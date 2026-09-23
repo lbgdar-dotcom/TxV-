@@ -1,12 +1,12 @@
-LOCUS       P7               755 bp    DNA     linear   SYN 23-SEP-2026
-DEFINITION  P7 IVT transcription unit for blunt cloning into pJET1.2; 183 aa ORF.
+LOCUS       P7               758 bp    DNA     linear   SYN 23-SEP-2026
+DEFINITION  P7 IVT transcription unit for blunt cloning into pJET1.2; 184 aa ORF.
 ACCESSION   P7
 VERSION     .
 KEYWORDS    IVT mRNA; T7; antigen cassette; pJET1.2.
 SOURCE      synthetic construct
   ORGANISM  synthetic construct
 FEATURES             Location/Qualifiers
-     source          1..755
+     source          1..758
                      /organism="synthetic construct"
                      /mol_type="other DNA"
      primer_bind     1..20
@@ -32,66 +32,66 @@ FEATURES             Location/Qualifiers
                      /note="GCCACC: purine at -3 and G at
                      +4, the strong consensus."
                      /ApEinfo_fwdcolor="#F7D08A"
-     CDS             85..636
+     CDS             85..639
                      /label="ORF"
                      /codon_start="1"
-                     /translation="MYPYDVPDYAGGGGSEVSGLEQL
-                     ESIINFEKLTEWTSSNVMEERGGGGSEEEEEGSGATN
-                     FSLLKQAGDVEENPGPMAAPGARRPLLLLLLAGLAHG
-                     ASADYKDDDDKGGGGSEEFAKFASFEAQGALANIAVD
-                     KANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLI
-                     GRKRSHAGYQTI"
-                     /note="183 aa. Single stop codon."
+                     /translation="MAYPYDVPDYAGGGGSEVSGLEQ
+                     LESIINFEKLTEWTSSNVMEERGGGGSEEEEEGSGAT
+                     NFSLLKQAGDVEENPGPMAAPGARRPLLLLLLAGLAH
+                     GASADYKDDDDKGGGGSEEFAKFASFEAQGALANIAV
+                     DKANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYL
+                     IGRKRSHAGYQTI"
+                     /note="184 aa. Single stop codon."
                      /ApEinfo_fwdcolor="#FFE9A8"
-     misc_feature    85..87
-                     /label="M"
+     misc_feature    85..90
+                     /label="MA"
                      /ApEinfo_fwdcolor="#9E9E9E"
-     misc_feature    88..114
+     misc_feature    91..117
                      /label="HA"
                      /ApEinfo_fwdcolor="#A3D9C9"
-     misc_feature    115..129
+     misc_feature    118..132
                      /label="L_2"
                      /ApEinfo_fwdcolor="#E3E3E3"
-     misc_feature    130..216
+     misc_feature    133..219
                      /label="A"
                      /ApEinfo_fwdcolor="#9BD1E5"
-     misc_feature    217..231
+     misc_feature    220..234
                      /label="L_4"
                      /ApEinfo_fwdcolor="#E3E3E3"
-     misc_feature    232..246
+     misc_feature    235..249
                      /label="E5"
                      /ApEinfo_fwdcolor="#F2A0A0"
-     misc_feature    247..312
+     misc_feature    250..315
                      /label="P2A"
                      /ApEinfo_fwdcolor="#F7B267"
-     sig_peptide     313..384
+     sig_peptide     316..387
                      /label="LAMP1_SP"
                      /ApEinfo_fwdcolor="#F5C6E0"
-     misc_feature    385..408
+     misc_feature    388..411
                      /label="FLAG"
                      /ApEinfo_fwdcolor="#A3D9C9"
-     misc_feature    409..423
+     misc_feature    412..426
                      /label="L_9"
                      /ApEinfo_fwdcolor="#E3E3E3"
-     misc_feature    424..510
+     misc_feature    427..513
                      /label="B"
                      /ApEinfo_fwdcolor="#9BD1E5"
-     misc_feature    511..525
+     misc_feature    514..528
                      /label="L_11"
                      /ApEinfo_fwdcolor="#E3E3E3"
-     misc_feature    526..633
+     misc_feature    529..636
                      /label="LAMP1_TMT"
                      /ApEinfo_fwdcolor="#D8C3F0"
-     terminator      634..636
+     terminator      637..639
                      /label="stop"
                      /ApEinfo_fwdcolor="#9E9E9E"
-     3'UTR           637..735
+     3'UTR           640..738
                      /label="3'UTR"
                      /note="Globin-derived 3' UTR; carries
                      its own native AAUAAA, which is inert
                      for a cytoplasmic transcript."
                      /ApEinfo_fwdcolor="#C9D7F8"
-     primer_bind     736..755
+     primer_bind     739..758
                      /label="IVT_R_handle"
                      /note="Reverse PCR primer site. The
                      IVT reverse primer is its reverse
@@ -106,16 +106,16 @@ COMMENT     Blunt-ligate into pJET1.2 in either orientation; recover the IVT
             template by PCR with IVT_F and IVT_R.
 ORIGIN
         1 cagtcacgta gcatcgactg taatacgact cactataagg aaataagaga gaaaagaaga
-       61 gtaagaagaa atataagagc caccatgtac ccctacgacg tgcccgacta cgccggaggc
-      121 ggaggcagcg aggtgagcgg cctggagcag ctggagagca tcattaactt cgagaagctg
-      181 accgagtgga ccagctccaa cgtgatggag gaacggggcg gaggcgggtc cgaggaggaa
-      241 gaggagggca gcggcgccac aaacttcagc ctgctcaagc aggccggcga cgtggaggaa
-      301 aacccaggcc ccatggccgc acccggcgcc agaaggccac tgctcctgct cctgctcgcc
-      361 ggcctggccc atggagcaag cgccgactac aaggacgatg acgataaggg cggtggcgga
-      421 agtgaagagt tcgccaagtt cgccagcttc gaagcccagg gagccctggc caacatcgcc
-      481 gtggacaaag ccaacctgga cgtgatgaag ggtggcggtg gctctatgct gatcccaatc
-      541 gccgtgggcg gagccctggc cggactggtg ctgatcgtgc tgatcgcata cctgatcggc
-      601 agaaagagga gccacgccgg ctaccagacc atctgagctg ccttctgcgg ggcttgcctt
-      661 ctggccatgc ccttcttctc tcccttgcac ctgtacctct tggtctttga ataaagcctg
-      721 agtaggaagg gatccgtcat gcagtcgatc actga
+       61 gtaagaagaa atataagagc caccatggca tacccatacg acgtgccaga ctacgccgga
+      121 ggcggaggca gcgaagtgag cggactggaa cagctggaga gcatcattaa cttcgagaag
+      181 ctgaccgagt ggacaagctc caacgtgatg gaagagagag gcggaggcgg gtccgaggag
+      241 gaagaggagg gaagtggagc aacaaacttc agcctcctga aacaggccgg cgatgtggaa
+      301 gagaatccag gaccaatggc agctccagga gccagaaggc cacttctgct tctgcttctg
+      361 gcaggactgg cacatggagc cagcgccgac tacaaggacg atgacgataa gggcggtggc
+      421 ggaagtgaag agttcgccaa attcgccagc ttcgaagcac agggagcact ggcaaatatc
+      481 gcagtggaca aagccaacct ggacgtgatg aagggtggcg gtggctctat gctgatccca
+      541 atcgcagtgg gaggtgcact ggcaggattg gtgctgattg tgctgatcgc ctacctgatc
+      601 ggaagaaaga gaagccacgc aggataccag accatctgag ctgccttctg cggggcttgc
+      661 cttctggcca tgcccttctt ctctcccttg cacctgtacc tcttggtctt tgaataaagc
+      721 ctgagtagga agggatccgt catgcagtcg atcactga
 //

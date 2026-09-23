@@ -1,4 +1,4 @@
-LOCUS       pVax1_AG_P0             3486 bp ds-DNA     circular     22-SEP-2026
+LOCUS       pVax1_AG_P0             3486 bp ds-DNA     circular     23-SEP-2026
 DEFINITION  pVax1_AG_P0: pVax1_AG_eGFP with eGFP replaced by the P0 antigen cassette.
 FEATURES             Location/Qualifiers
      source          1..3486
@@ -170,12 +170,12 @@ ORIGIN
       481 ggcaccaaaa tcaacgggac tttccaaaat gtcgtaacaa ctccgcccca ttgacgcaaa
       541 tgggcggtag gcgtgtacgg tgggaggtct atataagcag agctggtctc ctctggctaa
       601 ctagagaacc cactgcttac tggcttatcg aaattaatac gactcactat aaggaaataa
-      661 gagagaaaag aagagtaaga agaaatataa gagccaccat ggcctgcctg ggcctgagga
-      721 gatacaaggc ccagctgcag ctgcccagca gaacctggcc attcgtggcc ctgctcacac
-      781 tcctgttcat ccccgtgttc agctacccct acgacgtgcc cgactacgcc ggaggcggag
-      841 gcagcttcct gctctggatt ctggtggccg tgtccctggg cctgttcttt tacagcttcc
-      901 tggtgagcgc cgtgagcctg agcaagatgc tgaagaaacg gagcccactg accacaggcg
-      961 tgtacgtgaa gatgccaccc accgagccag agtgcgagaa gcagttccag ccctacttca
+      661 gagagaaaag aagagtaaga agaaatataa gagccaccat ggcatgtctg ggcctgagga
+      721 gatacaaagc acagctgcag ctgccaagca gaacatggcc attcgtggca ctgctcacac
+      781 tcctgttcat cccagtgttc agctacccat acgacgtgcc agactacgcc ggaggcggag
+      841 gcagcttcct cctgtggatt ctggtggcag tgagtctggg actgttcttt tacagcttcc
+      901 tggtgagcgc agtgagcctg agcaaaatgc tgaagaaaag gagcccactg accacaggag
+      961 tgtacgtgaa aatgccacct acagagccag agtgcgagaa acagttccag ccatacttca
      1021 tccccatcaa cgaggaggaa gaggagtgag ctgccttctg cggggcttgc cttctggcca
      1081 tgcccttctt ctctcccttg cacctgtacc tcttggtctt tgaataaagc ctgagtagga
      1141 agggatccaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa

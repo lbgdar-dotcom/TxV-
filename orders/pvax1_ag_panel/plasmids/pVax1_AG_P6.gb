@@ -1,4 +1,4 @@
-LOCUS       pVax1_AG_P6             3564 bp ds-DNA     circular     22-SEP-2026
+LOCUS       pVax1_AG_P6             3564 bp ds-DNA     circular     23-SEP-2026
 DEFINITION  pVax1_AG_P6: pVax1_AG_eGFP with eGFP replaced by the P6 antigen cassette.
 FEATURES             Location/Qualifiers
      source          1..3564
@@ -177,14 +177,14 @@ ORIGIN
       481 ggcaccaaaa tcaacgggac tttccaaaat gtcgtaacaa ctccgcccca ttgacgcaaa
       541 tgggcggtag gcgtgtacgg tgggaggtct atataagcag agctggtctc ctctggctaa
       601 ctagagaacc cactgcttac tggcttatcg aaattaatac gactcactat aaggaaataa
-      661 gagagaaaag aagagtaaga agaaatataa gagccaccat ggccgcaccc ggcgccagaa
-      721 ggccactgct cctgctcctg ctcgccggcc tggcccatgg agcaagcgcc tacccctacg
-      781 acgtgcccga ctacgccgga ggcggaggca gcgaggtgag cggcctggag cagctggaga
-      841 gcatcattaa cttcgagaag ctgaccgagt ggaccagctc caacgtgatg gaggaacggg
-      901 gcggaggcgg gtccgaagag ttcgccaagt tcgccagctt cgaagcccag ggagccctgg
-      961 ccaacatcgc cgtggacaaa gccaacctgg acgtgatgaa gggcggtggc ggaagtatgc
-     1021 tgatcccaat cgccgtgggc ggagccctgg ccggactggt gctgatcgtg ctgatcgcat
-     1081 acctgatcgg cagaaagagg agccacgccg gctaccagac catctgagct gccttctgcg
+      661 gagagaaaag aagagtaaga agaaatataa gagccaccat ggcagctcca ggagccagaa
+      721 ggccacttct gcttctgctt ctggcaggac tggcacatgg agccagcgcc tacccatacg
+      781 acgtgccaga ctacgccgga ggcggaggca gcgaagtgag cggactggaa cagctggaga
+      841 gcatcattaa cttcgagaag ctgaccgagt ggacaagctc caacgtgatg gaagagagag
+      901 gcggaggcgg gtccgaagag ttcgccaaat tcgccagctt cgaagcacag ggagcactgg
+      961 caaatatcgc agtggacaaa gccaacctgg acgtgatgaa gggcggtggc ggaagtatgc
+     1021 tgatcccaat cgcagtggga ggtgcactgg caggattggt gctgattgtg ctgatcgcct
+     1081 acctgatcgg aagaaagaga agccacgcag gataccagac catctgagct gccttctgcg
      1141 gggcttgcct tctggccatg cccttcttct ctcccttgca cctgtacctc ttggtctttg
      1201 aataaagcct gagtaggaag ggatccaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa
      1261 aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa

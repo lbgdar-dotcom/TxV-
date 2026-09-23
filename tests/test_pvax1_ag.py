@@ -33,23 +33,27 @@ REFERENCE_PROTEINS = {
     "P4": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEAQGALAN"
           "IAVDKANLDVMKGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSFLLWILVAVSLGLFF"
           "YSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPINEEEEE",
-    "P5": "MYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSEEFAKFASFEAQGALAN"
+    "P5": "MAYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSEEFAKFASFEAQGALAN"
           "IAVDKANLDVMKGGGGSEEEEE",
     "P6": "MAAPGARRPLLLLLLAGLAHGASAYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEE"
           "RGGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLIGR"
           "KRSHAGYQTI",
-    "P7": "MYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSEEEEEGSGATNFSLLKQ"
+    "P7": "MAYPYDVPDYAGGGGSEVSGLEQLESIINFEKLTEWTSSNVMEERGGGGSEEEEEGSGATNFSLLKQ"
           "AGDVEENPGPMAAPGARRPLLLLLLAGLAHGASADYKDDDDKGGGGSEEFAKFASFEAQGALANIA"
           "VDKANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLIGRKRSHAGYQTI",
-    "P8": "MYPYDVPDYAGGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSEEEEEGSGATNFSLLKQ"
+    "P8": "MAYPYDVPDYAGGGGSEEFAKFASFEAQGALANIAVDKANLDVMKGGGGSEEEEEGSGATNFSLLKQ"
           "AGDVEENPGPMAAPGARRPLLLLLLAGLAHGASADYKDDDDKGGGGSEVSGLEQLESIINFEKLTE"
           "WTSSNVMEERGGGGSMLIPIAVGGALAGLVLIVLIAYLIGRKRSHAGYQTI",
 }
 
 #: Protein lengths from the audited construct_architecture table.
+#:
+#: P5/P7/P8 are one residue longer than that table, because the Kozak alanine
+#: was added to them so all nine constructs share one Kozak context
+#: (GCCACCATGGCA). Their table values were 88, 183 and 183.
 REFERENCE_LENGTHS = {
     "P0": 116, "P1": 150, "P2": 150, "P3": 184, "P4": 184,
-    "P5": 88, "P6": 142, "P7": 183, "P8": 183,
+    "P5": 89, "P6": 142, "P7": 184, "P8": 184,
 }
 
 #: ORF and finished-plasmid lengths from the same table. These are the
@@ -57,11 +61,11 @@ REFERENCE_LENGTHS = {
 #: the stop-codon convention and the insertion site are all right.
 REFERENCE_ORF_NT = {
     "P0": 351, "P1": 453, "P2": 453, "P3": 555, "P4": 555,
-    "P5": 267, "P6": 429, "P7": 552, "P8": 552,
+    "P5": 270, "P6": 429, "P7": 555, "P8": 555,
 }
 REFERENCE_PLASMID_BP = {
     "P0": 3486, "P1": 3588, "P2": 3588, "P3": 3690, "P4": 3690,
-    "P5": 3402, "P6": 3564, "P7": 3687, "P8": 3687,
+    "P5": 3405, "P6": 3564, "P7": 3690, "P8": 3690,
 }
 
 
@@ -151,7 +155,7 @@ def test_panel_builds_into_a_valid_ivt_construct(name):
 def test_panel_construct_annotates_every_module():
     construct = build_panel_construct("P7")
     labels = {f.name for f in construct.features}
-    for module in ("M", "HA", "A", "E5", "P2A", "LAMP1_SP", "FLAG", "B",
+    for module in ("MA", "HA", "A", "E5", "P2A", "LAMP1_SP", "FLAG", "B",
                    "LAMP1_TMT"):
         assert module in labels or any(
             label.startswith(f"{module}_") for label in labels

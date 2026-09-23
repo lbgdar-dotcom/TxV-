@@ -108,6 +108,9 @@ class OptimizerConfig:
     #: Target GC fraction of the coding sequence.
     target_gc: float = 0.60
     gc_window: int = 60
+    #: Shortest prefix the GC term is evaluated on. Below three codons the
+    #: measured GC of a window is quantised too coarsely to steer on.
+    min_gc_window: int = 9
     #: Penalty weight on squared deviation of windowed GC from target.
     w_gc: float = 40.0
     #: Penalty per uridine (thymine) placed. Raise to push uridine depletion
@@ -199,6 +202,35 @@ def uridine_floor(protein: str, usage: dict[str, float] | None = None,
         options = [c for c in AA_TO_CODONS[aa]
                    if usage.get(c, 0.0) >= min_codon_usage] or AA_TO_CODONS[aa]
         total += min(c.count("T") for c in options)
+    return total, len(protein.rstrip("*"))
+
+
+def gc_floor(protein: str, usage: dict[str, float] | None = None,
+             min_codon_usage: float = 0.0) -> tuple[int, int]:
+    """Minimum achievable G+C bases in a CDS encoding ``protein``.
+
+    GC content is bounded below by amino-acid composition, not by the
+    optimiser. Ala (GCN), Pro (CCN) and Gly (GGN) have no codon with fewer than
+    two G/C bases, so an Ala/Pro/Gly-rich peptide -- the LAMP1 signal peptide
+    ``MAAPGARRPLLLLLLAGLAHGASA`` is the worst case in this panel -- cannot be
+    made AT-rich by any synonymous choice. Arg is the near-miss worth noting:
+    CGN would lock it at two, but AGA carries only one, so Arg is not on the
+    floor-setting list even though it looks like it should be.
+
+    Reporting the floor separates two different problems that look identical in
+    a GC table: "the optimiser left GC on the table", which is fixable by
+    reweighting, and "the peptide is simply like that", which is not fixable
+    without changing the protein. Only the first is worth tuning for.
+
+    Returns ``(floor_gc_bases, codons)``; divide by ``codons * 3`` for the
+    floor as a fraction of the CDS.
+    """
+    usage = usage or HUMAN_CODON_USAGE
+    total = 0
+    for aa in protein.rstrip("*"):
+        options = [c for c in AA_TO_CODONS[aa]
+                   if usage.get(c, 0.0) >= min_codon_usage] or AA_TO_CODONS[aa]
+        total += min(c.count("G") + c.count("C") for c in options)
     return total, len(protein.rstrip("*"))
 
 
@@ -320,8 +352,16 @@ class CodonOptimizer:
 
         seq = prefix + codon
         window = seq[-cfg.gc_window :]
-        if len(window) >= cfg.gc_window:
-            cost += cfg.w_gc * (gc_fraction(window) - cfg.target_gc) ** 2
+        # Apply the GC term to whatever window exists, scaled by how much of a
+        # full window that is. Requiring a complete window before charging for
+        # GC leaves every module shorter than gc_window -- the tags, the
+        # degron, the start -- optimised with no GC pressure at all, and leaves
+        # the first gc_window-1 bases of the longer ones unpressured too. The
+        # scaling keeps a single noisy codon from being judged as harshly as a
+        # settled window, so the full-window behaviour is unchanged.
+        if len(window) >= cfg.min_gc_window:
+            scale = min(1.0, len(window) / cfg.gc_window)
+            cost += scale * cfg.w_gc * (gc_fraction(window) - cfg.target_gc) ** 2
 
         # Only motifs overlapping the newly written codon can be new.
         tail = seq[-(self._max_motif + 2) :]

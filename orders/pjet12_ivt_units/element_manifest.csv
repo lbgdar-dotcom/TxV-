@@ -1,10 +1,10 @@
-construct,route,module_order,antigen_order,protein_aa,fragment_bp,transcript_nt,CTLA4_SP,LAMP1_SP,M,HA,FLAG,A,B,L,E5,P2A,CTLA4_TMT,LAMP1_TMT
+construct,route,module_order,antigen_order,protein_aa,fragment_bp,transcript_nt,CTLA4_SP,LAMP1_SP,MA,HA,FLAG,A,B,L,E5,P2A,CTLA4_TMT,LAMP1_TMT
 P0,"CTLA-4 (AP-2, via surface)",CTLA4_SP - HA - L - CTLA4_TMT - E5,none,116,554,497,1,0,0,1,0,0,0,1,1,0,1,0
 P1,"CTLA-4 (AP-2, via surface)",CTLA4_SP - HA - L - A - L - CTLA4_TMT - E5,A,150,656,599,1,0,0,1,0,1,0,2,1,0,1,0
 P2,"CTLA-4 (AP-2, via surface)",CTLA4_SP - HA - L - B - L - CTLA4_TMT - E5,B,150,656,599,1,0,0,1,0,0,1,2,1,0,1,0
 P3,"CTLA-4 (AP-2, via surface)",CTLA4_SP - HA - L - A - L - B - L - CTLA4_TMT - E5,A+B,184,758,701,1,0,0,1,0,1,1,3,1,0,1,0
 P4,"CTLA-4 (AP-2, via surface)",CTLA4_SP - HA - L - B - L - A - L - CTLA4_TMT - E5,B+A,184,758,701,1,0,0,1,0,1,1,3,1,0,1,0
-P5,"cytosolic (+E5 degron, free C-terminus)",M - HA - L - A - L - B - L - E5,A+B,88,470,413,0,0,1,1,0,1,1,3,1,0,0,0
+P5,"cytosolic (+E5 degron, free C-terminus)",MA - HA - L - A - L - B - L - E5,A+B,89,473,416,0,0,1,1,0,1,1,3,1,0,0,0
 P6,"LAMP1 (AP-3, direct to lysosome)",LAMP1_SP - HA - L - A - L - B - L - LAMP1_TMT,A+B,142,632,575,0,1,0,1,0,1,1,3,0,0,0,1
-P7,dual: A cytosolic + B lysosomal,M - HA - L - A - L - E5 - P2A - LAMP1_SP - FLAG - L - B - L - LAMP1_TMT,A+B,183,755,698,0,1,1,1,1,1,1,4,1,1,0,1
-P8,dual: B cytosolic + A lysosomal,M - HA - L - B - L - E5 - P2A - LAMP1_SP - FLAG - L - A - L - LAMP1_TMT,B+A,183,755,698,0,1,1,1,1,1,1,4,1,1,0,1
+P7,dual: A cytosolic + B lysosomal,MA - HA - L - A - L - E5 - P2A - LAMP1_SP - FLAG - L - B - L - LAMP1_TMT,A+B,184,758,701,0,1,1,1,1,1,1,4,1,1,0,1
+P8,dual: B cytosolic + A lysosomal,MA - HA - L - B - L - E5 - P2A - LAMP1_SP - FLAG - L - A - L - LAMP1_TMT,B+A,184,758,701,0,1,1,1,1,1,1,4,1,1,0,1

@@ -1,4 +1,4 @@
-LOCUS       pVax1_AG_P3             3690 bp ds-DNA     circular     22-SEP-2026
+LOCUS       pVax1_AG_P3             3690 bp ds-DNA     circular     23-SEP-2026
 DEFINITION  pVax1_AG_P3: pVax1_AG_eGFP with eGFP replaced by the P3 antigen cassette.
 FEATURES             Location/Qualifiers
      source          1..3690
@@ -180,16 +180,16 @@ ORIGIN
       481 ggcaccaaaa tcaacgggac tttccaaaat gtcgtaacaa ctccgcccca ttgacgcaaa
       541 tgggcggtag gcgtgtacgg tgggaggtct atataagcag agctggtctc ctctggctaa
       601 ctagagaacc cactgcttac tggcttatcg aaattaatac gactcactat aaggaaataa
-      661 gagagaaaag aagagtaaga agaaatataa gagccaccat ggcctgcctg ggcctgagga
-      721 gatacaaggc ccagctgcag ctgcccagca gaacctggcc attcgtggcc ctgctcacac
-      781 tcctgttcat ccccgtgttc agctacccct acgacgtgcc cgactacgcc ggaggcggag
-      841 gcagcgaggt gagcggcctg gagcagctgg agagcatcat taacttcgag aagctgaccg
-      901 agtggaccag ctccaacgtg atggaggaac ggggcggagg cgggtccgaa gagttcgcca
-      961 agttcgccag cttcgaagcc cagggagccc tggccaacat cgccgtggac aaagccaacc
-     1021 tggacgtgat gaagggcggt ggcggaagtt tcctgctctg gattctggtg gccgtgtccc
-     1081 tgggcctgtt cttttacagc ttcctggtga gcgccgtgag cctgagcaag atgctgaaga
-     1141 aacggagccc actgaccaca ggcgtgtacg tgaagatgcc acccaccgag ccagagtgcg
-     1201 agaagcagtt ccagccctac ttcatcccca tcaacgagga ggaagaggag tgagctgcct
+      661 gagagaaaag aagagtaaga agaaatataa gagccaccat ggcatgtctg ggcctgagga
+      721 gatacaaagc acagctgcag ctgccaagca gaacatggcc attcgtggca ctgctcacac
+      781 tcctgttcat cccagtgttc agctacccat acgacgtgcc agactacgcc ggaggcggag
+      841 gcagcgaagt gagcggactg gaacagctgg agagcatcat taacttcgag aagctgaccg
+      901 agtggacaag ctccaacgtg atggaagaga gaggcggagg cgggtccgaa gagttcgcca
+      961 aattcgccag cttcgaagca cagggagcac tggcaaatat cgcagtggac aaagccaacc
+     1021 tggacgtgat gaagggcggt ggcggaagtt tcctcctgtg gattctggtg gcagtgagtc
+     1081 tgggactgtt cttttacagc ttcctggtga gcgcagtgag cctgagcaaa atgctgaaga
+     1141 aaaggagccc actgaccaca ggagtgtacg tgaaaatgcc acctacagag ccagagtgcg
+     1201 agaaacagtt ccagccatac ttcatcccca tcaacgagga ggaagaggag tgagctgcct
      1261 tctgcggggc ttgccttctg gccatgccct tcttctctcc cttgcacctg tacctcttgg
      1321 tctttgaata aagcctgagt aggaagggat ccaaaaaaaa aaaaaaaaaa aaaaaaaaaa
      1381 aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa aaaaaaaaaa

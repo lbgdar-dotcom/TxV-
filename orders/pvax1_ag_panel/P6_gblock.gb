@@ -1,4 +1,4 @@
-LOCUS       P6               469 bp    DNA     linear   SYN 22-SEP-2026
+LOCUS       P6               469 bp    DNA     linear   SYN 23-SEP-2026
 DEFINITION  P6 synthesis fragment (orf mode), 469 bp, for homology assembly into the pVax1_AG backbone.
 ACCESSION   P6
 VERSION     .
@@ -53,12 +53,12 @@ COMMENT     ORF only: drops between the backbone's existing UTR
 COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
             starts at ATG and must not repeat it.
 ORIGIN
-        1 gaagaaatat aagagccacc atggccgcac ccggcgccag aaggccactg ctcctgctcc
-       61 tgctcgccgg cctggcccat ggagcaagcg cctaccccta cgacgtgccc gactacgccg
-      121 gaggcggagg cagcgaggtg agcggcctgg agcagctgga gagcatcatt aacttcgaga
-      181 agctgaccga gtggaccagc tccaacgtga tggaggaacg gggcggaggc gggtccgaag
-      241 agttcgccaa gttcgccagc ttcgaagccc agggagccct ggccaacatc gccgtggaca
-      301 aagccaacct ggacgtgatg aagggcggtg gcggaagtat gctgatccca atcgccgtgg
-      361 gcggagccct ggccggactg gtgctgatcg tgctgatcgc atacctgatc ggcagaaaga
-      421 ggagccacgc cggctaccag accatctgag ctgccttctg cggggcttg
+        1 gaagaaatat aagagccacc atggcagctc caggagccag aaggccactt ctgcttctgc
+       61 ttctggcagg actggcacat ggagccagcg cctacccata cgacgtgcca gactacgccg
+      121 gaggcggagg cagcgaagtg agcggactgg aacagctgga gagcatcatt aacttcgaga
+      181 agctgaccga gtggacaagc tccaacgtga tggaagagag aggcggaggc gggtccgaag
+      241 agttcgccaa attcgccagc ttcgaagcac agggagcact ggcaaatatc gcagtggaca
+      301 aagccaacct ggacgtgatg aagggcggtg gcggaagtat gctgatccca atcgcagtgg
+      361 gaggtgcact ggcaggattg gtgctgattg tgctgatcgc ctacctgatc ggaagaaaga
+      421 gaagccacgc aggataccag accatctgag ctgccttctg cggggcttg
 //

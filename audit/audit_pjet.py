@@ -29,7 +29,7 @@ def _dir(root: Path) -> Path:
 # ---------------------------------------------------------------------------
 
 MODULES = {
-    "M": "M",
+    "MA": "MA",
     "CTLA4_SP": "MACLGLRRYKAQLQLPSRTWPFVALLTLLFIPVFS",
     "CTLA4_TMT": "FLLWILVAVSLGLFFYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECEKQFQPYFIPIN",
     "LAMP1_SP": "MAAPGARRPLLLLLLAGLAHGASA",
@@ -49,16 +49,18 @@ PANEL = {
     "P2": ("CTLA4_SP", "HA", "L", "B", "L", "CTLA4_TMT", "E5"),
     "P3": ("CTLA4_SP", "HA", "L", "A", "L", "B", "L", "CTLA4_TMT", "E5"),
     "P4": ("CTLA4_SP", "HA", "L", "B", "L", "A", "L", "CTLA4_TMT", "E5"),
-    "P5": ("M", "HA", "L", "A", "L", "B", "L", "E5"),
+    "P5": ("MA", "HA", "L", "A", "L", "B", "L", "E5"),
     "P6": ("LAMP1_SP", "HA", "L", "A", "L", "B", "L", "LAMP1_TMT"),
-    "P7": ("M", "HA", "L", "A", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "B",
+    "P7": ("MA", "HA", "L", "A", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "B",
            "L", "LAMP1_TMT"),
-    "P8": ("M", "HA", "L", "B", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "A",
+    "P8": ("MA", "HA", "L", "B", "L", "E5", "P2A", "LAMP1_SP", "FLAG", "L", "A",
            "L", "LAMP1_TMT"),
 }
 
+#: Protein lengths from the audited architecture table, plus the one Kozak
+#: alanine added to P5/P7/P8 so the whole panel shares a Kozak context.
 AUDITED_AA = {"P0": 116, "P1": 150, "P2": 150, "P3": 184, "P4": 184,
-              "P5": 88, "P6": 142, "P7": 183, "P8": 183}
+              "P5": 89, "P6": 142, "P7": 184, "P8": 184}
 
 T7_CORE = "TAATACGACTCACTATA"
 LEADER = "AGGAAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGAGCCACC"
@@ -98,6 +100,14 @@ def occ(hay: str, needle: str, both: bool = False) -> list[int]:
 
 
 BLOCKER, WARN = "BLOCKER", "WARNING"
+
+#: Ceiling on coding-sequence GC. Not a synthesis limit -- vendors will build
+#: well above this -- but the band the panel was optimised into, so a drift
+#: above it means an encoding changed without the optimiser config changing.
+GC_CEILING = 0.60
+#: How far apart the constructs' GC may be. Routing is the variable under test;
+#: GC should not be a second one.
+GC_SPREAD = 0.06
 
 
 @dataclass
@@ -154,6 +164,8 @@ def main(root: Path | None = None, quiet: bool = False) -> int:
 
     encodings: dict[str, set[str]] = defaultdict(set)
     linker_encodings: set[str] = set()
+    kozak_contexts: dict[str, list[str]] = defaultdict(list)
+    orf_gc: dict[str, float] = {}
 
     for name in sorted(PANEL):
         modules = PANEL[name]
@@ -188,6 +200,9 @@ def main(root: Path | None = None, quiet: bool = False) -> int:
         orf_start = frag.index(LEADER) + len(LEADER)
         r.check(frag[orf_start - 6:orf_start + 3] == "GCCACCATG", name,
                 "Kozak/ATG junction is not GCCACCATG")
+        r.check(frag[orf_start + 3] == "G", name,
+                f"Kozak +4 is {frag[orf_start + 3]}, not G")
+        kozak_contexts[frag[orf_start - 6:orf_start + 6]].append(name)
 
         # -- ORF ------------------------------------------------------------
         aa = tr(frag[orf_start:])
@@ -202,6 +217,7 @@ def main(root: Path | None = None, quiet: bool = False) -> int:
         r.check(len(body) == AUDITED_AA[name], name,
                 f"protein is {len(body)} aa, audited value {AUDITED_AA[name]}")
         r.check(len(orf) % 3 == 0, name, "ORF is not a multiple of 3")
+        orf_gc[name] = gc(orf)
         r.check(orf.count("TGA") + orf.count("TAA") + orf.count("TAG") >= 1, name,
                 "no stop codon present")
         r.check(frag[orf_end:orf_end + len(UTR3)] == UTR3, name,
@@ -298,6 +314,27 @@ def main(root: Path | None = None, quiet: bool = False) -> int:
                 "a difference between arms could then be codon usage, not routing")
     r.check(len(linker_encodings) >= 2, "panel",
             "all GGGGS linkers share one encoding, creating direct repeats", WARN)
+
+    # One Kozak context for the whole panel. The -6..-1 element is supplied by
+    # the shared 5' UTR, but +4 is the first base of codon 2, so it belongs to
+    # whichever module starts the ORF -- which is exactly how three constructs
+    # ended up with a different +4 from the other six. A panel that compares
+    # routes cannot afford an initiation difference that tracks the route.
+    r.check(len(kozak_contexts) == 1, "panel",
+            "constructs do not share one Kozak context: "
+            + "; ".join(f"{ctx} ({', '.join(names)})"
+                        for ctx, names in sorted(kozak_contexts.items())))
+
+    # GC is held to a tighter band than the 25-75% synthesis limit above,
+    # because the point is comparability and vendor success, not legality.
+    if orf_gc:
+        hi, lo = max(orf_gc.values()), min(orf_gc.values())
+        worst = max(orf_gc, key=orf_gc.get)
+        r.check(hi <= GC_CEILING, "panel",
+                f"{worst} ORF GC is {hi:.1%}, above the {GC_CEILING:.0%} ceiling")
+        r.check(hi - lo <= GC_SPREAD, "panel",
+                f"ORF GC spans {lo:.1%}-{hi:.1%} ({hi - lo:.1%}), wider than the "
+                f"{GC_SPREAD:.0%} the panel allows", WARN)
 
     swap = {"A": "B", "B": "A"}
     r.check(tuple(swap.get(m, m) for m in PANEL["P7"]) == PANEL["P8"], "panel",

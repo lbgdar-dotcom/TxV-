@@ -92,16 +92,16 @@ COMMENT     Blunt-ligate into pJET1.2 in either orientation; recover the IVT
             template by PCR with IVT_F and IVT_R.
 ORIGIN
         1 cagtcacgta gcatcgactg taatacgact cactataagg aaataagaga gaaaagaaga
-       61 gtaagaagaa atataagagc caccatggcc tgcctgggcc tgaggagata caaggcccag
-      121 ctgcagctgc ccagcagaac ctggccattc gtggccctgc tcacactcct gttcatcccc
-      181 gtgttcagct acccctacga cgtgcccgac tacgccggag gcggaggcag cgaggtgagc
-      241 ggcctggagc agctggagag catcattaac ttcgagaagc tgaccgagtg gaccagctcc
-      301 aacgtgatgg aggaacgggg cggaggcggg tccgaagagt tcgccaagtt cgccagcttc
-      361 gaagcccagg gagccctggc caacatcgcc gtggacaaag ccaacctgga cgtgatgaag
-      421 ggcggtggcg gaagtttcct gctctggatt ctggtggccg tgtccctggg cctgttcttt
-      481 tacagcttcc tggtgagcgc cgtgagcctg agcaagatgc tgaagaaacg gagcccactg
-      541 accacaggcg tgtacgtgaa gatgccaccc accgagccag agtgcgagaa gcagttccag
-      601 ccctacttca tccccatcaa cgaggaggaa gaggagtgag ctgccttctg cggggcttgc
+       61 gtaagaagaa atataagagc caccatggca tgtctgggcc tgaggagata caaagcacag
+      121 ctgcagctgc caagcagaac atggccattc gtggcactgc tcacactcct gttcatccca
+      181 gtgttcagct acccatacga cgtgccagac tacgccggag gcggaggcag cgaagtgagc
+      241 ggactggaac agctggagag catcattaac ttcgagaagc tgaccgagtg gacaagctcc
+      301 aacgtgatgg aagagagagg cggaggcggg tccgaagagt tcgccaaatt cgccagcttc
+      361 gaagcacagg gagcactggc aaatatcgca gtggacaaag ccaacctgga cgtgatgaag
+      421 ggcggtggcg gaagtttcct cctgtggatt ctggtggcag tgagtctggg actgttcttt
+      481 tacagcttcc tggtgagcgc agtgagcctg agcaaaatgc tgaagaaaag gagcccactg
+      541 accacaggag tgtacgtgaa aatgccacct acagagccag agtgcgagaa acagttccag
+      601 ccatacttca tccccatcaa cgaggaggaa gaggagtgag ctgccttctg cggggcttgc
       661 cttctggcca tgcccttctt ctctcccttg cacctgtacc tcttggtctt tgaataaagc
       721 ctgagtagga agggatccgt catgcagtcg atcactga
 //

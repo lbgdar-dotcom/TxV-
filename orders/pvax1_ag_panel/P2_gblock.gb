@@ -1,4 +1,4 @@
-LOCUS       P2               493 bp    DNA     linear   SYN 22-SEP-2026
+LOCUS       P2               493 bp    DNA     linear   SYN 23-SEP-2026
 DEFINITION  P2 synthesis fragment (orf mode), 493 bp, for homology assembly into the pVax1_AG backbone.
 ACCESSION   P2
 VERSION     .
@@ -51,13 +51,13 @@ COMMENT     ORF only: drops between the backbone's existing UTR
 COMMENT     Left overlap ends in the Kozak (GCCACC), so the fragment
             starts at ATG and must not repeat it.
 ORIGIN
-        1 gaagaaatat aagagccacc atggcctgcc tgggcctgag gagatacaag gcccagctgc
-       61 agctgcccag cagaacctgg ccattcgtgg ccctgctcac actcctgttc atccccgtgt
-      121 tcagctaccc ctacgacgtg cccgactacg ccggaggcgg aggcagcgaa gagttcgcca
-      181 agttcgccag cttcgaagcc cagggagccc tggccaacat cgccgtggac aaagccaacc
-      241 tggacgtgat gaagggcgga ggcgggtcct tcctgctctg gattctggtg gccgtgtccc
-      301 tgggcctgtt cttttacagc ttcctggtga gcgccgtgag cctgagcaag atgctgaaga
-      361 aacggagccc actgaccaca ggcgtgtacg tgaagatgcc acccaccgag ccagagtgcg
-      421 agaagcagtt ccagccctac ttcatcccca tcaacgagga ggaagaggag tgagctgcct
+        1 gaagaaatat aagagccacc atggcatgtc tgggcctgag gagatacaaa gcacagctgc
+       61 agctgccaag cagaacatgg ccattcgtgg cactgctcac actcctgttc atcccagtgt
+      121 tcagctaccc atacgacgtg ccagactacg ccggaggcgg aggcagcgaa gagttcgcca
+      181 aattcgccag cttcgaagca cagggagcac tggcaaatat cgcagtggac aaagccaacc
+      241 tggacgtgat gaagggcgga ggcgggtcct tcctcctgtg gattctggtg gcagtgagtc
+      301 tgggactgtt cttttacagc ttcctggtga gcgcagtgag cctgagcaaa atgctgaaga
+      361 aaaggagccc actgaccaca ggagtgtacg tgaaaatgcc acctacagag ccagagtgcg
+      421 agaaacagtt ccagccatac ttcatcccca tcaacgagga ggaagaggag tgagctgcct
       481 tctgcggggc ttg
 //

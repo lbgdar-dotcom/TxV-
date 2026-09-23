@@ -240,3 +240,84 @@ def test_catches_the_two_shipped_files_disagreeing(sandbox):
         w.writeheader()
         w.writerows(rows)
     assert blocks(sandbox)
+
+
+# --- the requirements added after the first order package ------------------
+
+def test_catches_a_construct_with_a_different_kozak_context(sandbox):
+    """The sharpest control here: this mutation is invisible to every other check.
+
+    GCA -> GCC at codon 2 leaves the protein byte-identical, the frame intact,
+    every module present and every length unchanged. The only thing it breaks
+    is that all nine constructs share one Kozak context -- which is exactly the
+    confound the panel cannot afford, and exactly what nothing else would see.
+    """
+    def repoint(s):
+        i = s.index(audit_pjet.LEADER) + len(audit_pjet.LEADER)
+        assert s[i:i + 6] == "ATGGCA"
+        return s[:i] + "ATGGCC" + s[i + 6:]
+    rewrite(sandbox, "P2", repoint)
+    assert blocks(sandbox)
+
+
+def test_the_kozak_mutation_really_is_invisible_to_protein_level_checks(sandbox):
+    """Guard against the control above passing for the wrong reason."""
+    d = sandbox / "orders" / "pjet12_ivt_units"
+    before = audit_pjet.tr(
+        read_orf(d / "gblocks.fasta", "P2"))
+
+    def repoint(s):
+        i = s.index(audit_pjet.LEADER) + len(audit_pjet.LEADER)
+        return s[:i] + "ATGGCC" + s[i + 6:]
+    rewrite(sandbox, "P2", repoint)
+    after = audit_pjet.tr(read_orf(d / "gblocks.fasta", "P2"))
+    assert before == after
+
+
+def test_catches_a_construct_above_the_gc_ceiling(sandbox, monkeypatch):
+    """Drop the ceiling below the panel and the check must fire."""
+    monkeypatch.setattr(audit_pjet, "GC_CEILING", 0.30)
+    assert blocks(sandbox)
+
+
+def test_catches_a_panel_whose_gc_spread_is_too_wide(sandbox, monkeypatch, capsys):
+    """A spread finding is a warning, so assert it is *reported*, not that it blocks.
+
+    Asserting only "does not block" would pass even if the check had been
+    deleted, which is the failure mode this whole file exists to prevent.
+    """
+    monkeypatch.setattr(audit_pjet, "GC_SPREAD", 0.001)
+    audit_pjet.main(sandbox, quiet=False)
+    out = capsys.readouterr().out
+    assert "wider than the" in out
+    assert "WARNING (1)" in out
+    assert "DO NOT ORDER" not in out
+
+
+def test_the_gc_spread_warning_is_absent_at_the_real_threshold(sandbox, capsys):
+    audit_pjet.main(sandbox, quiet=False)
+    assert "wider than the" not in capsys.readouterr().out
+
+
+def test_catches_a_lost_kozak_plus_four_G(sandbox):
+    def flatten(s):
+        i = s.index(audit_pjet.LEADER) + len(audit_pjet.LEADER)
+        return s[:i] + "ATGTCA" + s[i + 6:]
+    rewrite(sandbox, "P5", flatten)
+    assert blocks(sandbox)
+
+
+def read_orf(path, name: str) -> str:
+    """The ORF of one construct, straight out of the fasta."""
+    seq, header, buf = None, None, []
+    for line in path.read_text().splitlines():
+        if line.startswith(">"):
+            if header and header.startswith(f">{name}|"):
+                seq = "".join(buf)
+            header, buf = line, []
+        else:
+            buf.append(line.strip())
+    if header and header.startswith(f">{name}|"):
+        seq = "".join(buf)
+    start = seq.index(audit_pjet.LEADER) + len(audit_pjet.LEADER)
+    return seq[start:]
