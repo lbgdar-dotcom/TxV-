@@ -23,7 +23,9 @@ from txv.ivt_unit import (  # noqa: E402
     FWD_PRIMER, REV_HANDLE, make_unit, reverse_primer, simulate_pcr,
     unit_elements,
 )
-from txv.plasmid import insert_blunt  # noqa: E402
+from txv.plasmid import (  # noqa: E402
+    insert_blunt, revcomp_record, rotate_record,
+)
 from txv.pvax1_ag import PANEL, build_panel_construct  # noqa: E402
 from txv.ivt_unit import T7_CORE  # noqa: E402
 from txv.seqops import find_all, revcomp  # noqa: E402
@@ -95,6 +97,25 @@ def digest_fragments(sequence: str, cuts: list[int]) -> list[tuple[int, int, int
     out.append((cuts[-1], cuts[0] + len(sequence),
                 len(sequence) - cuts[-1] + cuts[0]))
     return out
+
+
+def released_fragment(sequence: str, cuts: list[int], start: int, end: int) -> str:
+    """The circular-digest fragment containing ``start..end``, as sequence.
+
+    After the map is rotated so the insert begins at position 1, the fragment
+    that carries it wraps the origin: its two cuts are near the end and the
+    middle of the record, and a plain ``sequence[a:b]`` returns the backbone
+    instead. Slicing the doubled sequence handles the wrap.
+    """
+    cuts = sorted(cuts)
+    doubled = sequence + sequence
+    n = len(sequence)
+    for i, lo in enumerate(cuts):
+        hi = cuts[i + 1] if i + 1 < len(cuts) else cuts[0] + n
+        for offset in (0, n):
+            if lo <= start + offset and end + offset <= hi:
+                return doubled[lo:hi]
+    return ""
 
 
 def fragment_carrying(fragments, start: int, end: int, length: int):
@@ -216,13 +237,35 @@ def main() -> int:
                            f"unit + A{POLYA} ({panel.route})",
             )
             _annotate_insert(build, unit, construct, panel, orientation)
-            (OUT / f"{build.record.name}.gb").write_text(
-                write_genbank(build.record))
+
+            # Present every map 5' first, reading downstream. Rotating puts the
+            # insert at position 1, which most viewers draw at twelve o'clock;
+            # for the flipped clone the record is first shown from its other
+            # strand, so the cassette reads forward there too instead of
+            # mirror-imaged. Neither changes the molecule.
+            record = build.record
+            if orientation == -1:
+                record = revcomp_record(record, record.name)
+            start = next(f.start for f in record.features
+                         if f.qualifiers.get("label") == "insert")
+            record = rotate_record(record, start, record.name)
+
+            out_dir = OUT if orientation == 1 else OUT / "reverse_orientation"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            (out_dir / f"{record.name}.gb").write_text(write_genbank(record))
 
             if orientation != 1:
                 continue
 
-            seq = build.record.sequence
+            # Verify the record that was actually written, not the one before
+            # orientation. The two differ only in numbering, and every size
+            # below is rotation-invariant -- but checking a different object
+            # from the one shipped is how a map and its paperwork drift apart,
+            # which is the failure this whole package is built to avoid.
+            seq = record.sequence
+            insert = next(f for f in record.features
+                          if f.qualifiers.get("label") == "insert")
+            build.insert_start, build.insert_end = insert.start, insert.end
             # -- the selection has to be broken for the cloning to work -------
             if "Eco47I/T7" not in " ".join(build.disrupted):
                 problems.append((panel.name, "eco47IR is not disrupted; "
@@ -256,7 +299,8 @@ def main() -> int:
             runoff_nt = runoff_after = None
             runoff_ok = False
             if len(bgl) == 2:
-                released = seq[bgl[0]:bgl[1]]
+                released = released_fragment(seq, bgl, build.insert_start,
+                                             build.insert_end)
                 t7_hits = find_all(released, T7_CORE)
                 if len(t7_hits) == 1:
                     transcript = released[t7_hits[0] + len(T7_CORE):]

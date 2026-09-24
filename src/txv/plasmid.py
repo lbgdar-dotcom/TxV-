@@ -457,3 +457,95 @@ def insert_blunt(
     )
     return BluntInsertion(record, site, site, site + shift, orientation,
                           disrupted)
+
+
+def rotate_record(record: GenBankRecord, origin: int,
+                  name: str | None = None) -> GenBankRecord:
+    """Renumber a circular plasmid so ``origin`` becomes position 1.
+
+    A circular molecule has no intrinsic start, but a *map* does: most viewers
+    draw position 1 at twelve o'clock and read clockwise. Where the numbering
+    begins therefore decides whether a cassette reads from the top downstream
+    or starts halfway round, and that is a real difference when the map is
+    being used to check a design rather than to find a cut site.
+
+    Rotating changes no sequence and no biology -- the same molecule, counted
+    from a different base.
+
+    A feature straddling the new origin cannot be written as one range, since
+    this package's GenBank writer does not emit ``join(...)``. Such a feature
+    is split in two and both halves are labelled, which is honest about what
+    happened and readable in a viewer. In practice the only features that wrap
+    here are the ones the insert already disrupted.
+    """
+    if not record.is_circular:
+        raise ValueError("refusing to rotate a linear record")
+    length = len(record.sequence)
+    origin %= length
+    if origin == 0:
+        return record
+
+    sequence = record.sequence[origin:] + record.sequence[:origin]
+    features: list[GenBankFeature] = []
+
+    for feature in record.features:
+        start = feature.start - origin
+        end = feature.end - origin
+        if start < 0 and end <= 0:                 # entirely before: wrap both
+            start, end = start + length, end + length
+        elif start < 0 < end:                      # straddles the new origin
+            label = feature.qualifiers.get("label", feature.key)
+            head = dict(feature.qualifiers)
+            head["label"] = f"{label} (1 of 2)"
+            head["note"] = (f"Split across the origin by renumbering. "
+                            + head.get("note", "")).strip()
+            tail = dict(feature.qualifiers)
+            tail["label"] = f"{label} (2 of 2)"
+            tail["note"] = head["note"]
+            features.append(GenBankFeature(feature.key, start + length, length,
+                                           feature.strand, tail))
+            features.append(GenBankFeature(feature.key, 0, end,
+                                           feature.strand, head))
+            continue
+        features.append(GenBankFeature(feature.key, start, end, feature.strand,
+                                       dict(feature.qualifiers)))
+
+    features.sort(key=lambda f: (f.start, f.end))
+    return GenBankRecord(
+        name=name or record.name,
+        sequence=sequence,
+        features=features,
+        is_circular=True,
+        definition=record.definition,
+    )
+
+
+def revcomp_record(record: GenBankRecord,
+                   name: str | None = None) -> GenBankRecord:
+    """View a plasmid from its other strand.
+
+    A plasmid is double-stranded, so which strand a map draws is a choice, not
+    a fact about the molecule. For a clone whose insert went in backwards this
+    matters: on the strand the file happens to list, the whole cassette reads
+    right to left and the map is close to useless for checking a design. Shown
+    from the other strand the same molecule reads forward again, and what
+    actually differs from the designed clone -- where the vector's own features
+    sit relative to the insert -- becomes the visible difference instead of an
+    apparent mirror image.
+    """
+    from .seqops import revcomp
+
+    length = len(record.sequence)
+    features = [
+        GenBankFeature(f.key, length - f.end, length - f.start, -f.strand,
+                       dict(f.qualifiers))
+        for f in record.features
+    ]
+    features.sort(key=lambda f: (f.start, f.end))
+    return GenBankRecord(
+        name=name or record.name,
+        sequence=revcomp(record.sequence),
+        features=features,
+        is_circular=record.is_circular,
+        definition=record.definition,
+    )

@@ -179,13 +179,20 @@ def test_the_plasmid_carries_an_encoded_polya(plasmid_dir, name):
 
 
 @pytest.mark.parametrize("name", ["P0", "P5", "P7"])
-def test_the_reverse_orientation_polya_sits_on_the_bottom_strand(plasmid_dir, name):
-    """A -1 strand poly(A) reads as poly(T) on the strand the file lists."""
-    record = read_genbank(plasmid_dir / f"pJET1.2_{name}_rev.gb")
+def test_the_flipped_clone_shows_a_readable_polya_too(plasmid_dir, name):
+    """Shown from its other strand, the flipped clone's tail reads as A's.
+
+    Built on the strand it was made on, a flipped clone's poly(A) is a -1
+    feature spanning T's -- correct, and unreadable. These maps are drawn from
+    the opposite strand precisely so that stops being the case.
+    """
+    record = read_genbank(
+        plasmid_dir / "reverse_orientation" / f"pJET1.2_{name}_rev.gb")
     tail = next(f for f in record.features
                 if f.qualifiers.get("label", "").startswith("poly(A)"))
-    assert tail.strand == -1
-    assert set(record.sequence[tail.start:tail.end]) == {"T"}
+    assert tail.strand == 1
+    assert set(record.sequence[tail.start:tail.end]) == {"A"}
+    assert tail.end - tail.start == 120
 
 
 @pytest.mark.parametrize("name", ["P0", "P5", "P7"])
@@ -207,7 +214,10 @@ def test_bglii_runoff_gives_a_usable_ivt_template(plasmid_dir, name):
     cuts = sorted(i + 1 for i in find_all(seq, "AGATCT"))
     assert len(cuts) == 2
 
-    released = seq[cuts[0]:cuts[1]]
+    # The insert now starts at position 1, so the fragment carrying it wraps
+    # the origin: a plain slice between the two cuts returns the backbone.
+    doubled = seq + seq
+    released = doubled[cuts[1]:cuts[0] + len(seq)]
     t7 = find_all(released, T7_CORE)
     assert len(t7) == 1, "the released fragment must carry exactly one promoter"
 
@@ -227,5 +237,100 @@ def test_the_plasmid_map_annotates_the_modules_not_just_a_block(plasmid_dir, nam
         assert required in labels, required
     assert any(l.startswith("poly(A)") for l in labels)
     # and the vector's own features must survive
-    for required in ("AmpR", "ori", "Eco47I/T7"):
+    # eco47IR is split by the rotation that puts the insert at position 1;
+    # it is the feature the insert disrupted, so it straddles the new origin.
+    for required in ("AmpR", "ori"):
         assert required in labels, required
+    assert any(l.startswith("Eco47I/T7") for l in labels)
+
+
+# --- map orientation -------------------------------------------------------
+# A map is for reading a design off. If the cassette runs backwards it is not
+# serving that purpose, whichever strand the record happens to be built on.
+
+CASSETTE = ["IVT_F_handle", "T7_promoter", "5'UTR", "ORF", "3'UTR",
+            "IVT_R_handle", "poly(A) 120"]
+
+
+def _labelled(record):
+    return {f.qualifiers.get("label", ""): f for f in record.features}
+
+
+@pytest.mark.parametrize("name", ["P0", "P5", "P7"])
+def test_the_designed_map_starts_at_the_inserts_five_prime_end(plasmid_dir, name):
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    assert _labelled(record)["IVT_F_handle"].start == 0
+
+
+@pytest.mark.parametrize("name", ["P0", "P5", "P7"])
+def test_the_cassette_reads_downstream_in_order(plasmid_dir, name):
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    found = _labelled(record)
+    starts = [found[label].start for label in CASSETTE]
+    assert starts == sorted(starts), "elements are out of order on the map"
+    assert all(found[label].strand == 1 for label in CASSETTE)
+
+
+@pytest.mark.parametrize("name", ["P0", "P5", "P7"])
+def test_the_flipped_clone_map_also_reads_forwards(plasmid_dir, name):
+    """Shown from its other strand, a flipped clone is readable too."""
+    record = read_genbank(
+        plasmid_dir / "reverse_orientation" / f"pJET1.2_{name}_rev.gb")
+    found = _labelled(record)
+    starts = [found[label].start for label in CASSETTE]
+    assert starts == sorted(starts)
+    assert all(found[label].strand == 1 for label in CASSETTE)
+
+
+@pytest.mark.parametrize("name", ["P0", "P5", "P7"])
+def test_the_two_clones_differ_in_the_vector_strand_not_the_cassette(
+        plasmid_dir, name):
+    """The real difference must be the visible one."""
+    designed = _labelled(read_genbank(plasmid_dir / f"pJET1.2_{name}.gb"))
+    flipped = _labelled(read_genbank(
+        plasmid_dir / "reverse_orientation" / f"pJET1.2_{name}_rev.gb"))
+    for backbone in ("AmpR", "ori"):
+        assert designed[backbone].strand == -flipped[backbone].strand
+
+
+# --- rotation and strand-flip primitives -----------------------------------
+
+def test_rotation_preserves_the_molecule(vector):
+    from txv.plasmid import rotate_record
+    rotated = rotate_record(vector, 500)
+    assert len(rotated) == len(vector)
+    assert rotated.sequence in vector.sequence + vector.sequence
+    assert rotated.sequence != vector.sequence
+
+
+def test_rotation_splits_a_feature_that_crosses_the_new_origin(vector):
+    from txv.plasmid import rotate_record
+    lethal = next(f for f in vector.features
+                  if "Eco47I" in f.qualifiers.get("label", ""))
+    rotated = rotate_record(vector, lethal.start + 100)
+    halves = [f for f in rotated.features
+              if "Eco47I" in f.qualifiers.get("label", "")]
+    assert len(halves) == 2
+    assert {f.qualifiers["label"] for f in halves} == {
+        "Eco47I/T7 (1 of 2)", "Eco47I/T7 (2 of 2)"}
+
+
+def test_rotation_refuses_a_linear_record(vector):
+    from txv.plasmid import rotate_record
+    linear = GenBankRecord(name="x", sequence=vector.sequence,
+                           is_circular=False)
+    with pytest.raises(ValueError):
+        rotate_record(linear, 10)
+
+
+def test_rotating_by_zero_is_a_no_op(vector):
+    from txv.plasmid import rotate_record
+    assert rotate_record(vector, 0) is vector
+
+
+def test_strand_flip_is_its_own_inverse(vector):
+    from txv.plasmid import revcomp_record
+    twice = revcomp_record(revcomp_record(vector))
+    assert twice.sequence == vector.sequence
+    assert {(f.start, f.end, f.strand) for f in twice.features} == \
+           {(f.start, f.end, f.strand) for f in vector.features}
