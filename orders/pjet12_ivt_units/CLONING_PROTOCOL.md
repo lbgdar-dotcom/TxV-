@@ -76,12 +76,30 @@ searching for any part of the tail in the fasta will also, correctly, fail.
 
 ## Cloning
 
-1. **Ligate.** gBlock + pJET1.2/blunt + T4 DNA ligase, per the CloneJET
-   protocol. Skip the blunting step — a gene fragment is already blunt; it is
-   there for A-tailed PCR products.
+1. **Add the poly(A) by PCR, then ligate that product.** PCR the gBlock with
+   `IVT_F` + `IVT_R_polyA120`, column-purify, and blunt-ligate **the product**
+   into pJET1.2/blunt with T4 DNA ligase.
+
+   This is the step that changed, and it matters: the poly(A) is **not
+   synthesised into the gene fragment**. A flat A120 fails vendor screening
+   outright, and so does a BNT162b2-style segmented A30–linker–A70, whose
+   70-nt run is still past what a gBlock will build. Adding it by PCR before
+   cloning puts it in the plasmid — every miniprep then carries it, as
+   pVax1_AG_eGFP does — and spends the Ultramer once instead of on every prep.
+
+   **Use a proofreading polymerase (Phusion, Q5) so the product is blunt**, or
+   run the CloneJET blunting step. Taq leaves A-overhangs and will not ligate.
+   This reverses the earlier advice to skip blunting, which was right when a
+   gene fragment went in directly and is wrong now.
 2. **Transform and plate on ampicillin.** pJET1.2 is AmpR, not Kan — different
    from pVax1_AG. The lethal `eco47IR` gene means >99% of colonies carry an
    insert, so no blue/white and no no-insert control is needed.
+
+   **Use a recombination-deficient strain (Stbl3, or NEB Stable).** A 120-nt
+   A-tract in a high-copy pUC-origin plasmid can contract during propagation.
+   pVax1_AG carries the same tract and is fine in practice, but that is a
+   reason to pick the strain deliberately, not to assume it away — and to
+   check the tail length when you sequence.
 3. **Check an insert went in, if you want a cheap screen.** `BglII` cuts twice
    in pJET1.2, once either side of the cloning site, and **none of the nine
    fragments contains a BglII site** — checked, and enforced by a test. So a
@@ -100,27 +118,41 @@ searching for any part of the tail in the fasta will also, correctly, fail.
    in P6/P7/P8, and P2A intact in P7/P8.
 
 <!-- BEGIN GENERATED VERIFICATION TABLE -->
-| | plasmid | BglII insert band | BglII backbone band | orientation PCR (designed) | (flipped) |
-|---|---|---|---|---|---|
-| P0 | 3725 bp | 797 bp | 2928 bp | 808 bp | none |
-| P1 | 3827 bp | 899 bp | 2928 bp | 910 bp | none |
-| P2 | 3827 bp | 899 bp | 2928 bp | 910 bp | none |
-| P3 | 3929 bp | 1001 bp | 2928 bp | 1012 bp | none |
-| P4 | 3929 bp | 1001 bp | 2928 bp | 1012 bp | none |
-| P5 | 3644 bp | 716 bp | 2928 bp | 727 bp | none |
-| P6 | 3803 bp | 875 bp | 2928 bp | 886 bp | none |
-| P7 | 3929 bp | 1001 bp | 2928 bp | 1012 bp | none |
-| P8 | 3929 bp | 1001 bp | 2928 bp | 1012 bp | none |
+| | plasmid | BglII insert band | BglII backbone band | run-off transcript | nt after poly(A) | orientation PCR (designed) | (flipped) |
+|---|---|---|---|---|---|---|---|
+| P0 | 3845 bp | 917 bp | 2928 bp | 846 nt | 11 | 928 bp | none |
+| P1 | 3947 bp | 1019 bp | 2928 bp | 948 nt | 11 | 1030 bp | none |
+| P2 | 3947 bp | 1019 bp | 2928 bp | 948 nt | 11 | 1030 bp | none |
+| P3 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 1132 bp | none |
+| P4 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 1132 bp | none |
+| P5 | 3764 bp | 836 bp | 2928 bp | 765 nt | 11 | 847 bp | none |
+| P6 | 3923 bp | 995 bp | 2928 bp | 924 nt | 11 | 1006 bp | none |
+| P7 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 1132 bp | none |
+| P8 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 1132 bp | none |
 <!-- END GENERATED VERIFICATION TABLE -->
 
 Finished maps for all nine, in **both** orientations, are in `plasmids/`. Open
 them in SnapGene or Benchling: `eco47IR` is annotated as disrupted, which is
 the selection working, and `AmpR` and `ori` are annotated intact.
-6. **Make the IVT template.** PCR with `IVT_F` + `IVT_R_polyA120` off the
-   miniprep. The product is the transcription unit with a 120-bp A/T tract on
-   the end. **Column-purify it** — the kit manual allows a PCR mixture to be
-   used directly but states yields are better from a purified product. Quantify;
-   the reaction wants template at 25–50 ng/µl.
+6. **Make the IVT template — by BglII run-off.** Digest the miniprep with
+   BglII and column-purify. Because the plasmid now carries the poly(A), the
+   Ultramer is no longer needed here: the same digest that runs your diagnostic
+   gel releases the IVT template.
+
+   This mirrors pVax1_AG, which carries a BsaI site one base past its encoded
+   poly(A) and is linearised there for run-off. pJET1.2 gets the same behaviour
+   for free — its two BglII sites bracket the insert, and none of the nine
+   fragments contains a BglII site. The released fragment carries the
+   construct's own T7 promoter; the transcript begins `AGG`, carries the full
+   A120, and runs only **11 nt past the tail** (pVax1_AG manages ~5).
+
+   Run-off transcript lengths are in the verification table above.
+   **Column-purify** — the kit manual allows a raw reaction but states yields
+   are better from purified template. Quantify; the reaction wants 25–50 ng/µl.
+
+   *If you would rather PCR:* `IVT_F` + `IVT_R_polyA120` off the miniprep still
+   works and gives a poly(A) with nothing after it. It just costs the Ultramer
+   every time, which is what encoding the tail was meant to avoid.
 7. **Transcribe.** These fragments are built for the VENI all-in-one kit with
    Cap1 analog, whose manual specifies the minimum promoter
    `5'-TAATACGACTCACTATAAGG`. Every fragment carries that exact sequence, and

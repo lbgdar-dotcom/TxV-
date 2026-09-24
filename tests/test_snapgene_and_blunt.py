@@ -156,3 +156,76 @@ def test_the_orientation_pcr_distinguishes_the_two_products(vector):
 
     assert simulate_pcr(forward.record.sequence, FWD_PRIMER, rev)
     assert not simulate_pcr(reverse.record.sequence, FWD_PRIMER, rev)
+
+
+# --- the encoded poly(A) and run-off transcription -------------------------
+
+@pytest.fixture(scope="module")
+def plasmid_dir():
+    from pathlib import Path
+    d = Path(__file__).resolve().parents[1] / "orders" / "pjet12_ivt_units" / "plasmids"
+    if not (d / "pJET1.2_P0.gb").exists():
+        pytest.skip("plasmid maps not generated")
+    return d
+
+
+@pytest.mark.parametrize("name", ["P0", "P5", "P7"])
+def test_the_plasmid_carries_an_encoded_polya(plasmid_dir, name):
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    tail = next(f for f in record.features
+                if f.qualifiers.get("label", "").startswith("poly(A)"))
+    assert set(record.sequence[tail.start:tail.end]) == {"A"}
+    assert tail.end - tail.start == 120
+
+
+@pytest.mark.parametrize("name", ["P0", "P5", "P7"])
+def test_the_reverse_orientation_polya_sits_on_the_bottom_strand(plasmid_dir, name):
+    """A -1 strand poly(A) reads as poly(T) on the strand the file lists."""
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}_rev.gb")
+    tail = next(f for f in record.features
+                if f.qualifiers.get("label", "").startswith("poly(A)"))
+    assert tail.strand == -1
+    assert set(record.sequence[tail.start:tail.end]) == {"T"}
+
+
+@pytest.mark.parametrize("name", ["P0", "P5", "P7"])
+def test_the_gene_fragment_itself_encodes_no_polya(name):
+    """The tail is added by PCR. A synthesised A120 would be rejected."""
+    from txv.ivt_unit import make_unit
+    from txv.pvax1_ag import build_panel_construct
+    unit = make_unit(name, build_panel_construct(name).orf)
+    assert "A" * 20 not in unit.sequence
+
+
+@pytest.mark.parametrize("name", [p.name for p in __import__(
+    "txv.pvax1_ag", fromlist=["PANEL"]).PANEL])
+def test_bglii_runoff_gives_a_usable_ivt_template(plasmid_dir, name):
+    """One digest must serve as both the diagnostic and the IVT template."""
+    from txv.ivt_unit import T7_CORE
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    seq = record.sequence
+    cuts = sorted(i + 1 for i in find_all(seq, "AGATCT"))
+    assert len(cuts) == 2
+
+    released = seq[cuts[0]:cuts[1]]
+    t7 = find_all(released, T7_CORE)
+    assert len(t7) == 1, "the released fragment must carry exactly one promoter"
+
+    transcript = released[t7[0] + len(T7_CORE):]
+    assert transcript.startswith("AGG"), "must stay CleanCap AG compatible"
+    assert "A" * 120 in transcript
+    after = len(transcript) - (transcript.rfind("A" * 120) + 120)
+    assert 0 <= after <= 20, f"{after} nt after the poly(A) is too much"
+
+
+@pytest.mark.parametrize("name", ["P0", "P7"])
+def test_the_plasmid_map_annotates_the_modules_not_just_a_block(plasmid_dir, name):
+    """The point of these maps is seeing the design, not an opaque insert."""
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    labels = {f.qualifiers.get("label", "") for f in record.features}
+    for required in ("T7_promoter", "5'UTR", "Kozak", "ORF", "HA", "3'UTR"):
+        assert required in labels, required
+    assert any(l.startswith("poly(A)") for l in labels)
+    # and the vector's own features must survive
+    for required in ("AmpR", "ori", "Eco47I/T7"):
+        assert required in labels, required

@@ -18,12 +18,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from txv.genbank_io import write_genbank  # noqa: E402
+from txv.genbank_io import GenBankFeature, write_genbank  # noqa: E402
 from txv.ivt_unit import (  # noqa: E402
     FWD_PRIMER, REV_HANDLE, make_unit, reverse_primer, simulate_pcr,
+    unit_elements,
 )
 from txv.plasmid import insert_blunt  # noqa: E402
 from txv.pvax1_ag import PANEL, build_panel_construct  # noqa: E402
+from txv.ivt_unit import T7_CORE  # noqa: E402
 from txv.seqops import find_all, revcomp  # noqa: E402
 from txv.snapgene import read_primers, read_snapgene  # noqa: E402
 
@@ -37,8 +39,42 @@ ECORV = "GATATC"
 ECORV_OFFSET = 3
 #: Excision enzyme. pJET1.2 carries a site either side of the cloning site.
 BGLII, BGLII_OFFSET = "AGATCT", 1
+
+#: pJET1.2's stock sequencing primers, as read from the SnapGene file the first
+#: time and kept here so a rebuild from the GenBank map still knows them.
+PJET_STOCK_PRIMERS = {
+    "pJET1.2 forward sequencing primer": "CGACTCACTATAGGGAGAGCGGC",
+    "pJET1.2 reverse sequencing primer": "AAGAACATCGATTTTCCATGGCAG",
+}
 #: A Sanger read is reliable for roughly this many bases past the primer.
 SANGER_READ = 850
+
+#: Length of the poly(A) carried in the finished plasmid.
+#:
+#: The tail is **not** synthesised into the gene fragment. A 120-nt A-tract
+#: fails vendor screening outright, and so does the BNT162b2-style segmented
+#: A30-linker-A70, whose 70-nt run is still past what a gBlock will build.
+#: So the fragment ships tail-free and the tail is added by PCR with
+#: IVT_R_polyA120 **before cloning**, and that product is what goes into
+#: pJET1.2. The plasmid then carries the poly(A) encoded, exactly as
+#: pVax1_AG_eGFP does, every miniprep has it, and the Ultramer is spent once
+#: rather than on every prep.
+POLYA = 120
+
+#: How much sequence may follow the poly(A) in the run-off transcript. The
+#: tail should be at or near the 3' end; pVax1_AG manages ~5 nt by cutting
+#: BsaI one base past it, and a dozen is the same order.
+MAX_NT_AFTER_POLYA = 20
+
+#: GenBank feature kinds by element kind, for transplanting the fragment's own
+#: annotation into the finished plasmid.
+_KEY = {"handle": "primer_bind", "promoter": "promoter", "utr5": "5'UTR",
+        "utr3": "3'UTR", "kozak": "regulatory", "orf": "CDS",
+        "signal_peptide": "sig_peptide", "skip_peptide": "misc_feature",
+        "degron": "misc_feature", "tag": "misc_feature",
+        "antigen": "misc_feature", "linker": "misc_feature",
+        "transmembrane": "misc_feature", "start": "misc_feature",
+        "stop": "misc_feature"}
 
 
 def cut_positions(sequence: str, site: str, offset: int) -> list[int]:
@@ -76,20 +112,74 @@ def fragment_carrying(fragments, start: int, end: int, length: int):
     return None
 
 
+
+def _annotate_insert(build, unit, construct, panel, orientation: int) -> None:
+    """Transplant the fragment's own element map into the finished plasmid.
+
+    Without this the plasmid shows one anonymous "insert" block, which is no
+    use for the thing these maps exist for: looking at a construct and seeing
+    the signal peptide, the antigens and their order, the degron and the P2A
+    where they actually sit.
+
+    In the flipped orientation every element is mirrored within the insert, so
+    coordinates are reflected and the strand inverted rather than the elements
+    being dropped -- a reverse-orientation clone is a real product and its map
+    should be readable too.
+    """
+    lo, hi = build.insert_start, build.insert_end
+    span = hi - lo
+
+    for name, start, end, kind, note in unit_elements(unit, construct):
+        if orientation == 1:
+            f_start, f_end, strand = lo + start, lo + end, 1
+        else:
+            f_start, f_end, strand = lo + span - end, lo + span - start, -1
+        build.record.features.append(GenBankFeature(
+            _KEY.get(kind, "misc_feature"), f_start, f_end, strand,
+            {"label": name, "note": note},
+        ))
+
+    # The poly(A) is not part of the fragment, so unit_elements does not know
+    # about it; it comes from the primer during the pre-cloning PCR.
+    tail_len = span - len(unit)
+    if tail_len > 0:
+        if orientation == 1:
+            t_start, t_end, strand = hi - tail_len, hi, 1
+        else:
+            t_start, t_end, strand = lo, lo + tail_len, -1
+        build.record.features.append(GenBankFeature(
+            "polyA_signal", t_start, t_end, strand,
+            {"label": f"poly(A) {tail_len}",
+             "note": f"A{tail_len}, added by IVT_R_polyA{tail_len} in the PCR "
+                     "before cloning, not synthesised into the gene fragment. "
+                     "Encoded here, so every miniprep carries it."},
+        ))
+
+    build.record.features.sort(key=lambda f: (f.start, f.end))
+
+
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
-    vector = read_snapgene(sys.argv[1]) if len(sys.argv) > 1 else None
-    if vector is None:
-        if not VECTOR_GB.exists():
-            print(f"pass the pJET1.2 .dna file, or put a map at {VECTOR_GB}")
-            return 1
-        from txv.genbank_io import read_genbank
-        vector = read_genbank(VECTOR_GB)
-    else:
+    from txv.genbank_io import read_genbank
+
+    source = Path(sys.argv[1]) if len(sys.argv) > 1 else VECTOR_GB
+    if not source.exists():
+        print(f"pass the pJET1.2 map, or put one at {VECTOR_GB}")
+        return 1
+    # Accept either the SnapGene original or the GenBank this script writes,
+    # so a rebuild does not depend on still having the .dna to hand.
+    if source.suffix.lower() == ".dna":
+        vector = read_snapgene(source)
         VECTOR_GB.write_text(write_genbank(vector))
         print(f"wrote {VECTOR_GB.relative_to(ROOT)}")
+    else:
+        vector = read_genbank(source)
 
-    stock = read_primers(sys.argv[1]) if len(sys.argv) > 1 else {}
+    stock = read_primers(source) if source.suffix.lower() == ".dna" else {}
+    if not stock:
+        # The stock primers are a property of the vector, not of the file
+        # format it arrived in.
+        stock = dict(PJET_STOCK_PRIMERS)
     seq_fwd = next((s for n, s in stock.items() if "forward" in n.lower()), None)
     seq_rev = next((s for n, s in stock.items() if "reverse" in n.lower()), None)
 
@@ -104,16 +194,28 @@ def main() -> int:
 
     rows, problems = [], []
     for panel in PANEL:
-        unit = make_unit(panel.name, build_panel_construct(panel.name).orf)
+        construct = build_panel_construct(panel.name)
+        unit = make_unit(panel.name, construct.orf)
+
+        # What is actually cloned is the PCR product, not the gene fragment:
+        # the fragment amplified with IVT_R_polyA120 carries the poly(A).
+        cloned = simulate_pcr(unit.sequence, FWD_PRIMER, reverse_primer(POLYA),
+                              circular=False)
+        if len(cloned) != 1 or not cloned[0].endswith("A" * POLYA):
+            problems.append((panel.name, "the poly(A) PCR does not give a "
+                             "single tailed product"))
+            continue
+        insert_seq = cloned[0]
 
         for orientation, tag in ((1, "fwd"), (-1, "rev")):
             build = insert_blunt(
-                vector, unit.sequence, site,
+                vector, insert_seq, site,
                 f"pJET1.2_{panel.name}" + ("" if orientation == 1 else "_rev"),
                 orientation=orientation,
                 definition=f"pJET1.2 carrying the {panel.name} IVT transcription "
-                           f"unit ({panel.route})",
+                           f"unit + A{POLYA} ({panel.route})",
             )
+            _annotate_insert(build, unit, construct, panel, orientation)
             (OUT / f"{build.record.name}.gb").write_text(
                 write_genbank(build.record))
 
@@ -144,6 +246,33 @@ def main() -> int:
                                  "insert; it cannot be excised in one piece"))
             backbone_piece = max(f[2] for f in fragments) if len(bgl) > 1 else None
 
+            # -- run-off transcription ----------------------------------------
+            # pVax1_AG carries a BsaI site 1 nt past its encoded poly(A) and is
+            # linearised there for run-off. pJET1.2 gets the same behaviour for
+            # free: its two BglII sites bracket the insert, so one digest both
+            # releases the insert for the diagnostic gel and produces the IVT
+            # template, with the poly(A) near-terminal. No extra enzyme site and
+            # no tailed primer once the plasmid exists.
+            runoff_nt = runoff_after = None
+            runoff_ok = False
+            if len(bgl) == 2:
+                released = seq[bgl[0]:bgl[1]]
+                t7_hits = find_all(released, T7_CORE)
+                if len(t7_hits) == 1:
+                    transcript = released[t7_hits[0] + len(T7_CORE):]
+                    runoff_nt = len(transcript)
+                    tail = "A" * POLYA
+                    if transcript.startswith("AGG") and tail in transcript:
+                        runoff_after = len(transcript) - (
+                            transcript.rfind(tail) + POLYA)
+                        runoff_ok = runoff_after <= MAX_NT_AFTER_POLYA
+            if not runoff_ok:
+                problems.append((
+                    panel.name,
+                    "BglII run-off does not give a usable IVT template "
+                    f"(transcript {runoff_nt} nt, {runoff_after} nt past the "
+                    "poly(A))"))
+
             # -- sequencing coverage -----------------------------------------
             covered = None
             if seq_fwd and seq_rev:
@@ -154,16 +283,16 @@ def main() -> int:
                     reach_f = max(0, f_end + SANGER_READ - build.insert_start)
                     r_start = r_hits[0]
                     reach_r = max(0, build.insert_end - (r_start - SANGER_READ))
-                    covered = reach_f + reach_r >= len(unit)
+                    covered = reach_f + reach_r >= len(insert_seq)
                     if not covered:
                         problems.append((
                             panel.name,
                             f"stock primers reach {reach_f}+{reach_r} nt of a "
-                            f"{len(unit)} nt insert; an internal primer is needed"))
+                            f"{len(insert_seq)} nt insert; an internal primer is needed"))
 
             # -- telling the orientation apart --------------------------------
             fwd_products = simulate_pcr(seq, FWD_PRIMER, seq_rev or REV_HANDLE)
-            rev_build = insert_blunt(vector, unit.sequence, site, "tmp",
+            rev_build = insert_blunt(vector, insert_seq, site, "tmp",
                                      orientation=-1)
             rev_products = simulate_pcr(rev_build.record.sequence,
                                         FWD_PRIMER, seq_rev or REV_HANDLE)
@@ -171,18 +300,21 @@ def main() -> int:
             rows.append({
                 "construct": panel.name,
                 "plasmid_bp": len(build),
-                "insert_bp": len(unit),
+                "insert_bp": len(insert_seq),
                 "insert_at": build.insert_start + 1,
                 "disrupted": "; ".join(build.disrupted),
                 "BglII_sites": len(bgl),
                 "BglII_insert_fragment_bp": insert_carrying or "",
                 "BglII_backbone_fragment_bp": backbone_piece or "",
+                "runoff_transcript_nt": runoff_nt or "",
+                "nt_after_polyA": runoff_after if runoff_after is not None else "",
                 "sequencing_covers_insert": "yes" if covered else "no",
                 "orientation_PCR_fwd_bp": ";".join(str(len(p)) for p in fwd_products) or "none",
                 "orientation_PCR_rev_bp": ";".join(str(len(p)) for p in rev_products) or "none",
             })
-            print(f"  {panel.name}  {len(build):>5} bp  insert {len(unit):>4} bp at "
+            print(f"  {panel.name}  {len(build):>5} bp  insert {len(insert_seq):>4} bp at "
                   f"{build.insert_start + 1}  BglII: {insert_carrying}+{backbone_piece} bp  "
+                  f"run-off {runoff_nt} nt (+{runoff_after} past A{POLYA})  "
                   f"seq covers: {'yes' if covered else 'NO'}  "
                   f"orientation PCR fwd/rev: "
                   f"{[len(p) for p in fwd_products]}/{[len(p) for p in rev_products]}")
@@ -196,13 +328,16 @@ def main() -> int:
         text = protocol.read_text()
         table = [begin,
                  "| | plasmid | BglII insert band | BglII backbone band | "
+                 "run-off transcript | nt after poly(A) | "
                  "orientation PCR (designed) | (flipped) |",
-                 "|---|---|---|---|---|---|"]
+                 "|---|---|---|---|---|---|---|---|"]
         for row in rows:
             table.append(
                 f"| {row['construct']} | {row['plasmid_bp']} bp | "
                 f"{row['BglII_insert_fragment_bp']} bp | "
                 f"{row['BglII_backbone_fragment_bp']} bp | "
+                f"{row['runoff_transcript_nt']} nt | "
+                f"{row['nt_after_polyA']} | "
                 f"{row['orientation_PCR_fwd_bp']} bp | "
                 f"{row['orientation_PCR_rev_bp']} |")
         table.append(end)
@@ -222,7 +357,8 @@ def main() -> int:
             print(f"  [{name}] {problem}")
         return 1
     print("\nno problems: selection disrupted, AmpR and ori intact, insert "
-          "excisable, insert sequenceable with the stock primers")
+          "excisable, sequenceable, and BglII run-off gives a capped-"
+          "compatible IVT template with a near-terminal poly(A)")
     return 0
 
 
