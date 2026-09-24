@@ -115,11 +115,17 @@ def main() -> int:
             "Forward - anneals to the forward handle on every construct"])
         writer.writerow([
             "IVT_R_plain", reverse_primer(0), len(reverse_primer(0)),
-            "Reverse without tail - for colony PCR and sequencing checks"])
+            "Reverse without tail - colony PCR and sequencing checks. NOTE: you "
+            "will NOT find this sequence in gblocks.fasta, and that is correct. "
+            "A reverse primer anneals to the top strand, so what appears in the "
+            "fragment is its reverse complement - the last 20 nt of every "
+            "fragment, " + REV_HANDLE + "."])
         writer.writerow([
             "IVT_R_polyA120", reverse_primer(120), len(reverse_primer(120)),
             "Reverse with a 120-nt poly(T) 5' tail - adds the poly(A) to the "
-            "IVT template. Order as an Ultramer or equivalent."])
+            "IVT template. Order as an Ultramer or equivalent. Only the 3' 20 "
+            "nt anneal; the T120 tail hangs off the template and is copied into "
+            "the product, which is why the fragment encodes no poly(A)."])
 
     # -- manifest ----------------------------------------------------------
     with (OUT / "element_manifest.csv").open("w", newline="") as fh:

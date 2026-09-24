@@ -58,6 +58,22 @@ Three primers, in `primers.csv`, and the same three work for all nine:
 `IVT_R_polyA120` is an Ultramer-class oligo. One synthesis covers all nine
 constructs and every future prep, so the cost is a one-off.
 
+**Why you cannot find the reverse primers in `gblocks.fasta`.** Searching for
+`IVT_F` finds it immediately, at the start of every fragment. Searching for
+`IVT_R_plain` finds nothing, and that is correct rather than a fault.
+
+A fasta file lists one strand. A **forward** primer has the same sequence as
+that strand, so it appears literally. A **reverse** primer anneals *to* that
+strand, so what appears in the fragment is its **reverse complement** — the
+last 20 nt of every fragment, `GTCATGCAGTCGATCACTGA`. Reverse-complement
+`IVT_R_plain` and you will find it.
+
+`IVT_R_polyA120` is a step further removed: only its 3' 20 nt anneal. The
+120-nt poly(T) tail has nothing to pair with, hangs off the end of the
+template, and is copied into the product. That is exactly how the poly(A) gets
+onto the IVT template without being encoded in the fragment — and why
+searching for any part of the tail in the fasta will also, correctly, fail.
+
 ## Cloning
 
 1. **Ligate.** gBlock + pJET1.2/blunt + T4 DNA ligase, per the CloneJET

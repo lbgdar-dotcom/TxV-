@@ -125,3 +125,76 @@ def test_verifier_catches_a_lost_t7_promoter():
     unit = make_unit("bad", "ATGGCCTGA")
     unit.sequence = unit.sequence.replace(T7_CORE, "A" * len(T7_CORE))
     assert any("T7" in p for p in verify_unit(unit))
+
+
+# --- tailed primers --------------------------------------------------------
+# The poly(A) primer is the one oligo whose sequence is deliberately absent
+# from the fragment, so it is the one most easily broken without noticing.
+
+def test_the_reverse_primer_is_the_reverse_complement_of_the_handle():
+    """Why you cannot find IVT_R_plain by searching the fasta.
+
+    A forward primer has the same sequence as the top strand, so it appears in
+    the fragment literally. A reverse primer anneals to the top strand, so what
+    appears in the fragment is its reverse complement. Absence is correct.
+    """
+    assert reverse_primer(0) == revcomp(REV_HANDLE)
+    unit = make_unit("P0", build_panel_construct("P0").orf)
+    assert reverse_primer(0) not in unit.sequence
+    assert unit.sequence.endswith(REV_HANDLE)
+
+
+def test_the_forward_primer_does_appear_in_the_fragment():
+    unit = make_unit("P0", build_panel_construct("P0").orf)
+    assert unit.sequence.startswith(FWD_PRIMER)
+
+
+@pytest.mark.parametrize("name", [p.name for p in PANEL])
+def test_the_plain_primer_pair_amplifies_the_whole_unit(name):
+    unit = make_unit(name, build_panel_construct(name).orf)
+    products = simulate_pcr(unit.sequence, FWD_PRIMER, reverse_primer(0),
+                            circular=False)
+    assert products == [unit.sequence]
+
+
+@pytest.mark.parametrize("name", [p.name for p in PANEL])
+def test_the_tailed_primer_adds_the_polya_to_the_template(name):
+    """This is the check that was missing when simulate_pcr silently failed.
+
+    The T120 tail has nothing to anneal to -- the fragment encodes no poly(A),
+    which is the entire point of putting the tail on the primer. A simulator
+    that requires the whole primer to match reports no product at all, and the
+    absence looks like a broken primer rather than a broken simulator.
+    """
+    unit = make_unit(name, build_panel_construct(name).orf)
+    products = simulate_pcr(unit.sequence, FWD_PRIMER, reverse_primer(120),
+                            circular=False)
+    assert len(products) == 1
+    assert products[0] == unit.sequence + "A" * 120
+
+
+def test_a_tail_appears_in_the_product_but_not_the_template():
+    unit = make_unit("P5", build_panel_construct("P5").orf)
+    primer = reverse_primer(120)
+    assert "T" * 120 not in unit.sequence
+    assert "A" * 120 not in unit.sequence
+    product = simulate_pcr(unit.sequence, FWD_PRIMER, primer, circular=False)[0]
+    assert product.endswith("A" * 120)
+    assert len(product) == len(unit) + 120
+
+
+def test_a_primer_that_cannot_anneal_gives_no_product():
+    """Guards the fix: tolerating tails must not make everything amplify."""
+    unit = make_unit("P0", build_panel_construct("P0").orf)
+    junk = "GGTTACCGGTTACCGGTTACC"
+    assert simulate_pcr(unit.sequence, FWD_PRIMER, junk, circular=False) == []
+    assert simulate_pcr(unit.sequence, junk, reverse_primer(0),
+                        circular=False) == []
+
+
+def test_a_tail_shorter_than_the_minimum_anneal_is_not_a_binding_site():
+    """A 3' end below MIN_ANNEAL must not be accepted as annealed."""
+    unit = make_unit("P0", build_panel_construct("P0").orf)
+    stub = "A" * 40 + REV_HANDLE[-8:]      # only 8 nt of real annealing
+    assert simulate_pcr(unit.sequence, FWD_PRIMER, revcomp(stub),
+                        circular=False) == []

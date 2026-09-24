@@ -174,26 +174,72 @@ def make_unit(name: str, orf: str,
 # Verification
 # ---------------------------------------------------------------------------
 
+#: Shortest 3' stretch of a primer that is taken to anneal. Below this a match
+#: is noise rather than a binding site.
+MIN_ANNEAL = 15
+
+
+def _anneal(strand: str, primer: str, min_anneal: int,
+            reverse: bool = False) -> tuple[list[int], str, int]:
+    """Where a primer's 3' end binds on the top strand, and its 5' tail.
+
+    A primer need not match over its whole length. Only the 3' portion has to
+    anneal; a 5' tail hangs off the template and is copied into the product.
+    That is the whole mechanism behind IVT_R_polyA120, which puts a 120-nt
+    poly(A) on a template that encodes none.
+
+    The two orientations are not symmetric, which is the trap here. A forward
+    primer's annealing 3' portion is a **suffix** of the oligo and appears in
+    the top strand as-is. A reverse primer's 3' portion is also a suffix of the
+    oligo, but its binding site on the top strand is that suffix's reverse
+    complement -- so after reverse-complementing the oligo the annealing end is
+    at the **front**. Reverse-complementing the whole primer and then taking a
+    suffix, as an earlier version did, searches the top strand for the tail
+    instead of the binding site and finds nothing.
+
+    Returns ``(hits, tail, site_length)``, where ``hits`` are positions of the
+    binding site on the top strand and ``tail`` is the oligo's 5' overhang.
+    """
+    for n in range(len(primer), min_anneal - 1, -1):
+        body = primer[len(primer) - n:]
+        site = revcomp(body) if reverse else body
+        hits = find_all(strand, site)
+        if hits:
+            return hits, primer[:len(primer) - n], len(site)
+    return [], "", 0
+
+
 def simulate_pcr(template: str, forward: str, reverse: str,
-                 circular: bool = True) -> list[str]:
+                 circular: bool = True, min_anneal: int = MIN_ANNEAL) -> list[str]:
     """Amplicons produced by one primer pair on a (usually circular) template.
 
     ``forward`` and ``reverse`` are the **oligos**, not their binding sites: the
     reverse primer's site on the top strand is its reverse complement. Both
     strands are searched, because the point of the exercise is that the insert
     may have landed either way round.
+
+    Primers may carry non-annealing 5' tails, which appear in the product. An
+    earlier version required the whole primer to be found in the template,
+    which is right for a plain primer and wrong for a tailed one: it reported
+    no product at all for IVT_R_polyA120, the primer that adds the poly(A)
+    tail, because the template has no poly(A) for its T120 tail to match.
     """
     template = clean(template)
     search = template + template if circular else template
     products = []
     for strand in (search, revcomp(search)):
-        for f in find_all(strand, forward):
-            r = strand.find(revcomp(reverse), f)
-            if r == -1:
+        f_hits, f_tail, _ = _anneal(strand, forward, min_anneal)
+        r_body_hits, r_tail, r_body_len = _anneal(
+            strand, reverse, min_anneal, reverse=True)
+        if not f_hits or not r_body_hits:
+            continue
+        for f in f_hits:
+            r = next((x for x in r_body_hits if x >= f), None)
+            if r is None:
                 continue
-            end = r + len(reverse)
+            end = r + r_body_len
             if end - f <= len(template):
-                products.append(strand[f:end])
+                products.append(f_tail + strand[f:end] + revcomp(r_tail))
     # De-duplicate, treating a sequence and its reverse complement as one
     # molecule -- a PCR product is double-stranded.
     unique: list[str] = []
