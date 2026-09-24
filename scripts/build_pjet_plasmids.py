@@ -99,6 +99,32 @@ def digest_fragments(sequence: str, cuts: list[int]) -> list[tuple[int, int, int
     return out
 
 
+
+def read_span(sequence: str, primer: str, read_len: int) -> tuple[set[int], str]:
+    """Positions a Sanger read from ``primer`` covers, and which way it reads.
+
+    Circular-safe, which is the whole point. Once a map is rotated so the
+    insert starts at position 1, the vector's forward sequencing primer sits
+    near the end of the record and reads *across the origin* into the insert.
+    Linear arithmetic on that gives a reach larger than the plasmid and
+    declares every insert covered, which is how a broken check looks like a
+    passing one.
+
+    Returns ``(positions, direction)`` with positions taken modulo the record
+    length, or an empty set if the primer does not bind.
+    """
+    n = len(sequence)
+    top = find_all(sequence, primer)
+    if top:
+        start = top[0] + len(primer)          # reads 3' of the binding site
+        return {(start + k) % n for k in range(read_len)}, "forward"
+    bottom = find_all(sequence, revcomp(primer))
+    if bottom:
+        start = bottom[0]                     # reads back from the 5' side
+        return {(start - 1 - k) % n for k in range(read_len)}, "reverse"
+    return set(), "absent"
+
+
 def released_fragment(sequence: str, cuts: list[int], start: int, end: int) -> str:
     """The circular-digest fragment containing ``start..end``, as sequence.
 
@@ -320,19 +346,33 @@ def main() -> int:
             # -- sequencing coverage -----------------------------------------
             covered = None
             if seq_fwd and seq_rev:
-                f_hits = find_all(seq, seq_fwd, both_strands=True)
-                r_hits = find_all(seq, revcomp(seq_rev), both_strands=True)
-                if f_hits and r_hits:
-                    f_end = f_hits[0] + len(seq_fwd)
-                    reach_f = max(0, f_end + SANGER_READ - build.insert_start)
-                    r_start = r_hits[0]
-                    reach_r = max(0, build.insert_end - (r_start - SANGER_READ))
-                    covered = reach_f + reach_r >= len(insert_seq)
-                    if not covered:
-                        problems.append((
-                            panel.name,
-                            f"stock primers reach {reach_f}+{reach_r} nt of a "
-                            f"{len(insert_seq)} nt insert; an internal primer is needed"))
+                span_f, dir_f = read_span(seq, seq_fwd, SANGER_READ)
+                span_r, dir_r = read_span(seq, seq_rev, SANGER_READ)
+                want = {(build.insert_start + k) % len(seq)
+                        for k in range(build.insert_end - build.insert_start)}
+                reached = want & (span_f | span_r)
+                covered = len(reached) == len(want)
+                # The shortest Sanger read that still closes the insert. A
+                # "yes" that depends on an 850-nt read is worth less than the
+                # number, since read length is a property of whoever runs the
+                # sequencing, not of the design.
+                lo, hi = 1, SANGER_READ * 2
+                while lo < hi:
+                    mid = (lo + hi) // 2
+                    union = (read_span(seq, seq_fwd, mid)[0]
+                             | read_span(seq, seq_rev, mid)[0])
+                    if want <= union:
+                        hi = mid
+                    else:
+                        lo = mid + 1
+                min_read = lo
+                roles = f"fwd reads {dir_f}, rev reads {dir_r}"
+                if not covered:
+                    problems.append((
+                        panel.name,
+                        f"stock primers cover {len(reached)} of "
+                        f"{len(want)} insert bases ({len(want) - len(reached)} "
+                        "unread); an internal sequencing primer is needed"))
 
             # -- telling the orientation apart --------------------------------
             fwd_products = simulate_pcr(seq, FWD_PRIMER, seq_rev or REV_HANDLE)
@@ -353,13 +393,14 @@ def main() -> int:
                 "runoff_transcript_nt": runoff_nt or "",
                 "nt_after_polyA": runoff_after if runoff_after is not None else "",
                 "sequencing_covers_insert": "yes" if covered else "no",
+                "min_sanger_read_nt": min_read,
                 "orientation_PCR_fwd_bp": ";".join(str(len(p)) for p in fwd_products) or "none",
                 "orientation_PCR_rev_bp": ";".join(str(len(p)) for p in rev_products) or "none",
             })
             print(f"  {panel.name}  {len(build):>5} bp  insert {len(insert_seq):>4} bp at "
                   f"{build.insert_start + 1}  BglII: {insert_carrying}+{backbone_piece} bp  "
                   f"run-off {runoff_nt} nt (+{runoff_after} past A{POLYA})  "
-                  f"seq covers: {'yes' if covered else 'NO'}  "
+                  f"needs {min_read}-nt reads  "
                   f"orientation PCR fwd/rev: "
                   f"{[len(p) for p in fwd_products]}/{[len(p) for p in rev_products]}")
 
@@ -373,8 +414,8 @@ def main() -> int:
         table = [begin,
                  "| | plasmid | BglII insert band | BglII backbone band | "
                  "run-off transcript | nt after poly(A) | "
-                 "orientation PCR (designed) | (flipped) |",
-                 "|---|---|---|---|---|---|---|---|"]
+                 "min Sanger read | orientation PCR (designed) | (flipped) |",
+                 "|---|---|---|---|---|---|---|---|---|"]
         for row in rows:
             table.append(
                 f"| {row['construct']} | {row['plasmid_bp']} bp | "
@@ -382,6 +423,7 @@ def main() -> int:
                 f"{row['BglII_backbone_fragment_bp']} bp | "
                 f"{row['runoff_transcript_nt']} nt | "
                 f"{row['nt_after_polyA']} | "
+                f"{row['min_sanger_read_nt']} nt | "
                 f"{row['orientation_PCR_fwd_bp']} bp | "
                 f"{row['orientation_PCR_rev_bp']} |")
         table.append(end)

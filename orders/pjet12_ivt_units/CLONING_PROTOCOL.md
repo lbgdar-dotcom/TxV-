@@ -112,23 +112,34 @@ searching for any part of the tail in the fasta will also, correctly, fail.
    in the designed orientation and **nothing** in the flipped one. Sizes below;
    this is simulated against both finished maps, not guessed.
 5. **Sequence.** The two stock pJET1.2 primers read in from either side and
-   between them cover every insert, including the 955 bp ones — verified per
-   construct, not assumed from the read length. Confirm: the
-   `GCCACC`**`ATG`** junction, no indels in the ORF, `GYQTI` ending the protein
-   in P6/P7/P8, and P2A intact in P7/P8.
+   between them cover every insert — verified base by base on the finished
+   map, not inferred from a read length. The table below gives the **shortest
+   Sanger read that still closes each insert**: the longest constructs need
+   574 nt, so a routine 700–900 nt run has ~280 nt to spare. Below about 500
+   nt you get a gap in the middle of the ORF, which is the worst place for one.
+
+   Confirm: the `GCCACC`**`ATG`** junction, no indels in the ORF, `GYQTI`
+   ending the protein in P6/P7/P8, P2A intact in P7/P8, and the **poly(A)
+   length** — a 120-nt A-tract can contract in E. coli.
+
+   *On a flipped clone the two stock primers swap roles:* the forward primer
+   reads the insert's 3' end and the reverse primer its 5' end. Coverage is
+   identical either way, so a flipped clone is just as sequenceable — but the
+   traces come back the other way round, which is worth knowing before you
+   conclude something is wrong.
 
 <!-- BEGIN GENERATED VERIFICATION TABLE -->
-| | plasmid | BglII insert band | BglII backbone band | run-off transcript | nt after poly(A) | orientation PCR (designed) | (flipped) |
-|---|---|---|---|---|---|---|---|
-| P0 | 3845 bp | 917 bp | 2928 bp | 846 nt | 11 | 928 bp | none |
-| P1 | 3947 bp | 1019 bp | 2928 bp | 948 nt | 11 | 1030 bp | none |
-| P2 | 3947 bp | 1019 bp | 2928 bp | 948 nt | 11 | 1030 bp | none |
-| P3 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 1132 bp | none |
-| P4 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 1132 bp | none |
-| P5 | 3764 bp | 836 bp | 2928 bp | 765 nt | 11 | 847 bp | none |
-| P6 | 3923 bp | 995 bp | 2928 bp | 924 nt | 11 | 1006 bp | none |
-| P7 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 1132 bp | none |
-| P8 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 1132 bp | none |
+| | plasmid | BglII insert band | BglII backbone band | run-off transcript | nt after poly(A) | min Sanger read | orientation PCR (designed) | (flipped) |
+|---|---|---|---|---|---|---|---|---|
+| P0 | 3845 bp | 917 bp | 2928 bp | 846 nt | 11 | 472 nt | 928 bp | none |
+| P1 | 3947 bp | 1019 bp | 2928 bp | 948 nt | 11 | 523 nt | 1030 bp | none |
+| P2 | 3947 bp | 1019 bp | 2928 bp | 948 nt | 11 | 523 nt | 1030 bp | none |
+| P3 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 574 nt | 1132 bp | none |
+| P4 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 574 nt | 1132 bp | none |
+| P5 | 3764 bp | 836 bp | 2928 bp | 765 nt | 11 | 431 nt | 847 bp | none |
+| P6 | 3923 bp | 995 bp | 2928 bp | 924 nt | 11 | 511 nt | 1006 bp | none |
+| P7 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 574 nt | 1132 bp | none |
+| P8 | 4049 bp | 1121 bp | 2928 bp | 1050 nt | 11 | 574 nt | 1132 bp | none |
 <!-- END GENERATED VERIFICATION TABLE -->
 
 Finished maps for all nine, in **both** orientations, are in `plasmids/`. Open

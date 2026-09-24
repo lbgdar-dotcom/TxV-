@@ -334,3 +334,95 @@ def test_strand_flip_is_its_own_inverse(vector):
     assert twice.sequence == vector.sequence
     assert {(f.start, f.end, f.strand) for f in twice.features} == \
            {(f.start, f.end, f.strand) for f in vector.features}
+
+
+# --- primer behaviour on the re-oriented maps ------------------------------
+# Rotating a map does not move a primer's binding site, but it does move the
+# origin between the site and its target. Reach arithmetic has to know that.
+
+def _read_span(sequence, primer, read_len):
+    from txv.seqops import find_all as _find, revcomp as _rc
+    n = len(sequence)
+    top = _find(sequence, primer)
+    if top:
+        start = top[0] + len(primer)
+        return {(start + k) % n for k in range(read_len)}, "forward"
+    bottom = _find(sequence, _rc(primer))
+    if bottom:
+        return {(bottom[0] - 1 - k) % n for k in range(read_len)}, "reverse"
+    return set(), "absent"
+
+
+PJET_FWD = "CGACTCACTATAGGGAGAGCGGC"
+PJET_REV = "AAGAACATCGATTTTCCATGGCAG"
+
+
+def _insert_positions(record):
+    feature = next(f for f in record.features
+                   if f.qualifiers.get("label") == "insert")
+    n = len(record.sequence)
+    return {(feature.start + k) % n
+            for k in range(feature.end - feature.start)}
+
+
+@pytest.mark.parametrize("name", ["P0", "P3", "P7"])
+def test_the_stock_primers_cover_the_whole_insert(plasmid_dir, name):
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    want = _insert_positions(record)
+    union = (_read_span(record.sequence, PJET_FWD, 850)[0]
+             | _read_span(record.sequence, PJET_REV, 850)[0])
+    assert want <= union, f"{len(want - union)} insert bases unread"
+
+
+@pytest.mark.parametrize("name", ["P0", "P3", "P7"])
+def test_coverage_is_not_trivially_true(plasmid_dir, name):
+    """A shorter read must leave a gap, or the check proves nothing.
+
+    Before the maps were rotated this check used linear arithmetic. With the
+    insert at position 1 the vector's forward primer sits near the end of the
+    record, so that arithmetic produced a reach larger than the plasmid and
+    declared every insert covered whatever the read length.
+    """
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    want = _insert_positions(record)
+    union = (_read_span(record.sequence, PJET_FWD, 300)[0]
+             | _read_span(record.sequence, PJET_REV, 300)[0])
+    assert not want <= union
+
+
+def test_a_primer_read_wraps_the_origin(plasmid_dir):
+    """The forward stock primer reads across position 1 into the insert."""
+    record = read_genbank(plasmid_dir / "pJET1.2_P0.gb")
+    span, direction = _read_span(record.sequence, PJET_FWD, 850)
+    assert direction == "forward"
+    assert max(span) > len(record.sequence) - 100   # starts near the end
+    assert 0 in span                                 # and reaches past 1
+
+
+@pytest.mark.parametrize("name", ["P0", "P3"])
+def test_the_stock_primers_swap_roles_in_a_flipped_clone(plasmid_dir, name):
+    """Same coverage, opposite reading directions. Worth knowing at the bench."""
+    designed = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    flipped = read_genbank(
+        plasmid_dir / "reverse_orientation" / f"pJET1.2_{name}_rev.gb")
+
+    _, d_fwd = _read_span(designed.sequence, PJET_FWD, 850)
+    _, f_fwd = _read_span(flipped.sequence, PJET_FWD, 850)
+    assert (d_fwd, f_fwd) == ("forward", "reverse")
+
+    for record in (designed, flipped):
+        want = _insert_positions(record)
+        union = (_read_span(record.sequence, PJET_FWD, 850)[0]
+                 | _read_span(record.sequence, PJET_REV, 850)[0])
+        assert want <= union
+
+
+@pytest.mark.parametrize("name", ["P0", "P5", "P7"])
+def test_the_ivt_primers_still_bind_after_reorientation(plasmid_dir, name):
+    """IVT_F forward at the insert's 5' end, IVT_R against the handle."""
+    from txv.ivt_unit import FWD_PRIMER, reverse_primer
+    record = read_genbank(plasmid_dir / f"pJET1.2_{name}.gb")
+    seq = record.sequence
+    assert find_all(seq, FWD_PRIMER) == [0]
+    assert find_all(seq, revcomp(reverse_primer(0)))
+    assert not find_all(seq, reverse_primer(0))
