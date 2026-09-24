@@ -7,6 +7,7 @@
     --cyto:#b0590f; --cyto-soft:#f4e6d6;
     --endo:#0c6f7a; --endo-soft:#d9ecee;
     --warn:#9c2c37; --warn-soft:#f6e2e4;
+    --agA:#1f5fa8; --agA-soft:#dce9f7; --agB:#6b3d9e; --agB-soft:#e9dff7;
     --serif:"IBM Plex Serif",Georgia,"Times New Roman",serif;
     --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
     --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
@@ -18,6 +19,7 @@
       --cyto:#e29a52; --cyto-soft:#342519;
       --endo:#3bb0ba; --endo-soft:#0f2b2e;
       --warn:#d97781; --warn-soft:#2e171b;
+      --agA:#7fb3ea; --agA-soft:#142438; --agB:#b491e2; --agB-soft:#221935;
     }
   }
   :root[data-theme="dark"]{
@@ -26,6 +28,7 @@
     --cyto:#e29a52; --cyto-soft:#342519;
     --endo:#3bb0ba; --endo-soft:#0f2b2e;
     --warn:#d97781; --warn-soft:#2e171b;
+      --agA:#7fb3ea; --agA-soft:#142438; --agB:#b491e2; --agB-soft:#221935;
   }
 
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);
@@ -100,7 +103,7 @@
 <div class="wrap">
 
 <header>
-  <p class="eyebrow">pVax1_AG · nine constructs · design rationale</p>
+  <p class="eyebrow">pJET1.2 · nine constructs · design rationale</p>
   <h1>Why these nine plasmids look the way they do</h1>
   <p class="lede">Every element in these constructs is there to answer a specific
   question. This is what each one does, and what we lose if it is missing.</p>
@@ -123,390 +126,432 @@
     The protein is made perfectly well. It is in the wrong room.</p>
   </div>
 
+<!--FIGURES-->
   <figure>
-    <div class="figbox">
-      <svg viewBox="0 0 860 330" role="img" aria-label="An mRNA is translated on a cytosolic ribosome. The nascent protein reaches the proteasome and then MHC class I, but has no route into the MIIC where MHC class II is loaded.">
+      <svg viewBox="0 0 860 300" role="img" aria-label="A bare mRNA is translated on cytosolic ribosomes, reaches the proteasome and MHC class I, but has no route into the MIIC where class II is loaded.">
         <defs>
-          <marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <polygon points="0,1 9,5 0,9" fill="currentColor"/>
-          </marker>
-          <marker id="a1c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <polygon points="0,1 9,5 0,9" style="fill:var(--cyto)"/>
-          </marker>
-          <marker id="a1e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <polygon points="0,1 9,5 0,9" style="fill:var(--endo)"/>
-          </marker>
-        </defs>
-
-        <rect x="12" y="34" width="590" height="282" rx="8" stroke="currentColor" stroke-opacity=".18" style="fill:var(--surface-2)"/>
-        <text x="26" y="54" font-size="11" fill="currentColor" opacity=".55" letter-spacing="1.4" style="font-family:var(--mono)">CYTOSOL</text>
-
-        <path d="M34 120 q14 -11 28 0 t28 0 t28 0" fill="none" stroke="currentColor" stroke-width="2" opacity=".65"/>
-        <circle cx="128" cy="120" r="15" fill="none" stroke="currentColor" stroke-width="2"/>
-        <text x="72" y="152" font-size="12" fill="currentColor" text-anchor="middle">IVT mRNA</text>
-        <text x="128" y="152" font-size="12" fill="currentColor" text-anchor="middle">ribosome</text>
-
-        <line x1="148" y1="120" x2="196" y2="120" stroke="currentColor" stroke-width="2" marker-end="url(#a1)"/>
-        <rect x="200" y="100" width="118" height="40" rx="4" stroke="currentColor" stroke-width="1.5" style="fill:var(--surface)"/>
-        <text x="259" y="125" font-size="12.5" fill="currentColor" text-anchor="middle">antigen protein</text>
-
-        <line x1="259" y1="144" x2="259" y2="186" stroke-width="2" marker-end="url(#a1c)" style="stroke:var(--cyto)"/>
-        <text x="268" y="170" font-size="11.5" style="fill:var(--cyto)">degraded</text>
-        <rect x="196" y="190" width="126" height="38" rx="4" stroke-width="1.5" style="fill:var(--cyto-soft);stroke:var(--cyto)"/>
-        <text x="259" y="214" font-size="12.5" text-anchor="middle" style="fill:var(--cyto)">proteasome</text>
-
-        <line x1="322" y1="209" x2="374" y2="209" stroke-width="2" marker-end="url(#a1c)" style="stroke:var(--cyto)"/>
-        <text x="348" y="200" font-size="11" text-anchor="middle" style="fill:var(--cyto)">TAP</text>
-        <rect x="378" y="190" width="112" height="38" rx="4" stroke-width="1.5" style="fill:var(--surface);stroke:var(--cyto)"/>
-        <text x="434" y="214" font-size="12.5" text-anchor="middle" style="fill:var(--cyto)">ER → MHC I</text>
-        <line x1="490" y1="209" x2="560" y2="209" stroke-width="2" marker-end="url(#a1c)" style="stroke:var(--cyto)"/>
-        <text x="525" y="200" font-size="11" text-anchor="middle" style="fill:var(--cyto)">CD8</text>
-
-        <path d="M322 114 L640 114" fill="none" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#a1)" style="stroke:var(--ink-3)"/>
-        <text x="470" y="104" font-size="12" text-anchor="middle" style="fill:var(--warn)">no route from the cytosol</text>
-        <g stroke-width="2.5" style="stroke:var(--warn)">
-          <line x1="472" y1="106" x2="488" y2="122"/><line x1="488" y1="106" x2="472" y2="122"/>
-        </g>
-
-        <rect x="644" y="70" width="202" height="118" rx="8" stroke-width="1.5" style="fill:var(--endo-soft);stroke:var(--endo)"/>
-        <text x="745" y="95" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:var(--endo)">MIIC</text>
-        <text x="745" y="113" font-size="11.5" text-anchor="middle" style="fill:var(--endo)">late endosome lumen</text>
-        <text x="745" y="136" font-size="11.5" text-anchor="middle" style="fill:var(--endo)">cathepsins cleave here</text>
-        <line x1="745" y1="150" x2="745" y2="178" stroke-width="2" marker-end="url(#a1e)" style="stroke:var(--endo)"/>
-        <rect x="672" y="196" width="146" height="38" rx="4" stroke-width="1.5" style="fill:var(--surface);stroke:var(--endo)"/>
-        <text x="745" y="220" font-size="12.5" text-anchor="middle" style="fill:var(--endo)">MHC II</text>
-        <line x1="745" y1="238" x2="745" y2="272" stroke-width="2" marker-end="url(#a1e)" style="stroke:var(--endo)"/>
-        <text x="745" y="290" font-size="11.5" text-anchor="middle" style="fill:var(--endo)">CD4 help</text>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink)"/></marker>
+    <marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--cyto)"/></marker>
+    <marker id="arE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--endo)"/></marker>
+    <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker>
+    <marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--warn)"/></marker>
+    <marker id="arS" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M10 0 L0 5 L10 10 z" fill="var(--ink-2)"/></marker>
+  </defs>
+        <rect x="8" y="30" width="520" height="250" rx="10" fill="var(--surface-2)" stroke="var(--rule)"/>
+        <text x="24" y="54" font-size="12" font-family="var(--mono)" fill="var(--ink-3)">CYTOSOL</text>
+        <path d="M30 120 q14 -10 28 0 t28 0 t28 0" fill="none" stroke="var(--ink-2)" stroke-width="2"/>
+        <text x="30" y="150" font-size="11.5" fill="var(--ink-2)">IVT mRNA</text>
+        <circle cx="132" cy="120" r="14" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>
+        <text x="132" y="150" font-size="11.5" text-anchor="middle" fill="var(--ink-2)">ribosome</text>
+        <line x1="150" y1="120" x2="196" y2="120" stroke="var(--ink)" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="200" y="103" width="132" height="34" rx="5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>
+        <text x="266" y="125" font-size="12.5" text-anchor="middle" fill="var(--ink)">antigen protein</text>
+        <line x1="266" y1="141" x2="266" y2="186" stroke="var(--cyto)" stroke-width="2" marker-end="url(#arC)"/>
+        <text x="276" y="168" font-size="11.5" fill="var(--cyto)">degraded</text>
+        <rect x="200" y="190" width="132" height="32" rx="5" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="2"/>
+        <text x="266" y="211" font-size="12.5" text-anchor="middle" fill="var(--cyto)">proteasome</text>
+        <line x1="334" y1="206" x2="380" y2="206" stroke="var(--cyto)" stroke-width="2" marker-end="url(#arC)"/>
+        <text x="357" y="198" font-size="10.5" text-anchor="middle" fill="var(--cyto)">TAP</text>
+        <rect x="384" y="190" width="126" height="32" rx="5" fill="var(--surface)" stroke="var(--cyto)" stroke-width="2"/>
+        <text x="447" y="211" font-size="12.5" text-anchor="middle" fill="var(--cyto)">ER &#8594; MHC I</text>
+        <text x="447" y="246" font-size="12.5" text-anchor="middle" fill="var(--cyto)">CD8 response</text>
+        <line x1="447" y1="224" x2="447" y2="234" stroke="var(--cyto)" stroke-width="2"/>
+        <line x1="340" y1="120" x2="660" y2="120" stroke="var(--ink-3)" stroke-width="2" stroke-dasharray="7 5" marker-end="url(#arG)"/>
+        <text x="500" y="110" font-size="12" text-anchor="middle" fill="var(--warn)">no route from the cytosol</text>
+        <line x1="492" y1="112" x2="508" y2="128" stroke="var(--warn)" stroke-width="2.5"/>
+        <line x1="508" y1="112" x2="492" y2="128" stroke="var(--warn)" stroke-width="2.5"/>
+        <rect x="664" y="60" width="188" height="120" rx="10" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="758" y="88" font-size="13" font-weight="600" text-anchor="middle" fill="var(--endo)">MIIC</text>
+        <text x="758" y="110" font-size="11.5" text-anchor="middle" fill="var(--endo)">late endosome lumen</text>
+        <text x="758" y="130" font-size="11.5" text-anchor="middle" fill="var(--endo)">cathepsins cleave here</text>
+        <line x1="758" y1="142" x2="758" y2="172" stroke="var(--endo)" stroke-width="2" marker-end="url(#arE)"/>
+        <rect x="684" y="190" width="148" height="32" rx="5" fill="var(--surface)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="758" y="211" font-size="12.5" text-anchor="middle" fill="var(--endo)">MHC II</text>
+        <text x="758" y="246" font-size="12.5" text-anchor="middle" fill="var(--endo)">CD4 help</text>
+        <line x1="758" y1="224" x2="758" y2="234" stroke="var(--endo)" stroke-width="2"/>
       </svg>
-    </div>
-    <figcaption><b>Figure 1.</b> The compartments are the whole problem. Cytosolic
-    translation feeds MHC I automatically (amber). The MIIC, where MHC II is loaded
-    (teal), is a sealed lumen — a cytosolic protein cannot get in. Every routing
-    module in this panel exists to build that missing arrow.</figcaption>
+    <figcaption><b>Figure 1.</b> The compartments are the whole problem. An mRNA is translated on free cytosolic ribosomes, so a bare antigen ORF reaches the proteasome and MHC class I by default and has no route into the MIIC where class II is loaded. Every construct in this panel is an attempt to build that route.</figcaption>
   </figure>
-</section>
-
-<hr class="rule">
-
-<section>
-  <p class="eyebrow">02 — the fix</p>
-  <h2>A signal peptide and a transmembrane domain are a matched pair</h2>
-  <div class="measure">
-    <p>You cannot push a protein into a membrane compartment; you make the cell's own
-    machinery carry it, and that needs two signals. Neither does anything useful
-    alone, which is why every routed construct here carries both.</p>
-    <p>The <strong>signal peptide</strong> gets the chain out of the cytosol: SRP
-    grabs its hydrophobic core as it emerges, pauses translation, and threads the
-    chain into the ER lumen. SRP reads the <em>first</em> thing out of the ribosome —
-    so a signal peptide only works at the extreme N-terminus. That single fact fixes
-    module order in P7 and P8.</p>
-    <p>But a signal peptide alone gives you a <strong>secreted</strong> protein, which
-    leaves the cell and is useless to us. The <strong>transmembrane domain</strong>
-    stops that. When the translocon hits ~20 hydrophobic residues, transfer halts and
-    you get type I topology: the antigen cassette ends up in the lumen — and ER lumen
-    becomes endosome lumen becomes lysosome lumen — while the tail stays in the
-    cytosol, where the sorting machinery can read it.</p>
-  </div>
 
   <figure>
-    <div class="figbox">
-      <svg viewBox="0 0 860 260" role="img" aria-label="Three outcomes: with no signal peptide the protein stays cytosolic; with a signal peptide alone it is secreted out of the cell; with both a signal peptide and a transmembrane domain the cassette sits in the lumen and the sorting tail in the cytosol.">
+      <svg viewBox="0 0 860 240" role="img" aria-label="Three outcomes. With no signal peptide the protein stays cytosolic. With a signal peptide alone it is secreted out of the cell. With both a signal peptide and a transmembrane domain the cassette sits in the lumen and the sorting tail in the cytosol.">
         <defs>
-          <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <polygon points="0,1 9,5 0,9" fill="currentColor"/>
-          </marker>
-        </defs>
-
-        <g>
-          <text x="30" y="26" font-size="11" fill="currentColor" opacity=".6" letter-spacing="1" style="font-family:var(--mono)">A · NO SIGNAL PEPTIDE</text>
-          <line x1="30" y1="120" x2="250" y2="120" stroke="currentColor" stroke-width="3" opacity=".3"/>
-          <line x1="30" y1="128" x2="250" y2="128" stroke="currentColor" stroke-width="3" opacity=".3"/>
-          <text x="140" y="148" font-size="10.5" fill="currentColor" opacity=".55" text-anchor="middle">membrane</text>
-          <rect x="82" y="58" width="116" height="30" rx="4" stroke-width="1.5" style="fill:var(--cyto-soft);stroke:var(--cyto)"/>
-          <text x="140" y="78" font-size="12" text-anchor="middle" style="fill:var(--cyto)">cassette</text>
-          <text x="140" y="104" font-size="11.5" text-anchor="middle" style="fill:var(--cyto)">stays cytosolic</text>
-          <text x="140" y="180" font-size="12" fill="currentColor" text-anchor="middle">MHC I only</text>
-          <text x="140" y="200" font-size="11.5" text-anchor="middle" style="fill:var(--ink-3)">this is P5</text>
-        </g>
-
-        <g>
-          <text x="316" y="26" font-size="11" fill="currentColor" opacity=".6" letter-spacing="1" style="font-family:var(--mono)">B · SIGNAL PEPTIDE ONLY</text>
-          <line x1="316" y1="120" x2="536" y2="120" stroke="currentColor" stroke-width="3" opacity=".3"/>
-          <line x1="316" y1="128" x2="536" y2="128" stroke="currentColor" stroke-width="3" opacity=".3"/>
-          <rect x="368" y="152" width="116" height="30" rx="4" stroke="currentColor" stroke-width="1.5" style="fill:var(--surface)"/>
-          <text x="426" y="172" font-size="12" fill="currentColor" text-anchor="middle">cassette</text>
-          <line x1="426" y1="112" x2="426" y2="66" stroke="currentColor" stroke-width="2" marker-end="url(#a2)"/>
-          <text x="426" y="52" font-size="11.5" text-anchor="middle" style="fill:var(--warn)">secreted — gone</text>
-          <text x="426" y="204" font-size="11.5" fill="currentColor" opacity=".6" text-anchor="middle">enters ER, keeps going</text>
-        </g>
-
-        <g>
-          <text x="602" y="26" font-size="11" fill="currentColor" opacity=".6" letter-spacing="1" style="font-family:var(--mono)">C · SP + TM</text>
-          <line x1="602" y1="120" x2="830" y2="120" stroke-width="3" opacity=".5" style="stroke:var(--endo)"/>
-          <line x1="602" y1="128" x2="830" y2="128" stroke-width="3" opacity=".5" style="stroke:var(--endo)"/>
-          <rect x="658" y="58" width="116" height="30" rx="4" stroke-width="1.5" style="fill:var(--endo-soft);stroke:var(--endo)"/>
-          <text x="716" y="78" font-size="12" text-anchor="middle" style="fill:var(--endo)">cassette</text>
-          <text x="716" y="104" font-size="11" text-anchor="middle" style="fill:var(--endo)">LUMEN</text>
-          <rect x="708" y="114" width="16" height="40" rx="2" fill="currentColor" opacity=".45"/>
-          <line x1="716" y1="154" x2="716" y2="176" stroke="currentColor" stroke-width="2"/>
-          <circle cx="716" cy="182" r="6" style="fill:var(--cyto)"/>
-          <text x="734" y="186" font-size="11.5" style="fill:var(--cyto)">tail (cytosol)</text>
-          <text x="716" y="212" font-size="11.5" fill="currentColor" text-anchor="middle">TM = the anchor</text>
-        </g>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink)"/></marker>
+    <marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--cyto)"/></marker>
+    <marker id="arE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--endo)"/></marker>
+    <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker>
+    <marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--warn)"/></marker>
+    <marker id="arS" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M10 0 L0 5 L10 10 z" fill="var(--ink-2)"/></marker>
+  </defs>
+        <text x="8" y="18" font-size="12.5" font-weight="600" fill="var(--ink)">The signal peptide and the TM domain only work as a pair</text>
+        <rect x="8" y="34" width="270" height="180" rx="9" fill="var(--surface)" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="143" y="58" font-size="12" font-weight="600" text-anchor="middle" fill="var(--ink-2)">neither</text>
+        <rect x="52" y="76" width="182" height="26" rx="4" fill="var(--surface-2)" stroke="var(--ink-3)" stroke-width="1.5"/>
+        <text x="143" y="94" font-size="11" text-anchor="middle" fill="var(--ink-2)">antigen cassette</text>
+        <line x1="143" y1="110" x2="143" y2="140" stroke="var(--ink-3)" stroke-width="2" marker-end="url(#arG)"/>
+        <text x="143" y="162" font-size="11.5" text-anchor="middle" fill="var(--ink-2)">stays cytosolic</text>
+        <text x="143" y="182" font-size="11" text-anchor="middle" fill="var(--cyto)">class I only</text>
+        <text x="143" y="202" font-size="10.5" text-anchor="middle" fill="var(--ink-3)">this is P5</text>
+        <rect x="294" y="34" width="270" height="180" rx="9" fill="var(--surface)" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="429" y="58" font-size="12" font-weight="600" text-anchor="middle" fill="var(--warn)">signal peptide alone</text>
+        <rect x="316" y="76" width="50" height="26" rx="4" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="341" y="94" font-size="10" text-anchor="middle" fill="var(--cyto)">SP</text>
+        <rect x="370" y="76" width="172" height="26" rx="4" fill="var(--surface-2)" stroke="var(--ink-3)" stroke-width="1.5"/>
+        <text x="456" y="94" font-size="11" text-anchor="middle" fill="var(--ink-2)">antigen cassette</text>
+        <line x1="429" y1="110" x2="429" y2="140" stroke="var(--warn)" stroke-width="2" marker-end="url(#arW)"/>
+        <text x="429" y="162" font-size="11.5" text-anchor="middle" fill="var(--warn)">secreted &#8212; leaves the cell</text>
+        <text x="429" y="182" font-size="11" text-anchor="middle" fill="var(--warn)">presented by neither</text>
+        <text x="429" y="202" font-size="10.5" text-anchor="middle" fill="var(--ink-3)">not in the panel, by design</text>
+        <rect x="580" y="34" width="272" height="180" rx="9" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="716" y="58" font-size="12" font-weight="600" text-anchor="middle" fill="var(--endo)">both</text>
+        <rect x="598" y="76" width="42" height="26" rx="4" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="619" y="94" font-size="10" text-anchor="middle" fill="var(--cyto)">SP</text>
+        <rect x="644" y="76" width="124" height="26" rx="4" fill="var(--surface-2)" stroke="var(--ink-3)" stroke-width="1.5"/>
+        <text x="706" y="94" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">cassette</text>
+        <rect x="772" y="76" width="62" height="26" rx="4" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="803" y="94" font-size="10" text-anchor="middle" fill="var(--endo)">TM+tail</text>
+        <line x1="716" y1="110" x2="716" y2="140" stroke="var(--endo)" stroke-width="2" marker-end="url(#arE)"/>
+        <text x="716" y="162" font-size="11.5" text-anchor="middle" fill="var(--endo)">anchored: cassette luminal,</text>
+        <text x="716" y="178" font-size="11.5" text-anchor="middle" fill="var(--endo)">sorting tail cytosolic</text>
+        <text x="716" y="202" font-size="10.5" text-anchor="middle" fill="var(--ink-3)">P0&#8211;P4 and P6&#8211;P8</text>
       </svg>
-    </div>
-    <figcaption><b>Figure 2.</b> Why both modules, always. Drop the TM and the antigen
-    is secreted (B) — the one outcome that helps nobody. Keep both (C) and the cassette
-    sits in the lumen that becomes the MIIC, with the sorting tail left in the cytosol
-    where adaptor proteins can read it. <b>P5 deliberately has neither</b> — it is the
-    cytosolic baseline (A).</figcaption>
+    <figcaption><b>Figure 2.</b> Why both modules, always. A signal peptide alone sends the protein out of the cell, where it is presented by nothing; a transmembrane domain alone has nothing to insert into. Only the pair leaves the antigen cassette in the lumen with the sorting tail facing the cytosol, which is the arrangement the sorting adaptors need. P5 is the deliberate exception: no signal peptide, cytosolic by design.</figcaption>
   </figure>
-</section>
-
-<hr class="rule">
-
-<section>
-  <p class="eyebrow">03 — the choice under test</p>
-  <h2>The tail is the postcode, and we are testing two of them</h2>
-  <div class="measure">
-    <p>With the cassette in the lumen and the tail in the cytosol, the tail's short
-    sorting motif decides where the whole protein goes. We are comparing two, and the
-    difference is <em>the route</em>, not the destination — both end at the MIIC.</p>
-  </div>
 
   <figure>
-    <div class="figbox">
-      <svg viewBox="0 0 860 320" role="img" aria-label="Both tails deliver antigen to the MIIC, but the CTLA-4 YVKM tail travels via the plasma membrane and is retrieved by AP-2, while the LAMP1 GYQTI tail goes directly from the trans-Golgi to the lysosome via AP-3.">
+      <svg viewBox="0 0 860 478" role="img" aria-label="All nine constructs drawn to scale. P0 to P4 carry the CTLA-4 tail, P5 is cytosolic, P6 carries the LAMP1 tail, and P7 and P8 use P2A to make two separately routed proteins from one transcript.">
         <defs>
-          <marker id="a3c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <polygon points="0,1 9,5 0,9" style="fill:var(--cyto)"/>
-          </marker>
-          <marker id="a3e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <polygon points="0,1 9,5 0,9" style="fill:var(--endo)"/>
-          </marker>
-          <marker id="a3n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <polygon points="0,1 9,5 0,9" fill="currentColor"/>
-          </marker>
-        </defs>
-
-        <line x1="40" y1="46" x2="820" y2="46" stroke="currentColor" stroke-width="3" opacity=".28"/>
-        <text x="40" y="34" font-size="11" fill="currentColor" opacity=".55" letter-spacing="1" style="font-family:var(--mono)">PLASMA MEMBRANE</text>
-
-        <rect x="56" y="176" width="130" height="42" rx="5" stroke="currentColor" stroke-width="1.5" style="fill:var(--surface)"/>
-        <text x="121" y="202" font-size="12.5" fill="currentColor" text-anchor="middle">ER</text>
-        <line x1="186" y1="197" x2="232" y2="197" stroke="currentColor" stroke-width="2" marker-end="url(#a3n)"/>
-        <rect x="236" y="176" width="140" height="42" rx="5" stroke="currentColor" stroke-width="1.5" style="fill:var(--surface)"/>
-        <text x="306" y="202" font-size="12.5" fill="currentColor" text-anchor="middle">trans-Golgi</text>
-
-        <path d="M330 172 C330 110 400 78 452 62" fill="none" stroke-width="2" marker-end="url(#a3c)" style="stroke:var(--cyto)"/>
-        <text x="330" y="120" font-size="11.5" style="fill:var(--cyto)">to surface</text>
-        <path d="M506 62 C570 82 604 120 620 166" fill="none" stroke-width="2" marker-end="url(#a3c)" style="stroke:var(--cyto)"/>
-        <text x="596" y="110" font-size="11.5" style="fill:var(--cyto)">AP-2 grabs YVKM</text>
-        <text x="596" y="126" font-size="11.5" style="fill:var(--cyto)">clathrin pulls it back in</text>
-        <circle cx="479" cy="46" r="9" fill="none" stroke-width="2" style="stroke:var(--cyto)"/>
-        <text x="479" y="26" font-size="11.5" text-anchor="middle" style="fill:var(--cyto)">displayed, then retrieved</text>
-
-        <path d="M306 222 V268 Q306 276 314 276 H596 Q606 276 611 270 L627 246" fill="none" stroke-width="2" marker-end="url(#a3e)" style="stroke:var(--endo)"/>
-        <text x="455" y="296" font-size="11.5" text-anchor="middle" style="fill:var(--endo)">AP-3 reads GYQTI — direct, skips the surface entirely</text>
-
-        <rect x="560" y="176" width="176" height="52" rx="6" stroke-width="1.5" style="fill:var(--endo-soft);stroke:var(--endo)"/>
-        <text x="648" y="199" font-size="12.5" text-anchor="middle" font-weight="600" style="fill:var(--endo)">MIIC / lysosome</text>
-        <text x="648" y="217" font-size="11.5" text-anchor="middle" style="fill:var(--endo)">MHC II loading</text>
-
-        <rect x="56" y="262" width="230" height="44" rx="4" stroke="currentColor" stroke-opacity=".2" style="fill:var(--surface-2)"/>
-        <text x="68" y="280" font-size="11.5" style="fill:var(--cyto);font-family:var(--mono)">YVKM</text>
-        <text x="122" y="280" font-size="11.5" fill="currentColor">CTLA-4 · via surface</text>
-        <text x="68" y="298" font-size="11.5" style="fill:var(--endo);font-family:var(--mono)">GYQTI</text>
-        <text x="122" y="298" font-size="11.5" fill="currentColor">LAMP1 · direct</text>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink)"/></marker>
+    <marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--cyto)"/></marker>
+    <marker id="arE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--endo)"/></marker>
+    <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker>
+    <marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--warn)"/></marker>
+    <marker id="arS" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M10 0 L0 5 L10 10 z" fill="var(--ink-2)"/></marker>
+  </defs>
+        <rect x="8" y="12" width="13" height="13" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/><text x="26" y="23" font-size="11.5" fill="var(--ink-2)">CTLA-4 route</text>
+        <rect x="107.6" y="12" width="13" height="13" rx="3" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/><text x="125.6" y="23" font-size="11.5" fill="var(--ink-2)">LAMP1 route</text>
+        <rect x="200.89999999999998" y="12" width="13" height="13" rx="3" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/><text x="218.89999999999998" y="23" font-size="11.5" fill="var(--ink-2)">antigen A</text>
+        <rect x="281.59999999999997" y="12" width="13" height="13" rx="3" fill="var(--agB-soft)" stroke="var(--agB)" stroke-width="1.5"/><text x="299.59999999999997" y="23" font-size="11.5" fill="var(--ink-2)">antigen B</text>
+        <rect x="362.29999999999995" y="12" width="13" height="13" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/><text x="380.29999999999995" y="23" font-size="11.5" fill="var(--ink-2)">linker / tag</text>
+        <rect x="461.9" y="12" width="13" height="13" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/><text x="479.9" y="23" font-size="11.5" fill="var(--ink-2)">E5 degron</text>
+        <rect x="542.5999999999999" y="12" width="13" height="13" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="560.5999999999999" y="23" font-size="11.5" fill="var(--ink-2)">P2A skip</text>
+        <text x="8" y="52" font-size="11.5" fill="var(--ink-3)">colour marks the routing module a construct uses; box width is proportional to length in amino acids</text>
+        <line x1="8" y1="66" x2="852" y2="66" stroke="var(--rule)" stroke-width="1"/>
+        <text x="8" y="107" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P0</text><text x="40" y="107" font-size="11" fill="var(--cyto)">CTLA-4</text>
+        <rect x="116.0" y="92" width="119.0" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="175.5" y="106.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">SP</text>
+        <rect x="236.5" y="92" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="251.8" y="106.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="268.6" y="92" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="287.1" y="92" width="210.8" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="392.5" y="106.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">TM + YVKM</text>
+        <rect x="499.4" y="92" width="17.0" height="21" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="525.9" y="107" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">116 aa</text>
+        <text x="8" y="149" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P1</text><text x="40" y="149" font-size="11" fill="var(--cyto)">CTLA-4</text>
+        <rect x="116.0" y="134" width="119.0" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="175.5" y="148.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">SP</text>
+        <rect x="236.5" y="134" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="251.8" y="148.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="268.6" y="134" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="287.1" y="134" width="98.6" height="21" rx="3" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/>
+        <text x="336.4" y="148.5" font-size="10.5" text-anchor="middle" fill="var(--agA)">antigen A</text>
+        <rect x="387.2" y="134" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="405.7" y="134" width="210.8" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="511.1" y="148.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">TM + YVKM</text>
+        <rect x="618.0" y="134" width="17.0" height="21" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="644.5" y="149" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">150 aa</text>
+        <text x="8" y="191" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P2</text><text x="40" y="191" font-size="11" fill="var(--cyto)">CTLA-4</text>
+        <rect x="116.0" y="176" width="119.0" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="175.5" y="190.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">SP</text>
+        <rect x="236.5" y="176" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="251.8" y="190.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="268.6" y="176" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="287.1" y="176" width="98.6" height="21" rx="3" fill="var(--agB-soft)" stroke="var(--agB)" stroke-width="1.5"/>
+        <text x="336.4" y="190.5" font-size="10.5" text-anchor="middle" fill="var(--agB)">antigen B</text>
+        <rect x="387.2" y="176" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="405.7" y="176" width="210.8" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="511.1" y="190.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">TM + YVKM</text>
+        <rect x="618.0" y="176" width="17.0" height="21" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="644.5" y="191" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">150 aa</text>
+        <text x="8" y="233" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P3</text><text x="40" y="233" font-size="11" fill="var(--cyto)">CTLA-4</text>
+        <rect x="116.0" y="218" width="119.0" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="175.5" y="232.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">SP</text>
+        <rect x="236.5" y="218" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="251.8" y="232.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="268.6" y="218" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="287.1" y="218" width="98.6" height="21" rx="3" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/>
+        <text x="336.4" y="232.5" font-size="10.5" text-anchor="middle" fill="var(--agA)">antigen A</text>
+        <rect x="387.2" y="218" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="405.7" y="218" width="98.6" height="21" rx="3" fill="var(--agB-soft)" stroke="var(--agB)" stroke-width="1.5"/>
+        <text x="455.0" y="232.5" font-size="10.5" text-anchor="middle" fill="var(--agB)">antigen B</text>
+        <rect x="505.8" y="218" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="524.3" y="218" width="210.8" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="629.7" y="232.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">TM + YVKM</text>
+        <rect x="736.6" y="218" width="17.0" height="21" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="763.1" y="233" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">184 aa</text>
+        <text x="8" y="275" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P4</text><text x="40" y="275" font-size="11" fill="var(--cyto)">CTLA-4</text>
+        <rect x="116.0" y="260" width="119.0" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="175.5" y="274.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">SP</text>
+        <rect x="236.5" y="260" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="251.8" y="274.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="268.6" y="260" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="287.1" y="260" width="98.6" height="21" rx="3" fill="var(--agB-soft)" stroke="var(--agB)" stroke-width="1.5"/>
+        <text x="336.4" y="274.5" font-size="10.5" text-anchor="middle" fill="var(--agB)">antigen B</text>
+        <rect x="387.2" y="260" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="405.7" y="260" width="98.6" height="21" rx="3" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/>
+        <text x="455.0" y="274.5" font-size="10.5" text-anchor="middle" fill="var(--agA)">antigen A</text>
+        <rect x="505.8" y="260" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="524.3" y="260" width="210.8" height="21" rx="3" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="629.7" y="274.5" font-size="10.5" text-anchor="middle" fill="var(--cyto)">TM + YVKM</text>
+        <rect x="736.6" y="260" width="17.0" height="21" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="763.1" y="275" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">184 aa</text>
+        <text x="8" y="317" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P5</text><text x="40" y="317" font-size="11" fill="var(--ink-2)">cytosolic</text>
+        <rect x="116.0" y="302" width="6.8" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-3)" stroke-width="1.5"/>
+        <rect x="124.3" y="302" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="139.6" y="316.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="156.4" y="302" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="174.9" y="302" width="98.6" height="21" rx="3" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/>
+        <text x="224.2" y="316.5" font-size="10.5" text-anchor="middle" fill="var(--agA)">antigen A</text>
+        <rect x="275.0" y="302" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="293.5" y="302" width="98.6" height="21" rx="3" fill="var(--agB-soft)" stroke="var(--agB)" stroke-width="1.5"/>
+        <text x="342.8" y="316.5" font-size="10.5" text-anchor="middle" fill="var(--agB)">antigen B</text>
+        <rect x="393.6" y="302" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="412.1" y="302" width="17.0" height="21" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="438.6" y="317" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">89 aa</text>
+        <text x="8" y="359" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P6</text><text x="40" y="359" font-size="11" fill="var(--endo)">LAMP1</text>
+        <rect x="116.0" y="344" width="81.6" height="21" rx="3" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="156.8" y="358.5" font-size="10.5" text-anchor="middle" fill="var(--endo)">SP</text>
+        <rect x="199.1" y="344" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="214.4" y="358.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="231.2" y="344" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="249.7" y="344" width="98.6" height="21" rx="3" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/>
+        <text x="299.0" y="358.5" font-size="10.5" text-anchor="middle" fill="var(--agA)">antigen A</text>
+        <rect x="349.8" y="344" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="368.3" y="344" width="98.6" height="21" rx="3" fill="var(--agB-soft)" stroke="var(--agB)" stroke-width="1.5"/>
+        <text x="417.6" y="358.5" font-size="10.5" text-anchor="middle" fill="var(--agB)">antigen B</text>
+        <rect x="468.4" y="344" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="486.9" y="344" width="122.4" height="21" rx="3" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="548.1" y="358.5" font-size="10.5" text-anchor="middle" fill="var(--endo)">TM + GYQTI</text>
+        <text x="618.8" y="359" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">142 aa</text>
+        <text x="8" y="401" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P7</text><text x="40" y="401" font-size="11" fill="var(--warn)">dual</text>
+        <rect x="116.0" y="386" width="6.8" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-3)" stroke-width="1.5"/>
+        <rect x="124.3" y="386" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="139.6" y="400.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="156.4" y="386" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="174.9" y="386" width="98.6" height="21" rx="3" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/>
+        <text x="224.2" y="400.5" font-size="10.5" text-anchor="middle" fill="var(--agA)">antigen A</text>
+        <rect x="275.0" y="386" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="293.5" y="386" width="17.0" height="21" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <rect x="312.0" y="386" width="74.8" height="21" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="349.4" y="400.5" font-size="10.5" text-anchor="middle" fill="var(--ink)">P2A</text>
+        <rect x="388.3" y="386" width="81.6" height="21" rx="3" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="429.1" y="400.5" font-size="10.5" text-anchor="middle" fill="var(--endo)">SP</text>
+        <rect x="471.4" y="386" width="27.2" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="485.0" y="400.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">FLAG</text>
+        <rect x="500.1" y="386" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="518.6" y="386" width="98.6" height="21" rx="3" fill="var(--agB-soft)" stroke="var(--agB)" stroke-width="1.5"/>
+        <text x="567.9" y="400.5" font-size="10.5" text-anchor="middle" fill="var(--agB)">antigen B</text>
+        <rect x="618.7" y="386" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="637.2" y="386" width="122.4" height="21" rx="3" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="698.4" y="400.5" font-size="10.5" text-anchor="middle" fill="var(--endo)">TM + GYQTI</text>
+        <text x="769.1" y="401" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">184 aa</text>
+        <text x="8" y="443" font-size="14" font-weight="600" fill="var(--ink)" font-family="var(--mono)">P8</text><text x="40" y="443" font-size="11" fill="var(--warn)">dual</text>
+        <rect x="116.0" y="428" width="6.8" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-3)" stroke-width="1.5"/>
+        <rect x="124.3" y="428" width="30.6" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="139.6" y="442.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">HA</text>
+        <rect x="156.4" y="428" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="174.9" y="428" width="98.6" height="21" rx="3" fill="var(--agB-soft)" stroke="var(--agB)" stroke-width="1.5"/>
+        <text x="224.2" y="442.5" font-size="10.5" text-anchor="middle" fill="var(--agB)">antigen B</text>
+        <rect x="275.0" y="428" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="293.5" y="428" width="17.0" height="21" rx="3" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <rect x="312.0" y="428" width="74.8" height="21" rx="3" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="349.4" y="442.5" font-size="10.5" text-anchor="middle" fill="var(--ink)">P2A</text>
+        <rect x="388.3" y="428" width="81.6" height="21" rx="3" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="429.1" y="442.5" font-size="10.5" text-anchor="middle" fill="var(--endo)">SP</text>
+        <rect x="471.4" y="428" width="27.2" height="21" rx="3" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="485.0" y="442.5" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">FLAG</text>
+        <rect x="500.1" y="428" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="518.6" y="428" width="98.6" height="21" rx="3" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/>
+        <text x="567.9" y="442.5" font-size="10.5" text-anchor="middle" fill="var(--agA)">antigen A</text>
+        <rect x="618.7" y="428" width="17.0" height="21" rx="3" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <rect x="637.2" y="428" width="122.4" height="21" rx="3" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="698.4" y="442.5" font-size="10.5" text-anchor="middle" fill="var(--endo)">TM + GYQTI</text>
+        <text x="769.1" y="443" font-size="11" fill="var(--ink-3)" font-family="var(--mono)">184 aa</text>
       </svg>
-    </div>
-    <figcaption><b>Figure 3.</b> Same destination, different journey. The CTLA-4 tail
-    sends the protein to the cell surface first, where AP-2 and clathrin rapidly pull
-    it back into endosomes; the LAMP1 tail takes an AP-3 shortcut straight from the
-    Golgi. <b>P6 versus P0–P4 asks whether that detour via the surface helps or
-    hurts.</b> We keep the CTLA-4 extracellular IgV domain out of the construct — that
-    is the part that would bind CD80/CD86 and do real checkpoint signalling.</figcaption>
+    <figcaption><b>Figure 3.</b> All nine constructs, drawn to scale from the design library rather than by hand. Reading down: P0 is scaffold only, P1 and P2 add one antigen each, P3 and P4 carry both in either order, P5 drops the routing modules entirely, P6 swaps the CTLA-4 tail for LAMP1, and P7 and P8 use P2A to make two separately routed proteins from one transcript.</figcaption>
   </figure>
 
-  <div class="measure">
-    <h3>Why the module order is not ours to choose</h3>
-    <p><code>GYQTI</code> only works as the <em>last five residues of the protein</em>.
-    Append anything and the AP-3 adaptor stops binding, and the construct silently
-    reroutes to the plasma membrane — which reads as a negative result, not as a
-    mistake. <code>YVKM</code> has no such constraint: it sits internally with 19
-    native residues after it.</p>
-    <p>That asymmetry is the entire reason P7 and P8 are built the way they are. Each
-    carries two separate proteins from one mRNA, split by a <strong>P2A</strong>
-    ribosomal skipping element — and the LAMP1 arm has to be the <em>downstream</em>
-    one, because only the downstream arm can end the polypeptide.</p>
-  </div>
-
   <figure>
-    <div class="figbox">
-      <svg viewBox="0 0 860 150" role="img" aria-label="In P7 the cytosolic arm comes first, then P2A, then the LAMP1 arm whose GYQTI motif ends the protein. Putting LAMP1 upstream would bury GYQTI and break AP-3 binding.">
-        <g font-size="11.5" style="font-family:var(--mono)">
-          <text x="14" y="28" font-size="11" fill="currentColor" opacity=".6" letter-spacing="1">P7 / P8 — WORKS</text>
-          <rect x="14" y="38" width="62" height="28" rx="3" stroke="currentColor" stroke-opacity=".35" style="fill:var(--surface-2)"/><text x="45" y="57" fill="currentColor" text-anchor="middle">HA</text>
-          <rect x="78" y="38" width="96" height="28" rx="3" style="fill:var(--cyto-soft);stroke:var(--cyto)"/><text x="126" y="57" text-anchor="middle" style="fill:var(--cyto)">antigen A</text>
-          <rect x="176" y="38" width="66" height="28" rx="3" style="fill:var(--cyto-soft);stroke:var(--cyto)"/><text x="209" y="57" text-anchor="middle" style="fill:var(--cyto)">E5</text>
-          <rect x="244" y="38" width="62" height="28" rx="3" style="fill:var(--warn-soft);stroke:var(--warn)"/><text x="275" y="57" text-anchor="middle" style="fill:var(--warn)">P2A</text>
-          <rect x="308" y="38" width="86" height="28" rx="3" style="fill:var(--endo-soft);stroke:var(--endo)"/><text x="351" y="57" text-anchor="middle" style="fill:var(--endo)">LAMP1 SP</text>
-          <rect x="396" y="38" width="96" height="28" rx="3" style="fill:var(--endo-soft);stroke:var(--endo)"/><text x="444" y="57" text-anchor="middle" style="fill:var(--endo)">antigen B</text>
-          <rect x="494" y="38" width="118" height="28" rx="3" style="fill:var(--endo-soft);stroke:var(--endo)"/><text x="553" y="57" text-anchor="middle" style="fill:var(--endo)">TM–GYQTI</text>
-          <text x="622" y="57" font-size="15" style="fill:var(--endo)">◀</text>
-          <text x="640" y="57" font-size="12" style="font-family:var(--sans);fill:var(--endo)">ends the protein ✓</text>
-        </g>
-        <g font-size="11.5" style="font-family:var(--mono)">
-          <text x="14" y="104" font-size="11" fill="currentColor" opacity=".6" letter-spacing="1">REVERSED — SILENTLY BREAKS</text>
-          <rect x="14" y="114" width="86" height="28" rx="3" stroke-opacity=".5" style="fill:var(--endo-soft);stroke:var(--endo)"/><text x="57" y="133" text-anchor="middle" opacity=".7" style="fill:var(--endo)">LAMP1 SP</text>
-          <rect x="102" y="114" width="118" height="28" rx="3" stroke-opacity=".5" style="fill:var(--endo-soft);stroke:var(--endo)"/><text x="161" y="133" text-anchor="middle" opacity=".7" style="fill:var(--endo)">TM–GYQTI</text>
-          <rect x="222" y="114" width="62" height="28" rx="3" style="fill:var(--warn-soft);stroke:var(--warn)"/><text x="253" y="133" text-anchor="middle" style="fill:var(--warn)">P2A</text>
-          <rect x="286" y="114" width="96" height="28" rx="3" stroke="currentColor" stroke-opacity=".3" style="fill:var(--surface-2)"/><text x="334" y="133" fill="currentColor" text-anchor="middle" opacity=".6">antigen A</text>
-          <text x="398" y="133" font-size="12" style="font-family:var(--sans);fill:var(--warn)">GYQTI now buried — AP-3 fails, protein goes to the surface</text>
-        </g>
-      </svg>
-    </div>
-    <figcaption><b>Figure 4.</b> A positional constraint, drawn. The failure mode is
-    quiet: the construct still expresses, still shows an HA signal, and simply routes
-    to the wrong place. Our build checks this automatically — every LAMP1-bearing
-    construct is asserted to end in <code>GYQTI</code>.</figcaption>
-  </figure>
-</section>
-
-<hr class="rule">
-
-<section>
-  <p class="eyebrow">04 — the panel</p>
-  <h2>What each construct is for</h2>
-  <div class="measure">
-    <p>Nine constructs, one variable moved at a time. P0 and P1/P2 are the controls
-    that make the rest interpretable — without them, a weak signal from P3 could be
-    the scaffold, the antigen, or the route, and we would not know which.</p>
-  </div>
-  <div class="tscroll">
-    <table>
-      <thead><tr><th>Construct</th><th>Route</th><th>Payload</th><th>The question it answers</th></tr></thead>
-      <tbody>
-        <tr><td>P0</td><td><span class="pill p-cyto">CTLA-4</span></td><td>none</td><td>Does the scaffold alone give signal? Sets the floor.</td></tr>
-        <tr><td>P1</td><td><span class="pill p-cyto">CTLA-4</span></td><td>A</td><td>Single-antigen control — is A presented at all on this scaffold?</td></tr>
-        <tr><td>P2</td><td><span class="pill p-cyto">CTLA-4</span></td><td>B</td><td>Same for B. Needed before any two-antigen result means anything.</td></tr>
-        <tr><td>P3</td><td><span class="pill p-cyto">CTLA-4</span></td><td>A + B</td><td><b>The core question:</b> can one transcript drive class I and class II presentation at once?</td></tr>
-        <tr><td>P4</td><td><span class="pill p-cyto">CTLA-4</span></td><td>B + A</td><td>Order control for P3 — does cassette position change the outcome?</td></tr>
-        <tr><td>P5</td><td><span class="pill p-both">cytosolic</span></td><td>A + B + E5</td><td>Baseline with no routing, and the <b>only</b> construct where the degron has a free C-terminus — so this is the degron-positive comparator.</td></tr>
-        <tr><td>P6</td><td><span class="pill p-endo">LAMP1</span></td><td>A + B</td><td>Does the direct AP-3 route beat the detour via the cell surface?</td></tr>
-        <tr><td>P7</td><td><span class="pill p-both">dual</span></td><td>A cyto · B lyso</td><td>Can one mRNA send two antigens to two compartments deliberately? Note E5 is internal here, so it is expected to be weak.</td></tr>
-        <tr><td>P8</td><td><span class="pill p-both">dual</span></td><td>B cyto · A lyso</td><td>Swap control for P7 — is the effect about the route, or about the antigen?</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
-
-<hr class="rule">
-
-<section>
-  <p class="eyebrow">05 — the vector</p>
-  <h2>Every element in the plasmid, and what it buys us</h2>
-  <div class="measure">
-    <p>The backbone is unchanged from the eGFP version that already works; we swap
-    only the coding sequence, at positions 699–1418. Each surrounding element is doing
-    a specific job.</p>
-  </div>
-
-  <figure>
-    <div class="figbox">
-      <svg viewBox="0 0 860 260" role="img" aria-label="Linear map of the pVax1_AG vector showing two BsaI sites bracketing the transcription unit, which runs T7 promoter, 5 prime UTR, the insert window, 3 prime UTR and a 120 nucleotide poly-A tract, with CMV promoter upstream and kanamycin resistance and origin downstream.">
+      <svg viewBox="0 0 860 300" role="img" aria-label="Both sorting tails deliver antigen to the MIIC, but the CTLA-4 YVKM tail travels via the plasma membrane and is retrieved by AP-2, while the LAMP1 GYQTI tail goes directly from the trans-Golgi to the lysosome via AP-3.">
         <defs>
-          <marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <polygon points="0,1 9,5 0,9" fill="currentColor"/>
-          </marker>
-        </defs>
-
-        <text x="14" y="22" font-size="11" fill="currentColor" opacity=".55" letter-spacing="1" style="font-family:var(--mono)">pVax1_AG · 3855 bp · circular</text>
-
-        <line x1="14" y1="112" x2="846" y2="112" stroke="currentColor" stroke-width="1.5" opacity=".35"/>
-
-        <g font-size="10.5" style="font-family:var(--mono)">
-          <rect x="14" y="92" width="104" height="40" rx="3" stroke="currentColor" stroke-opacity=".35" style="fill:var(--surface-2)"/>
-          <text x="66" y="110" fill="currentColor" text-anchor="middle">CMV</text>
-          <text x="66" y="124" fill="currentColor" text-anchor="middle" opacity=".6">1–584</text>
-
-          <line x1="126" y1="70" x2="126" y2="150" stroke-width="2" style="stroke:var(--warn)"/>
-          <text x="126" y="62" font-size="11" text-anchor="middle" style="fill:var(--warn)">BsaI 585</text>
-
-          <rect x="136" y="92" width="88" height="40" rx="3" stroke="currentColor" stroke-width="1.4" style="fill:var(--surface)"/>
-          <text x="180" y="110" fill="currentColor" text-anchor="middle">T7</text>
-          <text x="180" y="124" fill="currentColor" text-anchor="middle" opacity=".6">+1 = AGG</text>
-
-          <rect x="228" y="92" width="86" height="40" rx="3" stroke="currentColor" stroke-width="1.4" style="fill:var(--surface)"/>
-          <text x="271" y="110" fill="currentColor" text-anchor="middle">5′UTR</text>
-          <text x="271" y="124" fill="currentColor" text-anchor="middle" opacity=".6">44 nt</text>
-
-          <rect x="318" y="88" width="168" height="48" rx="3" stroke-width="1.8" style="fill:var(--endo-soft);stroke:var(--endo)"/>
-          <text x="402" y="108" text-anchor="middle" font-weight="600" style="fill:var(--endo)">INSERT</text>
-          <text x="402" y="124" text-anchor="middle" style="fill:var(--endo)">699–1418</text>
-
-          <rect x="490" y="92" width="86" height="40" rx="3" stroke="currentColor" stroke-width="1.4" style="fill:var(--surface)"/>
-          <text x="533" y="110" fill="currentColor" text-anchor="middle">3′UTR</text>
-          <text x="533" y="124" fill="currentColor" text-anchor="middle" opacity=".6">99 nt</text>
-
-          <rect x="580" y="92" width="86" height="40" rx="3" stroke-width="1.4" style="fill:var(--cyto-soft);stroke:var(--cyto)"/>
-          <text x="623" y="110" text-anchor="middle" style="fill:var(--cyto)">poly(A)</text>
-          <text x="623" y="124" text-anchor="middle" opacity=".75" style="fill:var(--cyto)">120</text>
-
-          <line x1="676" y1="70" x2="676" y2="150" stroke-width="2" style="stroke:var(--warn)"/>
-          <text x="676" y="62" font-size="11" text-anchor="middle" style="fill:var(--warn)">BsaI 1639</text>
-
-          <rect x="688" y="92" width="72" height="40" rx="3" stroke="currentColor" stroke-opacity=".35" style="fill:var(--surface-2)"/>
-          <text x="724" y="116" fill="currentColor" text-anchor="middle">KanR</text>
-          <rect x="768" y="92" width="78" height="40" rx="3" stroke="currentColor" stroke-opacity=".35" style="fill:var(--surface-2)"/>
-          <text x="807" y="116" fill="currentColor" text-anchor="middle">ori</text>
-        </g>
-
-        <line x1="126" y1="172" x2="676" y2="172" stroke-width="1.5" marker-start="url(#a5)" marker-end="url(#a5)" style="stroke:var(--warn);color:var(--warn)"/>
-        <text x="401" y="192" font-size="12" text-anchor="middle" style="fill:var(--warn)">BsaI digest releases exactly this — the IVT template</text>
-
-        <line x1="14" y1="216" x2="126" y2="216" stroke="currentColor" stroke-width="1.5" opacity=".5"/>
-        <text x="140" y="220" font-size="11.5" fill="currentColor" opacity=".7">CMV drives the same ORF when you transfect the plasmid itself</text>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink)"/></marker>
+    <marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--cyto)"/></marker>
+    <marker id="arE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--endo)"/></marker>
+    <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker>
+    <marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--warn)"/></marker>
+    <marker id="arS" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M10 0 L0 5 L10 10 z" fill="var(--ink-2)"/></marker>
+  </defs>
+        <rect x="8" y="8" width="844" height="128" rx="9" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="24" y="32" font-size="13" font-weight="600" fill="var(--cyto)">CTLA-4 tail &#8212; YVKM, AP-2</text>
+        <text x="228" y="32" font-size="11.5" font-family="var(--mono)" fill="var(--cyto)">P0 P1 P2 P3 P4</text>
+        <rect x="24" y="52" width="120" height="34" rx="5" fill="var(--surface)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="84" y="73" font-size="12" text-anchor="middle" fill="var(--cyto)">ER &#8594; Golgi</text>
+        <line x1="146" y1="69" x2="196" y2="69" stroke="var(--cyto)" stroke-width="2" marker-end="url(#arC)"/>
+        <rect x="200" y="52" width="150" height="34" rx="5" fill="var(--surface)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="275" y="73" font-size="12" text-anchor="middle" fill="var(--cyto)">plasma membrane</text>
+        <line x1="352" y1="69" x2="402" y2="69" stroke="var(--cyto)" stroke-width="2" marker-end="url(#arC)"/>
+        <text x="377" y="61" font-size="10.5" text-anchor="middle" fill="var(--cyto)">AP-2</text>
+        <rect x="406" y="52" width="150" height="34" rx="5" fill="var(--surface)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="481" y="73" font-size="12" text-anchor="middle" fill="var(--cyto)">early endosome</text>
+        <line x1="558" y1="69" x2="608" y2="69" stroke="var(--cyto)" stroke-width="2" marker-end="url(#arC)"/>
+        <rect x="612" y="52" width="130" height="34" rx="5" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="677" y="73" font-size="12" text-anchor="middle" fill="var(--endo)">MIIC</text>
+        <text x="24" y="112" font-size="11.5" fill="var(--cyto)">exposed at the surface on the way &#8212; detectable by flow without permeabilising</text>
+        <rect x="8" y="150" width="844" height="128" rx="9" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="24" y="174" font-size="13" font-weight="600" fill="var(--endo)">LAMP1 tail &#8212; GYQTI, AP-3</text>
+        <text x="228" y="174" font-size="11.5" font-family="var(--mono)" fill="var(--endo)">P6 P7 P8</text>
+        <rect x="24" y="194" width="120" height="34" rx="5" fill="var(--surface)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="84" y="215" font-size="12" text-anchor="middle" fill="var(--endo)">ER &#8594; Golgi</text>
+        <line x1="146" y1="211" x2="196" y2="211" stroke="var(--endo)" stroke-width="2" marker-end="url(#arE)"/>
+        <rect x="200" y="194" width="150" height="34" rx="5" fill="var(--surface)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="275" y="215" font-size="12" text-anchor="middle" fill="var(--endo)">trans-Golgi network</text>
+        <line x1="352" y1="211" x2="608" y2="211" stroke="var(--endo)" stroke-width="2" marker-end="url(#arE)"/>
+        <text x="480" y="203" font-size="10.5" text-anchor="middle" fill="var(--endo)">AP-3 &#8212; direct, no surface step</text>
+        <rect x="612" y="194" width="130" height="34" rx="5" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="677" y="215" font-size="12" text-anchor="middle" fill="var(--endo)">MIIC</text>
+        <text x="24" y="254" font-size="11.5" fill="var(--endo)">never at the surface &#8212; so surface staining separates the two routes cleanly</text>
       </svg>
-    </div>
-    <figcaption><b>Figure 5.</b> Two BsaI sites bracket the whole transcription unit,
-    so one digest releases a clean linear IVT template. <b>That is why no insert may
-    contain a BsaI site</b> — one inside the cassette would cut the template in half.
-    All nine were screened and are clean.</figcaption>
+    <figcaption><b>Figure 4.</b> Same destination, different journey. Both tails deliver antigen to the MIIC, but the CTLA-4 YVKM tail gets there via the plasma membrane and AP-2 retrieval, while the LAMP1 GYQTI tail goes straight from the trans-Golgi network by AP-3. The surface step is what makes them distinguishable: CTLA-4-routed protein is detectable by flow without permeabilising, LAMP1-routed protein is not.</figcaption>
   </figure>
+
+  <figure>
+      <svg viewBox="0 0 860 250" role="img" aria-label="Three motifs whose function depends on position: the signal peptide must be N-terminal, GYQTI must be the last five residues, and the E5 degron needs a free C-terminus, which it lacks in P7 and P8.">
+        <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink)"/></marker>
+    <marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--cyto)"/></marker>
+    <marker id="arE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--endo)"/></marker>
+    <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker>
+    <marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--warn)"/></marker>
+    <marker id="arS" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M10 0 L0 5 L10 10 z" fill="var(--ink-2)"/></marker>
+  </defs>
+        <text x="8" y="18" font-size="12.5" font-weight="600" fill="var(--ink)">Motifs that only work in one place</text>
+        <rect x="8" y="34" width="180" height="26" rx="4" fill="var(--cyto-soft)" stroke="var(--cyto)" stroke-width="1.5"/>
+        <text x="98" y="52" font-size="11.5" text-anchor="middle" fill="var(--cyto)">signal peptide</text>
+        <text x="200" y="52" font-size="11.5" fill="var(--ink-2)">must be N-terminal &#8212; SRP reads the chain as it emerges</text>
+        <rect x="8" y="72" width="180" height="26" rx="4" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="98" y="90" font-size="11.5" text-anchor="middle" fill="var(--endo)">GYQTI</text>
+        <text x="200" y="90" font-size="11.5" fill="var(--ink-2)">must be the last five residues &#8212; otherwise AP-3 fails, silently</text>
+        <rect x="8" y="110" width="180" height="26" rx="4" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="98" y="128" font-size="11.5" text-anchor="middle" fill="var(--warn)">E5 degron</text>
+        <text x="200" y="128" font-size="11.5" fill="var(--ink-2)">needs a free C-terminus &#8212; an acidic degron is read from the end</text>
+        <line x1="8" y1="152" x2="852" y2="152" stroke="var(--rule)"/>
+        <text x="8" y="176" font-size="12" font-weight="600" fill="var(--ink)">The consequence in P7 and P8</text>
+        <rect x="8" y="190" width="150" height="24" rx="4" fill="var(--agA-soft)" stroke="var(--agA)" stroke-width="1.5"/>
+        <text x="83" y="207" font-size="11" text-anchor="middle" fill="var(--agA)">cytosolic arm</text>
+        <rect x="160" y="190" width="54" height="24" rx="4" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="187" y="207" font-size="11" text-anchor="middle" fill="var(--warn)">E5</text>
+        <rect x="216" y="190" width="70" height="24" rx="4" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="251" y="207" font-size="11" text-anchor="middle" fill="var(--ink)">P2A</text>
+        <rect x="288" y="190" width="200" height="24" rx="4" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="1.5"/>
+        <text x="388" y="207" font-size="11" text-anchor="middle" fill="var(--endo)">LAMP1 arm</text>
+        <rect x="490" y="190" width="76" height="24" rx="4" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="528" y="207" font-size="11" text-anchor="middle" fill="var(--endo)">GYQTI</text>
+        <text x="576" y="207" font-size="11.5" fill="var(--endo)">&#9664; last: works</text>
+        <line x1="187" y1="186" x2="187" y2="172" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="187" y="168" font-size="11" text-anchor="middle" fill="var(--warn)">internal: expected weak</text>
+        <text x="8" y="238" font-size="11.5" fill="var(--ink-3)">P5 is the degron-positive comparator &#8212; the only construct where E5 ends the protein and the route is cytosolic.</text>
+      </svg>
+    <figcaption><b>Figure 5.</b> Three motifs whose function is positional, and what that costs. The signal peptide must be N-terminal, GYQTI must be the final five residues, and an acidic degron is read from a free C-terminus. In P7 and P8 the E5 degron sits upstream of P2A and therefore has no free end, so those two are expected to show weak degron activity. That is a stated limitation of the dual-route design, not an oversight.</figcaption>
+  </figure>
+
+  <figure>
+      <svg viewBox="0 0 860 290" role="img" aria-label="The gene fragment is inserted at the single blunt Eco32I site of pJET1.2, which disrupts the lethal eco47IR gene so only recombinants grow, and the two flanking BglII sites both release the insert for checking and produce the IVT template.">
+        <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink)"/></marker>
+    <marker id="arC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--cyto)"/></marker>
+    <marker id="arE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--endo)"/></marker>
+    <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink-3)"/></marker>
+    <marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--warn)"/></marker>
+    <marker id="arS" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M10 0 L0 5 L10 10 z" fill="var(--ink-2)"/></marker>
+  </defs>
+        <text x="8" y="18" font-size="12.5" font-family="var(--mono)" fill="var(--ink-3)">pJET1.2 &#183; 2974 bp &#183; circular &#183; AmpR</text>
+        <text x="352" y="70" font-size="11" text-anchor="middle" fill="var(--warn)">Eco32I blunt site 371/372</text>
+        <line x1="352" y1="76" x2="352" y2="152" stroke="var(--warn)" stroke-width="2"/>
+        <rect x="8" y="96" width="120" height="36" rx="5" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="68" y="114" font-size="10.5" text-anchor="middle" fill="var(--ink-2)">rest of backbone</text>
+        <text x="68" y="127" font-size="9.5" text-anchor="middle" fill="var(--ink-3)">ori, AmpR &#8212; elsewhere on the circle</text>
+        <rect x="132" y="96" width="216" height="36" rx="5" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="1.5"/>
+        <text x="240" y="113" font-size="11.5" text-anchor="middle" fill="var(--warn)">eco47IR &#8212; lethal</text>
+        <text x="240" y="127" font-size="10" text-anchor="middle" fill="var(--warn)">broken by the insert; that is the selection</text>
+        <rect x="356" y="96" width="330" height="36" rx="5" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="521" y="119" font-size="12.5" font-weight="600" text-anchor="middle" fill="var(--endo)">your gene fragment &#8212; 670 to 955 bp</text>
+        <rect x="690" y="96" width="162" height="36" rx="5" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="771" y="119" font-size="11.5" text-anchor="middle" fill="var(--ink-2)">eco47IR continues</text>
+        <text x="132" y="88" font-size="10.5" fill="var(--ink-3)">BglII 337</text>
+        <line x1="132" y1="92" x2="132" y2="152" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="688" y="88" font-size="10.5" fill="var(--ink-3)">BglII</text>
+        <line x1="688" y1="92" x2="688" y2="152" stroke="var(--ink-3)" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <line x1="132" y1="162" x2="688" y2="162" stroke="var(--ink-2)" stroke-width="2" marker-start="url(#arS)" marker-end="url(#arG)"/>
+        <text x="410" y="182" font-size="11.5" text-anchor="middle" fill="var(--ink-2)">one BglII digest &#8212; the diagnostic band and the IVT template are the same cut</text>
+        <line x1="8" y1="200" x2="852" y2="200" stroke="var(--rule)"/>
+        <text x="8" y="224" font-size="12" font-weight="600" fill="var(--ink)">Inside the fragment</text>
+        <rect x="8" y="236" width="70" height="24" rx="4" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="43" y="253" font-size="10" text-anchor="middle" fill="var(--ink-2)">IVT_F</text>
+        <rect x="80" y="236" width="86" height="24" rx="4" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="123" y="253" font-size="10" text-anchor="middle" fill="var(--ink)">T7 &#8594; AGG</text>
+        <rect x="168" y="236" width="86" height="24" rx="4" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="211" y="253" font-size="10" text-anchor="middle" fill="var(--ink-2)">5&#8242;UTR</text>
+        <rect x="256" y="236" width="56" height="24" rx="4" fill="var(--surface-2)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="284" y="253" font-size="10" text-anchor="middle" fill="var(--ink-2)">Kozak</text>
+        <rect x="314" y="236" width="230" height="24" rx="4" fill="var(--endo-soft)" stroke="var(--endo)" stroke-width="2"/>
+        <text x="429" y="253" font-size="10.5" text-anchor="middle" fill="var(--endo)">ORF &#8212; the construct</text>
+        <rect x="546" y="236" width="150" height="24" rx="4" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="1.5"/>
+        <text x="621" y="253" font-size="10" text-anchor="middle" fill="var(--ink-2)">3&#8242;UTR &#8212; AES + mtRNR1</text>
+        <rect x="698" y="236" width="70" height="24" rx="4" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.5"/>
+        <text x="733" y="253" font-size="10" text-anchor="middle" fill="var(--ink-2)">IVT_R</text>
+        <text x="776" y="253" font-size="10.5" fill="var(--cyto)">+ A120</text>
+        <text x="8" y="280" font-size="11" fill="var(--ink-3)">The poly(A) is added by PCR before cloning &#8212; a 120-nt A-tract cannot be synthesised into a gene fragment.</text>
+      </svg>
+    <figcaption><b>Figure 6.</b> The fragment goes into the single blunt Eco32I site of pJET1.2, which sits inside the lethal eco47IR gene: breaking it is the selection, so colonies that grow carry an insert. The two flanking BglII sites do double duty, releasing the insert for the diagnostic gel and producing the IVT template in the same digest. No fragment contains a BglII site.</figcaption>
+  </figure>
+  <!--/FIGURES-->
 
   <div class="measure">
     <dl class="kv">
       <dt>T7, +1 = AGG</dt>
       <dd>Not the textbook <code>…CACTATAG</code>. The transcript starts <code>AGG</code>,
-      which is what CleanCap AG needs — this is the "AG" in pVax1_AG, and the one thing
-      never to disturb if the UTRs are ever changed.</dd>
+      which is what an AG-initiating cap1 analog needs. The IVT kit's manual states the
+      minimum promoter as <code>5′-TAATACGACTCACTATAAGG</code>, so this is fixed by the
+      chemistry, not a preference — and it is the one thing never to disturb if the UTRs
+      are ever changed.</dd>
 
-      <dt>5′ UTR, 44 nt</dt>
+      <dt>5′ UTR, 47 nt</dt>
       <dd>Ends in the strong Kozak <code>GCCACC</code> and contains <strong>no upstream
       AUG</strong>. An upstream AUG would capture scanning ribosomes and quietly suppress
       the real ORF.</dd>
 
-      <dt>Insert window</dt>
-      <dd>699–1418, replacing eGFP exactly. The 20-bp homology arms on each gBlock <em>are
-      backbone sequence</em>, so the Kozak appears once in the finished plasmid and the
-      ORF starts in frame.</dd>
+      <dt>Insert site</dt>
+      <dd>The blunt Eco32I cut at 371/372, which is unique in the vector and sits inside
+      the lethal <em>eco47IR</em> gene. Breaking that gene is the selection: a re-ligated
+      empty vector still kills its host, so colonies that grow carry an insert.</dd>
 
-      <dt>3′ UTR, 99 nt</dt>
-      <dd>Globin-derived, for transcript stability. We corrected the map here: it was
-      labelled 54 nt, leaving the UTR's own <code>AAUAAA</code> unannotated. Harmless to
-      the molecule, but a map that could not answer "does this transcript carry a poly(A)
-      signal?".</dd>
+      <dt>3′ UTR, 296 nt</dt>
+      <dd>The BNT162b2 3′ UTR verbatim — the amino-terminal enhancer of split (AES) UTR
+      followed by the mitochondrial 12S rRNA (mtRNR1) element, selected <em>ex vivo</em>
+      for stability and protein output. It replaced a 99-nt sequence carried over from the
+      old backbone, which the parts registry itself marked as a placeholder.</dd>
 
       <dt>poly(A), 120</dt>
-      <dd>Encoded in the plasmid, and added again by PCR at the IVT step. We left it
-      <em>out</em> of the gBlocks: a 120-nt A-tract is close to unsynthesisable, and since
-      the primer adds the tail anyway the encoded copy does no work for the transcript.</dd>
+      <dd>Not in the gene fragment: a flat 120-nt A-tract fails vendor screening outright,
+      and so does a segmented A30–linker–A70, whose 70-nt run is still past what a gBlock
+      will build. It is added by PCR with <code>IVT_R_polyA120</code> <em>before</em>
+      cloning, so the plasmid carries it encoded and the long primer is spent once rather
+      than on every prep.</dd>
 
-      <dt>CMV promoter</dt>
-      <dd>Lets the same plasmid be transfected directly, as a comparison arm. This is why
-      we also screen every ORF for <code>AAUAAA</code> — in a nuclear transcript a cryptic
-      poly(A) signal inside the coding sequence would truncate the mRNA.</dd>
+      <dt>No eukaryotic promoter</dt>
+      <dd>pJET1.2 has none, which is the point of moving to it: the plasmid only has to
+      grow in <em>E. coli</em> before being cut for IVT. The 809 bp of mammalian-only
+      machinery the previous backbone carried does no work here.</dd>
 
       <dt>HA and FLAG tags</dt>
       <dd>These answer "was it made", on a different reagent from the pMHC antibodies that
@@ -575,10 +620,11 @@
 </section>
 
 <footer>
-  <p>Constructs P0–P8 on pVax1_AG (3855 bp backbone; assembled plasmids 3441–3726 bp).
-  Nine gBlocks, 346–631 bp. Every map verified against the parent vector —
-  reading frame, Kozak junction, AGG transcription start, BsaI count, poly(A) integrity
-  and backbone elements re-derived from the assembled sequence rather than assumed.</p>
+  <p>Constructs P0–P8 on pJET1.2 (2974 bp backbone; assembled plasmids 3644–3929 bp).
+  Nine gene fragments, 670–955 bp. Every map verified against the parent vector — reading
+  frame, Kozak junction, AGG transcription start, the IVT kit's minimum promoter, BglII
+  count and the disruption of <em>eco47IR</em> re-derived from the assembled sequence
+  rather than assumed.</p>
 </footer>
 
 </div>

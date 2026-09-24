@@ -4,11 +4,19 @@ __pycache__/
 out/
 benchling_dry_run/
 .pytest_cache/
+# Build output directories. NOT docs/build, which holds the scripts that
+# produce the design document -- those are source and are tracked; its
+# generated files and node_modules are ignored individually below.
 build/
+!docs/build/
 dist/
 .venv/
 docs/build/node_modules/
 docs/build/package*.json
+docs/build/panel.html
+docs/build/fig-*.html
+docs/build/fig-*.png
+docs/build/*.docx
 
 # Zip bundles built only to hand files to someone. Everything inside them is
 # already tracked (orders/**, backbone/**), so committing the archive would be
