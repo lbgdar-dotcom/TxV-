@@ -216,6 +216,15 @@ def main(species: str = DEFAULT_SPECIES) -> int:
         "predict the cleavage site.",
         "- **No prediction of actual presentation.** Nothing in silico "
         "separates the routes; that is what the panel is for.",
+        "- **The folding numbers are for unmodified RNA.** ViennaRNA\u2019s "
+        "energy parameters are for standard A/C/G/U, but the transcript is "
+        "made with N1-methylpseudouridine in place of every uridine, which "
+        "changes base stacking and pairing. The absolute MFE and accessibility "
+        "values above are therefore approximations. The *comparison across the "
+        "panel* is the more robust part, since every construct carries the "
+        "same substitution \u2014 and comparison is what these numbers are "
+        "used for here. Treat a single construct\u2019s MFE as indicative, "
+        "not as a measurement.",
         "",
     ]
     (OUT / "IN_SILICO_REPORT.md").write_text("\n".join(lines) + "\n")
