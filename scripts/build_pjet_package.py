@@ -18,11 +18,19 @@ from txv.ivt_unit import (  # noqa: E402
 )
 from txv.order import assess_synthesis  # noqa: E402
 from txv.pvax1_ag import (  # noqa: E402
-    MODULES, PANEL, PANEL_BY_NAME, build_panel_construct,
+    DEFAULT_SPECIES, MODULES, PANEL, PANEL_BY_NAME, build_panel_construct,
 )
 from txv.seqops import find_all, revcomp, translate  # noqa: E402
 
-OUT = Path(__file__).resolve().parents[1] / "orders" / "pjet12_ivt_units"
+ROOT = Path(__file__).resolve().parents[1]
+
+#: Where each species' package lives. They are separate directories, never a
+#: merged one: a fragment optimised for one table must not sit next to a
+#: fragment optimised for the other in the same ordering file.
+PACKAGES = {
+    "human": ROOT / "orders" / "pjet12_ivt_units",
+    "mouse": ROOT / "orders" / "pjet12_ivt_units_mouse",
+}
 
 #: The elements you asked to be able to check, and what each one is for.
 TRACKED = [
@@ -41,12 +49,18 @@ TRACKED = [
 ]
 
 
-def main() -> int:
+def main(species: str = DEFAULT_SPECIES) -> int:
+    if species not in PACKAGES:
+        print(f"no package directory for {species!r}; have {sorted(PACKAGES)}")
+        return 1
+    OUT = PACKAGES[species]
     OUT.mkdir(parents=True, exist_ok=True)
+    print(f"building the {species}-codon-optimised package in "
+          f"{OUT.relative_to(ROOT)}/\n")
     manifest_rows, checklist, problems = [], [], []
 
     for panel in PANEL:
-        construct = build_panel_construct(panel.name)
+        construct = build_panel_construct(panel.name, species=species)
         unit = make_unit(panel.name, construct.orf)
 
         problems += [(panel.name, p) for p in verify_unit(unit, construct.orf_protein)]
@@ -240,4 +254,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SPECIES))

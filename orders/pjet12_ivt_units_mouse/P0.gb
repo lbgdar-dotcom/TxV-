@@ -1,0 +1,93 @@
+LOCUS       P0               751 bp    DNA     linear   SYN 14-OCT-2026
+DEFINITION  P0 IVT transcription unit for blunt cloning into pJET1.2; 116 aa ORF.
+ACCESSION   P0
+VERSION     .
+KEYWORDS    IVT mRNA; T7; antigen cassette; pJET1.2.
+SOURCE      synthetic construct
+  ORGANISM  synthetic construct
+FEATURES             Location/Qualifiers
+     source          1..751
+                     /organism="synthetic construct"
+                     /mol_type="other DNA"
+     primer_bind     1..20
+                     /label="IVT_F_handle"
+                     /note="Forward PCR primer site. Also
+                     supplies the upstream duplex T7
+                     needs; a promoter flush with the end
+                     of a PCR product transcribes poorly."
+                     /ApEinfo_fwdcolor="#C8C8C8"
+     promoter        21..37
+                     /label="T7_promoter"
+                     /note="T7 class III promoter,
+                     -17..-1. The next base is +1."
+                     /ApEinfo_fwdcolor="#B3E0A6"
+     5'UTR           38..78
+                     /label="5'UTR"
+                     /note="Transcript begins AGG at +1
+                     (CleanCap AG compatible). No upstream
+                     AUG."
+                     /ApEinfo_fwdcolor="#C9D7F8"
+     regulatory      79..84
+                     /label="Kozak"
+                     /note="GCCACC: purine at -3 and G at
+                     +4, the strong consensus."
+                     /ApEinfo_fwdcolor="#F7D08A"
+     CDS             85..435
+                     /label="ORF"
+                     /codon_start="1"
+                     /translation="MACLGLRRYKAQLQLPSRTWPFV
+                     ALLTLLFIPVFSYPYDVPDYAGGGGSFLLWILVAVSL
+                     GLFFYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEP
+                     ECEKQFQPYFIPINEEEEE"
+                     /note="116 aa. Single stop codon."
+                     /ApEinfo_fwdcolor="#FFE9A8"
+     sig_peptide     85..189
+                     /label="CTLA4_SP"
+                     /ApEinfo_fwdcolor="#F5C6E0"
+     misc_feature    190..216
+                     /label="HA"
+                     /ApEinfo_fwdcolor="#A3D9C9"
+     misc_feature    217..231
+                     /label="L"
+                     /ApEinfo_fwdcolor="#E3E3E3"
+     misc_feature    232..417
+                     /label="CTLA4_TMT"
+                     /ApEinfo_fwdcolor="#D8C3F0"
+     misc_feature    418..432
+                     /label="E5"
+                     /ApEinfo_fwdcolor="#F2A0A0"
+     terminator      433..435
+                     /label="stop"
+                     /ApEinfo_fwdcolor="#9E9E9E"
+     3'UTR           436..731
+                     /label="3'UTR"
+                     /note="Globin-derived 3' UTR; carries
+                     its own native AAUAAA, which is inert
+                     for a cytoplasmic transcript."
+                     /ApEinfo_fwdcolor="#C9D7F8"
+     primer_bind     732..751
+                     /label="IVT_R_handle"
+                     /note="Reverse PCR primer site. The
+                     IVT reverse primer is its reverse
+                     complement plus a poly(T) tail."
+                     /ApEinfo_fwdcolor="#C8C8C8"
+COMMENT     Route: CTLA-4 (AP-2, via surface)
+COMMENT     Asks: Scaffold-only control: does the routing module
+            alone produce signal?
+COMMENT     Blunt-ligate into pJET1.2 in either orientation; recover the IVT
+            template by PCR with IVT_F and IVT_R.
+ORIGIN
+        1 cagtcacgta gcatcgactg taatacgact cactataagg aaataagaga gaaaagaaga
+       61 gtaagaagaa atataagagc caccatggca tgcctgggcc tgaggagata taaagcacaa
+      121 ctgcagctgc caagcagaac ctggccattt gtggcacttc tgacactcct gttcatccca
+      181 gtgttcagct acccatacga cgtgccagat tacgccggag gcggaggcag cttcctgctc
+      241 tggattctgg tggcagtgtc tctgggactg ttcttttaca gctttctggt gagcgcagtg
+      301 agcctgagca aaatgctgaa gaaaagaagc ccactgacca caggagtgta cgtgaagatg
+      361 cctccaacag aaccagaatg cgagaagcag ttccagccat acttcatccc catcaacgag
+      421 gaggaagagg agtgactcga gctggtactg catgcacgca atgctagctg cccctttccc
+      481 gtcctgggta ccccgagtct cccccgacct cgggtcccag gtatgctccc acctccacct
+      541 gccccactca ccacctctgc tagttccaga cacctcccaa gcacgcagca atgcagctca
+      601 aaacgcttag cctagccaca cccccacggg aaacagcagt gattaacctt tagcaataaa
+      661 cgaaagttta actaagctat actaacccca gggttggtca atttcgtgcc agccacaccc
+      721 tggagctagc agtcatgcag tcgatcactg a
+//

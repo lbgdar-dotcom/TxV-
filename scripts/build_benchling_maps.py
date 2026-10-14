@@ -28,12 +28,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from txv.genbank_io import GenBankFeature, read_genbank, write_genbank  # noqa: E402
 from txv.ivt_unit import make_unit, unit_elements  # noqa: E402
 from txv.plasmid import insert_blunt  # noqa: E402
-from txv.pvax1_ag import PANEL, build_panel_construct  # noqa: E402
+from txv.pvax1_ag import (  # noqa: E402
+    DEFAULT_SPECIES, PANEL, build_panel_construct,
+)
 from txv.seqops import find_all, translate  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 VECTOR = ROOT / "backbone" / "pJET1.2.gb"
-OUT = ROOT / "orders" / "pjet12_ivt_units" / "benchling_maps"
+PACKAGES = {
+    "human": ROOT / "orders" / "pjet12_ivt_units",
+    "mouse": ROOT / "orders" / "pjet12_ivt_units_mouse",
+}
 
 ECORV, ECORV_OFFSET = "GATATC", 3
 
@@ -42,7 +47,11 @@ _KEY = {"handle": "primer_bind", "promoter": "promoter", "utr5": "5'UTR",
         "signal_peptide": "sig_peptide", "skip_peptide": "misc_feature"}
 
 
-def main() -> int:
+def main(species: str = DEFAULT_SPECIES) -> int:
+    if species not in PACKAGES:
+        print(f"no package directory for {species!r}; have {sorted(PACKAGES)}")
+        return 1
+    OUT = PACKAGES[species] / "benchling_maps"
     OUT.mkdir(parents=True, exist_ok=True)
     vector = read_genbank(VECTOR)
 
@@ -57,7 +66,7 @@ def main() -> int:
 
     problems = []
     for panel in PANEL:
-        construct = build_panel_construct(panel.name)
+        construct = build_panel_construct(panel.name, species=species)
         unit = make_unit(panel.name, construct.orf)
 
         build = insert_blunt(
@@ -118,4 +127,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SPECIES))

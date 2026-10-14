@@ -20,8 +20,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _dir(root: Path) -> Path:
-    return root / "orders" / "pjet12_ivt_units"
+#: Package directories this auditor can be pointed at. The checks are the same
+#: either way: each package is audited on its own terms, and the
+#: canonical-encoding check is what catches a package built from two tables.
+PACKAGES = {"human": "pjet12_ivt_units", "mouse": "pjet12_ivt_units_mouse"}
+
+
+def _dir(root: Path, package: str = "pjet12_ivt_units") -> Path:
+    return root / "orders" / package
 
 
 # ---------------------------------------------------------------------------
@@ -163,8 +169,9 @@ def gb_labels(path: Path) -> list[str]:
     return re.findall(r'/label="([^"]+)"', path.read_text())
 
 
-def main(root: Path | None = None, quiet: bool = False) -> int:
-    d = _dir(root or ROOT)
+def main(root: Path | None = None, quiet: bool = False,
+         package: str = "pjet12_ivt_units") -> int:
+    d = _dir(root or ROOT, package)
     r = Report()
 
     fasta = read_fasta(d / "gblocks.fasta")
@@ -365,7 +372,7 @@ def main(root: Path | None = None, quiet: bool = False) -> int:
 
     width = 78
     print("=" * width)
-    print("PRE-ORDER AUDIT — P0-P8 transcription units for pJET1.2")
+    print(f"PRE-ORDER AUDIT — P0-P8 transcription units for pJET1.2  [{d.name}]")
     print("=" * width)
     print(f"{r.checks} checks across {len(PANEL)} constructs, "
           "re-derived from the design\n")
@@ -386,4 +393,7 @@ def main(root: Path | None = None, quiet: bool = False) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else None))
+    arg = sys.argv[1] if len(sys.argv) > 1 else None
+    if arg in PACKAGES:
+        sys.exit(main(package=PACKAGES[arg]))
+    sys.exit(main(Path(arg) if arg else None))

@@ -37,8 +37,8 @@ import RNA  # noqa: E402
 from txv.codon import HUMAN_CODON_USAGE, CodonOptimizer  # noqa: E402
 from txv.ivt_unit import LEADER  # noqa: E402
 from txv.pvax1_ag import (  # noqa: E402
-    MODULES, PANEL, build_panel_construct, canonical_encodings,
-    panel_optimizer_config,
+    DEFAULT_SPECIES, MODULES, PANEL, build_panel_construct,
+    canonical_encodings, panel_optimizer_config,
 )
 from txv.seqops import AA_TO_CODONS, gc_fraction  # noqa: E402
 
@@ -78,13 +78,13 @@ def accessibility(orf: str) -> float:
     return sum(up[i][1] for i in range(lo, hi)) / (hi - lo)
 
 
-def search(module: str, target: float, optimizer) -> list[tuple]:
-    canon = canonical_encodings()
+def search(module: str, target: float, optimizer, species: str) -> list[tuple]:
+    canon = canonical_encodings(species=species)
     current = canon[module]
     context = ""
     for panel in PANEL:
         if panel.modules[0] == module:
-            context = build_panel_construct(panel.name).orf
+            context = build_panel_construct(panel.name, species=species).orf
             break
 
     head = FIRST_FREE_CODON * 3
@@ -141,14 +141,17 @@ def search(module: str, target: float, optimizer) -> list[tuple]:
 
 
 def main() -> int:
-    optimizer = CodonOptimizer(panel_optimizer_config())
-    canon = canonical_encodings()
+    # The codons are chosen against a usage table, so the answer is per species.
+    species = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_SPECIES
+    print(f"optimising the 5' codons against the {species} codon table\n")
+    optimizer = CodonOptimizer(panel_optimizer_config(species))
+    canon = canonical_encodings(species=species)
 
     # The group that is not being tuned sets the target the others match.
     fixed = ""
     for panel in PANEL:
         if panel.modules[0] == "MA":
-            fixed = build_panel_construct(panel.name).orf
+            fixed = build_panel_construct(panel.name, species=species).orf
             break
     target = accessibility(fixed)
     print(f"MA+HA start (P5/P7/P8) is fixed at accessibility {target:.3f}")
@@ -158,9 +161,9 @@ def main() -> int:
         before = ""
         for panel in PANEL:
             if panel.modules[0] == module:
-                before = build_panel_construct(panel.name).orf
+                before = build_panel_construct(panel.name, species=species).orf
                 break
-        scored, rejected = search(module, target, optimizer)
+        scored, rejected = search(module, target, optimizer, species)
         if not scored:
             print(f"{module}: no candidate passed the constraints")
             for reason, n in rejected.most_common():

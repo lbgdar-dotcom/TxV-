@@ -97,19 +97,30 @@ N_LINKER_VARIANTS = 4
 #: Length at which a direct repeat is treated as a defect.
 REPEAT_K = 12
 
-_CANON_CACHE: dict[str, str] = {}
-_LINKER_CACHE: list[str] = []
+#: The species whose codon usage the panel is optimised for, when none is
+#: named. "human" is the historical default and the one the shipped human
+#: package was built with; it stays the default so that package stays
+#: reproducible byte for byte.
+DEFAULT_SPECIES = "human"
+
+#: Derived encodings, cached per species. Two species produce two different
+#: panels, and mixing them would be the canonical-encoding bug in a new
+#: costume -- antigen A encoded one way in one construct and another way in
+#: the next.
+_CANON_CACHE: dict[str, dict[str, str]] = {}
+_LINKER_CACHE: dict[str, list[str]] = {}
 
 
-def _linker_variants(optimizer) -> list[str]:
+def _linker_variants(optimizer, usage=None) -> list[str]:
     """Derive linker encodings that differ from each other end to end."""
     from itertools import product
 
     from .codon import HUMAN_CODON_USAGE
     from .seqops import AA_TO_CODONS
 
-    gly = [c for c in AA_TO_CODONS["G"] if HUMAN_CODON_USAGE[c] >= 0.10]
-    ser = [c for c in AA_TO_CODONS["S"] if HUMAN_CODON_USAGE[c] >= 0.10]
+    usage = usage or HUMAN_CODON_USAGE
+    gly = [c for c in AA_TO_CODONS["G"] if usage[c] >= 0.10]
+    ser = [c for c in AA_TO_CODONS["S"] if usage[c] >= 0.10]
     candidates = []
     for combo in product(gly, gly, gly, gly, ser):
         dna = "".join(combo)
@@ -119,7 +130,7 @@ def _linker_variants(optimizer) -> list[str]:
             continue                      # no 4+ homopolymer run
         if optimizer.find_forbidden(dna):
             continue
-        score = sum(HUMAN_CODON_USAGE[c] for c in combo)
+        score = sum(usage[c] for c in combo)
         candidates.append((-score, dna))
     candidates.sort()
 
@@ -161,7 +172,7 @@ def _assemble(name: str, canon: dict[str, str], linkers: list[str], e5: str) -> 
     return "".join(out)
 
 
-def _choose_e5(canon: dict[str, str], linkers: list[str]) -> str:
+def _choose_e5(canon: dict[str, str], linkers: list[str], usage=None) -> str:
     """Pick the E5 encoding that leaves no direct repeat anywhere in the panel.
 
     Glutamate has exactly two codons, so EEEEE has 32 encodings. They are not
@@ -174,6 +185,7 @@ def _choose_e5(canon: dict[str, str], linkers: list[str]) -> str:
 
     from .codon import HUMAN_CODON_USAGE
 
+    usage = usage or HUMAN_CODON_USAGE
     best = None
     for combo in product(("GAA", "GAG"), repeat=5):
         dna = "".join(combo)
@@ -183,8 +195,8 @@ def _choose_e5(canon: dict[str, str], linkers: list[str]) -> str:
             _repeat_count(_assemble(p.name, canon, linkers, dna))
             for p in PANEL if "E5" in p.modules
         )
-        usage = sum(HUMAN_CODON_USAGE[c] for c in combo)
-        key = (repeats, -usage)
+        score = sum(usage[c] for c in combo)
+        key = (repeats, -score)
         if best is None or key < best[0]:
             best = (key, dna)
     return best[1]
@@ -216,9 +228,21 @@ def _choose_e5(canon: dict[str, str], linkers: list[str]) -> str:
 #: rather than computed at import so the design library does not depend on
 #: ViennaRNA; ``scripts/validate_in_silico.py`` re-measures them and fails if
 #: they drift.
-FIVE_PRIME_CODONS: dict[str, str] = {
-    "CTLA4_SP": "TGCCTGGGCCTCAGGAGA",
-    "LAMP1_SP": "GCCCCAGGAGCCAGAAGG",
+#: Keyed by species, because the codons are chosen *against* a usage table:
+#: the accessibility search picks among synonymous codons and breaks ties on
+#: how common they are, so the answer is not transferable between tables.
+FIVE_PRIME_CODONS: dict[str, dict[str, str]] = {
+    "human": {
+        "CTLA4_SP": "TGCCTGGGCCTCAGGAGA",
+        "LAMP1_SP": "GCCCCAGGAGCCAGAAGG",
+    },
+    # Re-derived under the mouse table: `python scripts/optimize_5prime.py mouse`.
+    # Start-codon accessibility 0.529 / 0.502 against the untuned group's 0.52,
+    # with CpG at the minimum available in each band.
+    "mouse": {
+        "CTLA4_SP": "TGCCTGGGCCTGAGGAGA",
+        "LAMP1_SP": "GCCCCAGGAGCAAGAAGG",
+    },
 }
 
 #: First residue index that FIVE_PRIME_CODONS applies to (codon 1 is ATG,
@@ -250,7 +274,7 @@ N_TERMINAL_MODULES: frozenset[str] = frozenset({"MA", "CTLA4_SP", "LAMP1_SP"})
 KOZAK_CODON2: str = "GCA"
 
 
-def panel_optimizer_config():
+def panel_optimizer_config(species: str = DEFAULT_SPECIES):
     """The codon-optimiser settings this panel is built with.
 
     Chosen by sweeping ``target_gc`` against everything it trades against and
@@ -286,9 +310,13 @@ def panel_optimizer_config():
     closer to the length of the structural elements that actually stall
     synthesis.
     """
-    from .codon import OptimizerConfig
+    from .codon import CODON_USAGE, OptimizerConfig
 
+    if species not in CODON_USAGE:
+        raise ValueError(f"no codon table for {species!r}; "
+                         f"have {sorted(CODON_USAGE)}")
     return OptimizerConfig(
+        usage=dict(CODON_USAGE[species]),
         repeat_k=REPEAT_K,
         w_repeat=120.0,
         target_gc=0.50,
@@ -298,7 +326,8 @@ def panel_optimizer_config():
     )
 
 
-def canonical_encodings(optimizer=None) -> dict[str, str]:
+def canonical_encodings(optimizer=None,
+                        species: str = DEFAULT_SPECIES) -> dict[str, str]:
     """One DNA encoding per module, used in every construct that carries it.
 
     This is a **scientific** requirement, not a tidiness one. The panel exists
@@ -311,15 +340,18 @@ def canonical_encodings(optimizer=None) -> dict[str, str]:
     The linker is the deliberate exception (see :data:`N_LINKER_VARIANTS`), and
     E5 is chosen against the assembled panel (see :func:`_choose_e5`).
     """
-    from .codon import CodonOptimizer, OptimizerConfig
+    from .codon import CODON_USAGE, CodonOptimizer, OptimizerConfig
 
-    if _CANON_CACHE:
-        return dict(_CANON_CACHE)
+    if optimizer is None and species in _CANON_CACHE:
+        return dict(_CANON_CACHE[species])
 
     # A tighter repeat window than the default is worth it here: these
     # encodings are reused in every construct, so a repeat inside one is a
     # repeat in eight plasmids.
-    optimizer = optimizer or CodonOptimizer(panel_optimizer_config())
+    usage = CODON_USAGE.get(species, CODON_USAGE[DEFAULT_SPECIES])
+    optimizer = optimizer or CodonOptimizer(panel_optimizer_config(species))
+    canon: dict[str, str] = {}
+    five_prime = FIVE_PRIME_CODONS.get(species, {})
     for name, protein in MODULES.items():
         if name in ("L", "E5"):
             continue
@@ -328,22 +360,26 @@ def canonical_encodings(optimizer=None) -> dict[str, str]:
         pinned = None
         if name in N_TERMINAL_MODULES:
             pinned = {1: KOZAK_CODON2}
-            codons = FIVE_PRIME_CODONS.get(name, "")
+            codons = five_prime.get(name, "")
             for offset in range(0, len(codons), 3):
                 pinned[FIVE_PRIME_START + offset // 3] = codons[offset:offset + 3]
-        _CANON_CACHE[name] = optimizer.optimize(
+        canon[name] = optimizer.optimize(
             protein, add_stop=None, pinned=pinned).dna
 
-    _LINKER_CACHE.extend(_linker_variants(optimizer))
-    _CANON_CACHE["E5"] = _choose_e5(_CANON_CACHE, _LINKER_CACHE)
-    return dict(_CANON_CACHE)
+    linkers = _linker_variants(optimizer, usage)
+    canon["E5"] = _choose_e5(canon, linkers, usage)
+    if optimizer is None or species in CODON_USAGE:
+        _CANON_CACHE[species] = dict(canon)
+        _LINKER_CACHE[species] = list(linkers)
+    return dict(canon)
 
 
-def linker_variants(optimizer=None) -> list[str]:
+def linker_variants(optimizer=None,
+                    species: str = DEFAULT_SPECIES) -> list[str]:
     """The derived GGGGS encodings, cycled by position within a cassette."""
-    if not _LINKER_CACHE:
-        canonical_encodings(optimizer)
-    return list(_LINKER_CACHE)
+    if species not in _LINKER_CACHE:
+        canonical_encodings(optimizer, species)
+    return list(_LINKER_CACHE[species])
 
 
 MODULE_NOTES: dict[str, str] = {
@@ -619,7 +655,7 @@ MODULE_KIND: dict[str, str] = {
 }
 
 
-def panel_cassette(name: str) -> "Cassette":
+def panel_cassette(name: str, species: str = DEFAULT_SPECIES) -> "Cassette":
     """The panel construct as a :class:`~txv.epitopes.Cassette` of modules.
 
     Each module becomes its own bead with an empty linker between beads, so the
@@ -630,7 +666,7 @@ def panel_cassette(name: str) -> "Cassette":
     from .epitopes import Antigen, Cassette
 
     panel = PANEL_BY_NAME[name]
-    canon = canonical_encodings()
+    canon = canonical_encodings(species=species)
     beads = []
     linker_index = 0
     for index, module in enumerate(panel.modules):
@@ -638,7 +674,7 @@ def panel_cassette(name: str) -> "Cassette":
         # tags); suffix them so features stay distinguishable.
         label = f"{module}_{index}" if panel.modules.count(module) > 1 else module
         if module == "L":
-            variants = linker_variants()
+            variants = linker_variants(species=species)
             pinned = variants[linker_index % len(variants)]
             linker_index += 1
         else:
@@ -708,6 +744,7 @@ def build_panel_construct(
     spec: "ConstructSpec | None" = None,
     registry: "PartRegistry | None" = None,
     optimizer_config=None,
+    species: str = DEFAULT_SPECIES,
 ):
     """Assemble one panel member as an IVT mRNA template.
 
@@ -735,7 +772,7 @@ def build_panel_construct(
         registry=registry or module_registry(),
         optimizer=CodonOptimizer(optimizer_config) if optimizer_config else None,
     )
-    construct = builder.build(spec, panel_cassette(name))
+    construct = builder.build(spec, panel_cassette(name, species))
     construct.design_notes.append(f"{panel.name} route: {panel.route}")
     construct.design_notes.append(f"{panel.name} asks: {panel.question}")
     return construct

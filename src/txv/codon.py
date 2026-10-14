@@ -69,6 +69,52 @@ HUMAN_CODON_USAGE: dict[str, float] = {
     "TAA": 0.30, "TAG": 0.24, "TGA": 0.47,
 }
 
+# Relative synonymous codon usage in *Mus musculus*, same normalisation as the
+# human table above: fraction of that amino acid's codons, to two decimals.
+#
+# Source: the Mus musculus (taxid 10090) table bundled with
+# `python_codon_tables` (0.1.18), which carries the Kazusa-derived counts. The
+# package's *human* table was checked against HUMAN_CODON_USAGE above before
+# this one was trusted: mean absolute difference 0.005 over 64 codons, which is
+# the rounding.
+#
+# How far it is from human, since that governs how much re-optimising buys:
+# mean absolute difference 0.012, largest 0.040 (Lys AAG/AAA and Asn AAC/AAT),
+# and the single most-used codon changes for exactly one amino acid --
+# proline, human CCC to mouse CCT. The two tables are close, as two mammals
+# should be. Optimising for the readout species is still the right default when
+# the readout species is known.
+MOUSE_CODON_USAGE: dict[str, float] = {
+    "GCA": 0.23, "GCC": 0.38, "GCG": 0.09, "GCT": 0.29,
+    "AGA": 0.22, "AGG": 0.22, "CGA": 0.12, "CGC": 0.17, "CGG": 0.19, "CGT": 0.08,
+    "AAC": 0.57, "AAT": 0.43,
+    "GAC": 0.55, "GAT": 0.45,
+    "TGC": 0.52, "TGT": 0.48,
+    "CAA": 0.26, "CAG": 0.74,
+    "GAA": 0.41, "GAG": 0.59,
+    "GGA": 0.26, "GGC": 0.33, "GGG": 0.23, "GGT": 0.18,
+    "CAC": 0.59, "CAT": 0.41,
+    "ATA": 0.16, "ATC": 0.50, "ATT": 0.34,
+    "CTA": 0.08, "CTC": 0.20, "CTG": 0.39, "CTT": 0.13, "TTA": 0.07, "TTG": 0.13,
+    "AAA": 0.39, "AAG": 0.61,
+    "ATG": 1.00,
+    "TTC": 0.56, "TTT": 0.44,
+    "CCA": 0.29, "CCC": 0.30, "CCG": 0.10, "CCT": 0.31,
+    "AGC": 0.24, "AGT": 0.15, "TCA": 0.14, "TCC": 0.22, "TCG": 0.05, "TCT": 0.20,
+    "ACA": 0.29, "ACC": 0.35, "ACG": 0.10, "ACT": 0.25,
+    "TGG": 1.00,
+    "TAC": 0.57, "TAT": 0.43,
+    "GTA": 0.12, "GTC": 0.25, "GTG": 0.46, "GTT": 0.17,
+    "TAA": 0.28, "TAG": 0.23, "TGA": 0.49,
+}
+
+#: Usage tables by the species the transcript will be read out in.
+CODON_USAGE: dict[str, dict[str, float]] = {
+    "human": HUMAN_CODON_USAGE,
+    "mouse": MOUSE_CODON_USAGE,
+}
+
+
 # Motifs excluded from coding regions by default. IUPAC codes allowed; each is
 # screened on both strands.
 DEFAULT_FORBIDDEN: tuple[str, ...] = (
