@@ -1,15 +1,18 @@
 # Order packages — which one to use
 
-Three packages are kept in step with each other. **Only one is the live route.**
+Four packages are kept in step with each other. **Only one is the live route.**
 
 | package | vector | assembly | status |
 |---|---|---|---|
-| **`pjet12_ivt_units/`** | **pJET1.2/blunt** | **blunt, T4 ligase** | **LIVE — order from this one** |
+| **`pjet12_ivt_units_mouse/`** | **pJET1.2/blunt** | **blunt, T4 ligase** | **LIVE — mouse codons; order from this one** |
+| `pjet12_ivt_units/` | pJET1.2/blunt | blunt, T4 ligase | human codons — superseded for a murine readout |
 | `pvax1_ag_panel/` | pVax1_AG | Gibson into the linearised backbone | superseded |
 | `pvax1_ag_panel_goldengate/` | minimal IVT vector | BsaI Golden Gate | superseded |
 
-The two superseded packages are regenerated from the same module encodings as
-the live one, so they are *consistent*, not abandoned. They are kept because
+The human pJET1.2 package is kept because it is verified and because the only
+thing wrong with it is the species of its codon table — the proteins are
+identical. The two pVax1_AG packages are regenerated from the same module
+encodings as the live one, so they are *consistent*, not abandoned. They are kept because
 they are the fallback if pJET1.2 blunt cloning gives trouble, and because the
 pVax1_AG maps are the only ones that show the design in a vector already in use
 in the lab. They are not what to order today.
@@ -20,7 +23,14 @@ Every package is built from `txv.pvax1_ag.canonical_encodings()`, so a module
 has one DNA sequence across all three. Rebuild all of them after any design
 change:
 
+Both codon variants come from the same code; the species is an argument.
+
 ```
+python scripts/build_pjet_package.py mouse
+python scripts/build_benchling_maps.py mouse
+python scripts/validate_in_silico.py mouse
+python audit/audit_pjet.py mouse
+
 python scripts/build_pjet_package.py
 python scripts/build_pjet_plasmids.py backbone/pJET1.2.gb
 python scripts/build_goldengate_package.py
