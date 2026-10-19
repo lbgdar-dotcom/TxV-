@@ -159,10 +159,31 @@ the T7 core begins at 372 + 20 = 392.
 | Kozak `GCCACC` | 450-455 | 6 |
 | `ATG` | 456-458 | 3 |
 
-The T7 feature has two defensible spans and 18 nt is neither of them: 17 nt
-for the core (392-408, with the `AGG` annotated separately), or 20 nt for the
-kit manual's minimal promoter `TAATACGACTCACTATAAGG` (392-411, with the `AGG`
-nested inside it). A feature ending at 409 is the core plus one base.
+The T7 promoter feature has no canonical length, so the table's 392-408 is one
+convention and not the only right answer. Annotations differ in how many
+transcribed bases they pull into the promoter:
+
+| span | sequence | convention |
+|---|---|---|
+| 392-408, 17 nt | `TAATACGACTCACTATA` | core only, `AGG` annotated separately |
+| 392-409, 18 nt | `TAATACGACTCACTATAA` | core + 1 |
+| 392-410, 19 nt | `TAATACGACTCACTATAAG` | core + 2 -- what **pJET1.2 itself uses** |
+| 392-411, 20 nt | `TAATACGACTCACTATAAGG` | the kit manual's minimum template |
+
+The vector's own `T7 promoter` feature is 19 nt (`TAATACGACTCACTATAGG`, 305-323
+in stock pJET1.2), so the vendor already counts two transcribed bases as part
+of the promoter. Any of these is defensible; pick one and keep it the same
+across all nine maps.
+
+Note the manual's wording: *"Minimum T7 promotor sequences:
+5'-TAATACGACTCACTATAAGG"*. That constrains the **molecule** -- those 20 bases
+must be present on the template -- not the feature boundary on a map. The DNA
+satisfies it however the annotation is drawn.
+
+A feature that overlaps the `AGG` by a base or two is not an error. Base 409 is
+genuinely both the promoter's last annotated base, under the core+1 convention,
+and the first base of the cap1 `AGG`; Benchling allows overlapping features
+precisely for this.
 
 ### Three numbers for one 5' UTR
 
