@@ -42,6 +42,33 @@ and the remainder is our `UTR3` with no mismatch. It decomposes as:
 | 143-281 | 139 nt | mtRNR1 (mitochondrial 12S rRNA) |
 | 282-296 | 15 nt | `ACCCTGGAGCTAGCA`, scar ending in NheI |
 
+### The 3' end straddles a junction
+
+The last 40 nt, `GGGTTGGTCAATTTCGTGCCAGCCACACCCTGGAGCTAGC`, is the stretch
+most likely to look unaccountable, because it is not one element:
+
+```
+GGGTTGGTCAATTTCGTGCCAGCCAC   ACCCTGGAGCTAGC   A
+|---- mtRNR1, 256-281 ----|   |- scar 282-295 -|  296
+          26 nt                     14 nt
+```
+
+Aligned against human mitochondrial DNA it will match and then stop dead at
+`...GCCAGCCAC`, because the native 12S rRNA continues `CGCGGT...` where this
+switches to the scar. The divergence point is the junction, not an error.
+
+The scar is cloning debris: BioNTech assembled the composite in a plasmid, so
+the element carries the sites used to build it at its outer ends -- XhoI at
+1-6, NheI at 290-295. Both are inert here; nothing in this workflow cuts with
+either.
+
+The last 61 nt of any fragment in this panel are therefore:
+
+```
+GGGTTGGTCAATTTCGTGCCAGCCACACCCTGGAGCTAGCA GTCATGCAGTCGATCACTGA
+|---------- end of 3' UTR, 41 nt ---------| |- reverse handle --|
+```
+
 The two motif cores are **butt-joined** -- no linker, no spacer. That matters
 because Orlandini von Niessen et al. (*Mol Ther* 2019;27:824-836) print the
 motif core areas separately and never print a composite: the composite is the
