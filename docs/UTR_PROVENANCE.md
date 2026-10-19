@@ -126,6 +126,45 @@ For a methods section: *"a truncated variant of the mRNA-1273 5' UTR,
 re-headed AGG for cap1 analog compatibility and with the GC-rich 10 nt block
 5' of the Kozak removed."*
 
+## Where the 5' UTR's boundary falls
+
+In a Benchling map the leader reads 44 nt, not 47, whenever the T7 promoter is
+annotated in the kit's 20 nt form `TAATACGACTCACTATAAGG`: that feature swallows
+the `AGG`, and the 5' UTR feature starts after it.
+
+```
+TAATACGACTCACTATA AGG AAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGAGCCACC ATG
+|-- T7 core, 17 -| |- transcribed: 47 nt of 5' UTR --------------|
+|--- KIT_MIN_PROMOTER, 20 -| |- 5' UTR feature as drawn, 44 nt --|
+```
+
+Both are right about the DNA. They disagree about which feature owns the `AGG`,
+and the `AGG` is genuinely both things: the last three bases T7 needs to
+initiate well, and the first three bases of the transcript. On the RNA there is
+no ambiguity -- the 5' UTR is **47 nt**, cap to `A` of `AUG`, and that is the
+number for a methods section.
+
+## How these compare to the literature
+
+**5' UTR -- Ma et al., *Sci Rep* 2024;14:19845** compared five leaders. As IVT
+mRNA the order was beta-globin > albumin > minimal > alpha-globin > CYBA. Ours
+was not among them. The two nearest comparators bracket it: their "minimal"
+leader (promoter, transcription start and Kozak, nothing else) placed 3rd, and
+alpha-globin -- which is BNT162b2's leader, the obvious swap -- placed 4th.
+So the licensed alternative is not an upgrade by this paper's data.
+
+Read the paper's own headline result first: plasmid-screened and
+IVT-mRNA-delivered rankings did not correlate, and CYBA went from best in
+plasmid to worst as mRNA. A ranking that does not survive a change of format
+should not be assumed to survive a change of cell type either -- theirs was
+HEK293T and BHK-T7, not dendritic cells, and not mouse.
+
+**3' UTR -- Orlandini von Niessen et al., *Mol Ther* 2019;27:824-836** is not a
+comparator for ours; it is its source. What ships here is that paper's
+AES-mtRNR1 element as BNT162b2 manufactures it, which differs from the paper's
+own construct in three small ways: mtRNR1 trimmed 142 -> 139 nt, two C->U
+changes in the AES segment, and the XhoI/NheI cloning scars at the outer ends.
+
 ## What is pinned in the suite
 
 - `tests/test_ivt_unit.py::test_utr3_segment_decomposition` -- the 3' UTR's
