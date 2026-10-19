@@ -30,9 +30,23 @@ def validator():
     return module
 
 
-def test_the_shipped_design_passes(validator, capsys):
-    assert validator.main() == 0
+def test_the_shipped_design_passes(validator, capsys, tmp_path):
+    assert validator.main(out_dir=tmp_path) == 0
     assert "no findings" in capsys.readouterr().out
+
+
+def test_the_run_does_not_write_into_the_order_package(validator, tmp_path):
+    """A validation run must not be able to edit what it is validating.
+
+    These negative controls doctor a threshold and then call main(). Before
+    out_dir existed that wrote the doctored report over the shipped one, so
+    the order folder ended up advertising a threshold no design was held to.
+    """
+    shipped = ROOT / "orders" / "pjet12_ivt_units" / "IN_SILICO_REPORT.md"
+    before = shipped.read_bytes()
+    validator.main(out_dir=tmp_path)
+    assert shipped.read_bytes() == before
+    assert (tmp_path / "IN_SILICO_REPORT.md").exists()
 
 
 @pytest.mark.parametrize("threshold,value,expected", [
@@ -42,16 +56,17 @@ def test_the_shipped_design_passes(validator, capsys):
     ("MIN_CAP_MFE", -1.0, "cap-proximal"),
     ("MAX_MFE_PER_NT_SPREAD", 0.01, "MFE/nt varies"),
 ])
-def test_each_threshold_can_fail(validator, monkeypatch, capsys,
+def test_each_threshold_can_fail(validator, monkeypatch, capsys, tmp_path,
                                  threshold, value, expected):
     monkeypatch.setattr(validator, threshold, value)
-    assert validator.main() == 1
+    assert validator.main(out_dir=tmp_path) == 1
     out = capsys.readouterr().out
     assert "FINDING(S)" in out
     assert expected in out
 
 
-def test_a_failing_signal_peptide_call_is_surfaced(validator, monkeypatch, capsys):
+def test_a_failing_signal_peptide_call_is_surfaced(validator, monkeypatch,
+                                                   capsys, tmp_path):
     """Does the script act on the verdict, or just print it?
 
     The peptide itself cannot be swapped out here: the design library validates
@@ -67,16 +82,16 @@ def test_a_failing_signal_peptide_call_is_surfaced(validator, monkeypatch, capsy
         h_region_max=-2.0, minus_one="W", minus_three="W",
         problems=["no hydrophobic h-region (max window KD -2.00)"])
     monkeypatch.setattr(validator, "signal_peptide_call", lambda _: broken)
-    assert validator.main() == 1
+    assert validator.main(out_dir=tmp_path) == 1
     out = capsys.readouterr().out
     assert "h-region" in out
     assert "FINDING(S)" in out
 
 
 def test_a_tm_module_with_no_membrane_span_is_surfaced(validator, monkeypatch,
-                                                       capsys):
+                                                       capsys, tmp_path):
     monkeypatch.setattr(validator, "tm_segments", lambda _: [])
-    assert validator.main() == 1
+    assert validator.main(out_dir=tmp_path) == 1
     assert "cannot span a bilayer" in capsys.readouterr().out
 
 
