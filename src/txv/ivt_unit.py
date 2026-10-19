@@ -72,18 +72,36 @@ KIT_MIN_PROMOTER = "TAATACGACTCACTATAAGG"
 #: longer the verbatim validated sequence and its provenance argument is spent.
 #: That AG start is what the vector's name refers to.
 #:
-#: It also stands on its own: 34% GC, no upstream AUG, no AATAAA, and the
-#: lowest secondary structure over the start codon of anything considered here
-#: (see scripts/validate_in_silico.py).
+#: It also stands on its own: 34% GC, no upstream AUG, no AATAAA, no CpG, and
+#: the least cap-proximal structure of anything considered here
+#: (see scripts/validate_in_silico.py and the table below).
 #:
-#: Likely provenance, recorded as a lead and not as a citation: this is one
-#: base from the mRNA-1273 (Spikevax) 5' UTR, which reads GGG where this reads
-#: AGG -- exactly the re-heading the kit's cap chemistry forces. If that holds,
-#: the leader is not unprovenanced at all but a licensed 5' UTR with its first
-#: trinucleotide swapped. It is unconfirmed: the primary sequence is in a
-#: Moderna patent (reported as SEQ ID NO 181) and neither that patent nor NCBI
-#: resolves from this environment. Treat the sequence as validated by its own
-#: measured properties above until someone diffs it against that record.
+#: Provenance, now measured rather than guessed. This is a truncated variant of
+#: the mRNA-1273 (Spikevax) 5' UTR, which the Stanford direct-sequencing
+#: assembly (Jeong et al., github.com/NAalytics, Figure 2) gives as 57 nt:
+#:
+#:     GGGAAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGACCCCGGCGCCGCCACC
+#:     AGGAAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGA..........GCCACC
+#:
+#: Two differences, not one. G1 -> A is the re-heading the kit's cap chemistry
+#: forces and would be needed whatever leader went here. The other is a 10 nt
+#: deletion of CCCCGGCGCC immediately 5' of the Kozak. The 41 nt body and the
+#: GCCACC terminus are identical.
+#:
+#: Keeping the truncation, because the deleted block is the worst part of the
+#: element and sits where it matters most. Measured head to head over all nine
+#: mouse constructs (scripts/validate_in_silico.py metrics, ViennaRNA):
+#:
+#:     leader                     GC     CpG o/e   cap MFE      AUG access
+#:     this 47 nt                 34.0%  0 (0.00)  -4.4..-6.6   0.513-0.542
+#:     mRNA-1273 57 nt, AGG-head  45.6%  3 (1.04)  -5.4..-11.1  0.454-0.547
+#:
+#: Both clear every threshold. The truncation buys roughly half the
+#: cap-proximal structure and removes all three CpGs -- and CpG o/e 1.04 over
+#: the element would be the only part of the transcript above the 0.80 the
+#: panel is held to. It costs start accessibility on P5/P7/P8 only, by ~0.02,
+#: against a 0.30 floor. Restoring the full licensed leader would buy
+#: provenance at the price of the properties the leader is here for.
 LEADER = "AGGAAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGAGCCACC"
 
 #: BNT162b2 3' UTR, verbatim: the amino-terminal enhancer of split (AES) 3' UTR

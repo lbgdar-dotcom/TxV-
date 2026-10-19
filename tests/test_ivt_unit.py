@@ -220,3 +220,32 @@ def test_utr3_segment_decomposition():
     # it sits in the second segment, not the first.
     assert "AATAAA" in mtrnr1
     assert "AATAAA" not in aes
+
+
+#: mRNA-1273 5' UTR as read off the Stanford direct-sequencing assembly
+#: (Jeong et al., Figure 2). Pinned here so the claim the LEADER comment makes
+#: about its own ancestry is a thing the suite checks, not a thing it asserts.
+MRNA_1273_UTR5 = "GGGAAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGACCCCGGCGCCGCCACC"
+
+
+def test_leader_is_a_truncated_mrna_1273_utr5():
+    """Two differences from the licensed leader, and both are deliberate.
+
+    G1 -> A is forced by the kit's cap chemistry. The other is a 10 nt
+    deletion of a GC-rich, CpG-bearing block sitting directly on the Kozak.
+    Anything that silently restored it would be undoing a measured choice.
+    """
+    assert len(MRNA_1273_UTR5) == 57
+    assert len(LEADER) == 47
+
+    assert MRNA_1273_UTR5[0] == "G" and LEADER[0] == "A"
+    assert MRNA_1273_UTR5[1:41] == LEADER[1:41]          # shared body
+    assert MRNA_1273_UTR5.endswith("GCCACC")
+    assert LEADER.endswith("GCCACC")
+
+    deleted = MRNA_1273_UTR5[41:-6]
+    assert deleted == "CCCCGGCGCC"
+    assert "CG" in deleted and "CG" not in LEADER        # the CpGs it carried
+
+    # Reconstructing the licensed leader from this one has to be explicit.
+    assert "G" + LEADER[1:41] + deleted + "GCCACC" == MRNA_1273_UTR5
