@@ -144,6 +144,39 @@ initiate well, and the first three bases of the transcript. On the RNA there is
 no ambiguity -- the 5' UTR is **47 nt**, cap to `A` of `AUG`, and that is the
 number for a methods section.
 
+### Expected feature coordinates in the pJET1.2 map
+
+The 5' end is identical on all nine constructs, so these positions hold for
+every one of them. Insert goes in blunt at 372, forward handle is 20 nt, so
+the T7 core begins at 372 + 20 = 392.
+
+| feature | 1-based, inclusive | length |
+|---|---|---|
+| forward primer handle | 372-391 | 20 |
+| T7 core `TAATACGACTCACTATA` | 392-408 | 17 |
+| cap1 `AGG` | 409-411 | 3 |
+| 5' UTR body | 412-449 | 38 |
+| Kozak `GCCACC` | 450-455 | 6 |
+| `ATG` | 456-458 | 3 |
+
+The T7 feature has two defensible spans and 18 nt is neither of them: 17 nt
+for the core (392-408, with the `AGG` annotated separately), or 20 nt for the
+kit manual's minimal promoter `TAATACGACTCACTATAAGG` (392-411, with the `AGG`
+nested inside it). A feature ending at 409 is the core plus one base.
+
+### Three numbers for one 5' UTR
+
+Depending on which flanking pieces a map attributes elsewhere, the same DNA
+reads as 38, 44 or 47 nt:
+
+| | what it covers |
+|---|---|
+| 38 nt | body only -- `AGG` and Kozak annotated as their own features |
+| 44 nt | body + Kozak -- `AGG` inside the 20 nt T7 promoter feature |
+| **47 nt** | `AGG` + body + Kozak -- **cap to AUG, the 5' UTR on the RNA** |
+
+All three are right about the DNA. 47 is the one for a methods section.
+
 ## How these compare to the literature
 
 **5' UTR -- Ma et al., *Sci Rep* 2024;14:19845** compared five leaders. As IVT
