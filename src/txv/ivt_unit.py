@@ -75,10 +75,51 @@ KIT_MIN_PROMOTER = "TAATACGACTCACTATAAGG"
 #: It also stands on its own: 34% GC, no upstream AUG, no AATAAA, and the
 #: lowest secondary structure over the start codon of anything considered here
 #: (see scripts/validate_in_silico.py).
+#:
+#: Likely provenance, recorded as a lead and not as a citation: this is one
+#: base from the mRNA-1273 (Spikevax) 5' UTR, which reads GGG where this reads
+#: AGG -- exactly the re-heading the kit's cap chemistry forces. If that holds,
+#: the leader is not unprovenanced at all but a licensed 5' UTR with its first
+#: trinucleotide swapped. It is unconfirmed: the primary sequence is in a
+#: Moderna patent (reported as SEQ ID NO 181) and neither that patent nor NCBI
+#: resolves from this environment. Treat the sequence as validated by its own
+#: measured properties above until someone diffs it against that record.
 LEADER = "AGGAAATAAGAGAGAAAAGAAGAGTAAGAAGAAATATAAGAGCCACC"
 
 #: BNT162b2 3' UTR, verbatim: the amino-terminal enhancer of split (AES) 3' UTR
 #: followed by the mitochondrially encoded 12S rRNA (mtRNR1) element, 296 nt.
+#:
+#: "Verbatim" is now a measurement, not a claim. Diffed base for base against
+#: the published BNT162b2 drug-substance sequence: take everything after the
+#: spike ORF's tandem stop (TGA TGA) and up to the end of the deposited
+#: sequence, and it is these 296 nt with no mismatch. See
+#: tests/test_ivt_unit.py::test_utr3_segment_decomposition for the breakdown,
+#: which lands on the segment lengths reported for the vaccine:
+#:
+#:     1-6     CTCGAG            XhoI, the two trinucleotides after the stop
+#:     7-142   AES core, 136 nt  the core area length given in Table 1 of
+#:                               Orlandini von Niessen 2019 for the AES motif
+#:     143-281 mtRNR1, 139 nt    a 3 nt trim of that paper's 142 nt core
+#:     282-296 ACCCTGGAGCTAGCA   15 nt scar ending in NheI
+#:
+#: Two things follow that are worth having in writing. The two segments are
+#: butt-joined -- there is no linker or spacer between them, so the composite
+#: really is core-plus-core, which is how the paper's 64 double-UTRs were
+#: built. And the order is AES first: this is the element written F-I in the
+#: BioNTech literature, F = AES, I = mtRNR1. The paper's best in-vitro
+#: performer is named the other way round (mtRNR1-AES); both were top of the
+#: screen, and the order shipped here is the one carried by a licensed product
+#: and by the paper's BALB/c in-vivo arm.
+#:
+#: The AES segment is reported to carry two C->U changes relative to the
+#: genomic AES 3' UTR, introduced to remove predicted miRNA sites. So this is
+#: the manufactured sequence rather than the wild-type one -- which is the
+#: version with the efficacy data behind it.
+#:
+#: Species: nothing here is translated, so there is no codon usage to adapt.
+#: The screen that produced these motifs was run in human dendritic cells, and
+#: the composite was then validated in BALB/c mice, so the element already has
+#: evidence in both the target cell type and the target species.
 #:
 #: This replaces the 99 nt pVax1_AG carried over when these units were first
 #: made self-contained. That carry-over was a mistake: the units no longer

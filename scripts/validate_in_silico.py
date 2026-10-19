@@ -55,11 +55,20 @@ MAX_CPG_OE = 0.80
 MAX_MFE_PER_NT_SPREAD = 0.25
 
 
-def main(species: str = DEFAULT_SPECIES) -> int:
+def main(species: str = DEFAULT_SPECIES, out_dir: Path | None = None) -> int:
+    """Validate the panel; write the report to `out_dir`, or beside the package.
+
+    `out_dir` exists for the negative-control tests, which move a threshold to
+    force a finding. Without it those runs wrote their doctored report straight
+    over the shipped one, so whichever case ran last decided what the order
+    folder claimed its thresholds were. A test must not be able to edit a
+    deliverable.
+    """
     if species not in PACKAGES:
         print(f"no package for {species!r}; have {sorted(PACKAGES)}")
         return 1
-    OUT = PACKAGES[species]
+    OUT = PACKAGES[species] if out_dir is None else Path(out_dir)
+    OUT.mkdir(parents=True, exist_ok=True)
     problems: list[tuple[str, str]] = []
     rows = []
 

@@ -198,3 +198,25 @@ def test_a_tail_shorter_than_the_minimum_anneal_is_not_a_binding_site():
     stub = "A" * 40 + REV_HANDLE[-8:]      # only 8 nt of real annealing
     assert simulate_pcr(unit.sequence, FWD_PRIMER, revcomp(stub),
                         circular=False) == []
+
+
+def test_utr3_segment_decomposition():
+    """The 3' UTR is a butt join of two motif cores, not a free-form sequence.
+
+    Pinning the boundaries here means a future edit to UTR3 has to say which
+    segment it is editing. The lengths are the ones reported for BNT162b2 and
+    for the AES core area in Orlandini von Niessen 2019; the junction carries
+    no linker, which is the point the decomposition exists to record.
+    """
+    xho, aes, mtrnr1, scar = UTR3[:6], UTR3[6:142], UTR3[142:281], UTR3[281:]
+
+    assert xho == "CTCGAG"
+    assert len(aes) == 136
+    assert len(mtrnr1) == 139
+    assert scar == "ACCCTGGAGCTAGCA"
+    assert xho + aes + mtrnr1 + scar == UTR3
+
+    # AES comes first: the mitochondrial half is the one carrying AATAAA, and
+    # it sits in the second segment, not the first.
+    assert "AATAAA" in mtrnr1
+    assert "AATAAA" not in aes
