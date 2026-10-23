@@ -306,6 +306,12 @@ A duplicated Kozak is in itself benign: what would hurt is an upstream AUG, and
 `GCCACCGCCACC` contains none. Whatever is chosen has to go on all nine
 identically, or initiation context becomes a second variable alongside routing.
 
+**The published element carries one `GCCACC`**, so the middle row is the one
+with literature behind it and the table poses no dilemma: a duplicate is an
+editing artifact to remove, and dropping the Kozak entirely scores a little
+better in the model but matches nothing anyone has measured. The 59 nt form is
+the one to build.
+
 ## What is pinned in the suite
 
 - `tests/test_ivt_unit.py::test_utr3_segment_decomposition` -- the 3' UTR's
