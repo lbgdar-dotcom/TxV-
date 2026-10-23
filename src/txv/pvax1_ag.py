@@ -547,8 +547,10 @@ PANEL: tuple[PanelConstruct, ...] = (
     PanelConstruct(
         "P5", ("MA", "HA", "L", "A", "L", "B", "L", "E5"),
         "cytosolic (+E5 degron, free C-terminus)",
-        "Cytosolic baseline, and the only construct where the degron has a free "
-        "C-terminus -- so this is the degron-positive comparator.",
+        "Cytosolic baseline. E5 ends the protein here as it does in P0-P4, but "
+        "this is the only construct where it does so on an untethered chain "
+        "rather than a membrane-anchored one, which makes it the cleanest "
+        "degron-positive comparator for P7/P8.",
         ("A", "B"),
     ),
     PanelConstruct(
@@ -564,7 +566,10 @@ PANEL: tuple[PanelConstruct, ...] = (
         "dual: A cytosolic + B lysosomal",
         "Dual route from one transcript: A to the proteasome, B to the "
         "endolysosome. Note E5 is internal here, upstream of P2A, so it has no "
-        "free C-terminus and is expected to be weak.", ("A", "B"),
+        "free C-terminus and is expected to be weak. Route is also confounded "
+        "with ORF position -- A is cytosolic AND upstream, B is lysosomal AND "
+        "downstream -- and no construct in this panel separates the two.",
+        ("A", "B"),
     ),
     PanelConstruct(
         "P8",
@@ -572,7 +577,11 @@ PANEL: tuple[PanelConstruct, ...] = (
          "L", "LAMP1_TMT"),
         "dual: B cytosolic + A lysosomal",
         "Swap control for P7: is the effect about the route or about the "
-        "antigen?", ("B", "A"),
+        "antigen? It swaps ORF position along with route, so it answers that "
+        "question and not whether position itself matters. HA marks the "
+        "cytosolic product and FLAG the lysosomal one in both, so each "
+        "product can be quantified separately and presentation normalised "
+        "per unit protein.", ("B", "A"),
     ),
 )
 
