@@ -21,7 +21,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from txv.genbank_io import GenBankFeature, GenBankRecord, write_genbank  # noqa: E402
 from txv.mhc2_routing import EXTERNAL, PANEL, module_protein  # noqa: E402
-from txv.pvax1_ag import canonical_encodings, linker_variants  # noqa: E402
+from txv.codon import CodonOptimizer  # noqa: E402
+from txv.pvax1_ag import (  # noqa: E402
+    canonical_encodings, linker_variants, panel_optimizer_config,
+)
 
 SPECIES = "mouse"
 OUT = ROOT / "orders" / "mhc2_routing"
@@ -69,6 +72,15 @@ def module_protein_all(construct):
 def main() -> int:
     canon = canonical_encodings(species=SPECIES)
     linkers = linker_variants(species=SPECIES)
+
+    # Modules this panel adds are optimised once each, with the same settings
+    # the shared ones were built under, and reused everywhere they appear --
+    # the canonicalisation rule, extended to the new library rather than
+    # abandoned for it.
+    opt = CodonOptimizer(panel_optimizer_config(SPECIES))
+    for name, ext in EXTERNAL.items():
+        if ext.resolved and name not in canon:
+            canon[name] = opt.optimize(ext.sequence, add_stop=None).dna
     OUT.mkdir(parents=True, exist_ok=True)
     built, skipped = [], []
 

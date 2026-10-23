@@ -1,0 +1,40 @@
+LOCUS       R3                      342 bp ds-DNA     linear     23-OCT-2026
+DEFINITION  R3: H2-M beta tail: to the MHC II loading compartment
+FEATURES             Location/Qualifiers
+     CDS             1..342
+                     /label="R3"
+                     /note="H2-M beta tail: to the MHC II
+                     loading compartment"
+                     /translation="MAALWLLLLVLSLHCMGAGYPYD
+                     VPDYAGGGGSEEFAKFASFEAQGALANIAVDKANLDV
+                     MKGGGGSTVKVSVSAATLGLGFIIFCVGFFRWRKSHS
+                     SSYTPLSGSTYPEGRH"
+     misc_feature    1..57
+                     /label="H2DMB_SP"
+                     /note="MAALWLLLLVLSLHCMGAG"
+     misc_feature    58..84
+                     /label="HA"
+                     /note="YPYDVPDYA"
+     misc_feature    85..99
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    100..186
+                     /label="B"
+                     /note="EEFAKFASFEAQGALANIAVDKANLDVMK"
+     misc_feature    187..201
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    202..339
+                     /label="H2DMB_TMT"
+                     /note="TVKVSVSAATLGLGFIIFCVGFFRWRKSHS
+                     SSYTPLSGSTYPEGRH"
+     misc_feature    340..342
+                     /label="stop"
+ORIGIN
+        1 atggcagctc tttggctgct tctgcttgtg ctgtctctgc attgcatggg agcaggatac
+       61 ccatacgacg tgccagatta cgccggaggc ggaggcagcg aagagttcgc aaagttcgcc
+      121 agcttcgaag cacagggagc acttgcaaac attgcagtgg ataaggccaa cctggacgtg
+      181 atgaagggcg gaggcggatc taccgtgaaa gtgtctgtga gcgcagctac actgggactg
+      241 ggattcatta tcttctgcgt gggcttcttt aggtggagaa agagccactc tagtagctac
+      301 accccactgt ctggaagcac atacccagaa ggaagacact ga
+//

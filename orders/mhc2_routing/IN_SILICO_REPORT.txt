@@ -1,0 +1,84 @@
+== translation fidelity ==
+  R0   168 bp   55 aa  OK
+  R1   453 bp  150 aa  OK
+  R2   327 bp  108 aa  OK
+  R3   342 bp  113 aa  OK
+  R4   675 bp  224 aa  OK
+  R5   513 bp  170 aa  OK
+  R6   237 bp   78 aa  OK
+
+== composition ==
+            GC    CAI  CpG  /100nt   o/e   minGC40  maxGC40
+  R0     57.1%  0.873   12     7.1  0.93     47.5%    67.5%
+  R1     53.6%  0.886   16     3.5  0.49     45.0%    67.5%
+  R2     55.7%  0.816   15     4.6  0.60     45.0%    67.5%
+  R3     54.4%  0.861   15     4.4  0.60     42.5%    67.5%
+  R4     51.4%  0.886   14     2.1  0.32     45.0%    62.5%
+  R5     52.6%  0.914   25     4.9  0.73     45.0%    67.5%
+  R6     54.4%  0.861   10     4.2  0.57     47.5%    67.5%
+
+== direct repeats (>= 12 nt, recombination risk) ==
+  R0: none
+  R1: none
+  R2: none
+  R3: none
+  R4: none
+  R5: none
+  R6: none
+
+== module canonicalisation across the panel ==
+  B            1 encoding(s)  OK
+  CTLA4_SP     1 encoding(s)  OK
+  CTLA4_TMT    1 encoding(s)  OK
+  E5           1 encoding(s)  OK
+  EA_CORE      1 encoding(s)  OK
+  H2DMB_SP     1 encoding(s)  OK
+  H2DMB_TMT    1 encoding(s)  OK
+  HA           1 encoding(s)  OK
+  II_C         1 encoding(s)  OK
+  II_N         1 encoding(s)  OK
+  LAMP1_SP     1 encoding(s)  OK
+  LAMP1_TMT    1 encoding(s)  OK
+  LC3B         1 encoding(s)  OK
+  MA           1 encoding(s)  OK
+  (L is excluded by design: linkers cycle through 4 encodings)
+
+== routing elements ==
+  CTLA4_SP   signal peptide: no problems
+  LAMP1_SP   signal peptide: no problems
+  H2DMB_SP   signal peptide: no problems
+  CTLA4_TMT  membrane span(s): 1
+  LAMP1_TMT  membrane span(s): 1
+  H2DMB_TMT  membrane span(s): 1
+
+== topology constraints ==
+  R2: LAMP1 GYQTI must be terminal -- OK
+  R5: LC3B must end at the free Gly -- OK
+  R4: Ii must carry no N-terminal tag -- OK
+  R4: Ii tag must be C-terminal -- OK
+  R4: Ea must sit in the CLIP register -- OK
+  R3: H2-DM sorting motif must be present -- OK
+
+== folding, against the HBB leader as representative context ==
+  (ViennaRNA on unmodified RNA; the transcript is m1Psi-substituted,
+   and the real 5' context is whichever leader these are cloned into)
+  R0  AUG accessibility 0.531  cap-proximal MFE  -15.2  MFE/nt -0.329
+  R1  AUG accessibility 0.439  cap-proximal MFE  -15.7  MFE/nt -0.334
+  R2  AUG accessibility 0.513  cap-proximal MFE  -15.2  MFE/nt -0.340
+  R3  AUG accessibility 0.484  cap-proximal MFE  -15.2  MFE/nt -0.345
+  R4  AUG accessibility 0.496  cap-proximal MFE  -13.8  MFE/nt -0.306
+  R5  AUG accessibility 0.531  cap-proximal MFE  -15.2  MFE/nt -0.297
+  R6  AUG accessibility 0.439  cap-proximal MFE  -15.7  MFE/nt -0.293
+
+== sequence provenance ==
+  EA_CORE    already in use in this project as part of module B
+  H2DMB_SP   ONE source (UniRef90 P35737). H2-DMb1 is polymorphic between strains and neighbouring records in the same search were H2-DMb2, a different gene. VERIFY before ordering.
+  H2DMB_TMT  ONE source. Same caveat as H2DMB_SP; one position in the tail (YTPL-S-GST here, YTPL-P-GST in H2-DMb2 and other species) differs between records.
+  II_C       3 repositories; same corroboration as II_N
+  II_N       3 repositories; independently corroborated by CLIP and Ii peptides eluted from mouse BMDC MHC II in a published mass-spectrometry dataset (FLYQQQGRLDK, SGPLEYPQL, KPVSQMRMATPLLMRPM all map into it)
+  LC3B       6 independent repositories plus PDB 5WRD, all identical
+
+1 ACCEPTED DEVIATION(S) -- documented, not fixed:
+  [R0] CpG o/e 0.93 over only 168 nt. Every module is canonical and shared, so this cannot be re-optimised without breaking comparability; the same modules give 0.83 at 270 nt in P5. Density is 7.1 CpG/100 nt, the highest here because this construct is the shortest and carries none of the CpG-poor routing modules.
+
+no findings: all seven pass every check

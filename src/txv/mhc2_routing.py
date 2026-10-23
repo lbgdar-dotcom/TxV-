@@ -39,42 +39,83 @@ class ExternalModule:
         return self.sequence is not None
 
 
-#: The three modules this panel needs and does not have. UniProt, NCBI and
-#: Ensembl are all unreachable from the build environment, so these are left
-#: empty on purpose. Fill `sequence` from the named record and the build
-#: completes; leave it and the build skips that construct and says so.
+#: Sequences retrieved from UniProt records mirrored in public GitHub
+#: repositories, because UniProt, NCBI and Ensembl are all unreachable from
+#: this environment. Each carries the number of independent sources it was
+#: seen in; that number is the confidence, and it is not the same for all
+#: three. Verify against the named accession before ordering synthesis.
 EXTERNAL: dict[str, ExternalModule] = {
     "H2DMB_SP": ExternalModule(
-        "H2DMB_SP", "H2-DMb1 (H2-M beta chain)", "Mus musculus",
-        "signal peptide only, residues 1 to the signal peptidase site",
-        "N-terminal entry into the secretory pathway, matched to the "
-        "H2-DM beta tail below so the pair is one protein's own.",
+        "H2DMB_SP", "H2-DMb1, UniProt P35737 (DMB_MOUSE)", "Mus musculus",
+        "residues 1-19, the signal peptide",
+        "Entry into the secretory pathway, matched to the H2-DM beta tail "
+        "below. The cut is placed at 19 because PDB 1K8I chain B begins "
+        "GFVAHVEST, which is residue 20 of the precursor.",
+        "MAALWLLLLVLSLHCMGAG",
     ),
     "H2DMB_TMT": ExternalModule(
-        "H2DMB_TMT", "H2-DMb1 (H2-M beta chain)", "Mus musculus",
-        "transmembrane domain through the native C-terminus, which must "
-        "retain the tyrosine-based cytoplasmic sorting motif intact and "
-        "terminal",
-        "The MIIC-targeting determinant. This is the module the construct "
-        "exists to test, so a truncation that clips the motif silently "
-        "produces a negative result that means nothing.",
+        "H2DMB_TMT", "H2-DMb1, UniProt P35737 (DMB_MOUSE)", "Mus musculus",
+        "residues 216-261: transmembrane through the native C-terminus",
+        "The MIIC-targeting determinant. txv.insilico.tm_segments puts the "
+        "membrane span at 216-240 and the YTPL sorting motif sits at 248-251, "
+        "ten residues from the end -- so unlike LAMP1's GYQTI this motif is "
+        "internal and does not have to be terminal.",
+        "TVKVSVSAATLGLGFIIFCVGFFRWRKSHSSSYTPLSGSTYPEGRH",
     ),
-    "II_CLIP_SCAFFOLD": ExternalModule(
-        "II_CLIP_SCAFFOLD", "CD74 / invariant chain (Ii p31)", "Mus musculus",
-        "full ORF, with the CLIP segment excised and its boundaries recorded "
-        "so the epitope can be dropped into that register",
-        "Type II membrane protein: the N-terminal cytoplasmic tail carries "
-        "the di-leucine endosomal targeting motifs and must not be modified "
-        "or tagged.",
+    "II_N": ExternalModule(
+        "II_N", "CD74 / invariant chain p31, UniProt P04441", "Mus musculus",
+        "p31 residues 1-84, i.e. everything N-terminal to CLIP",
+        "Type II membrane protein. The cytoplasmic N-terminus carries the "
+        "di-leucine endosomal targeting motifs, so it takes no signal peptide "
+        "and no N-terminal tag.",
+        "MDDQRDLISNHEQLPILGNRPREPERCSRGALYTGVSVLVALLLAGQATTAYFLYQQQGR"
+        "LDKLTITSQNLQLESLRMKLPKSA",
+    ),
+    "EA_CORE": ExternalModule(
+        "EA_CORE", "Ea 52-68", "Mus musculus",
+        "the 17-residue I-A(b)-binding core read out by Y-Ae",
+        "Drops into the CLIP register. CLIP is p31 85-101, also 17 residues, "
+        "so the substitution is length-neutral and the flanking register is "
+        "preserved.",
+        "ASFEAQGALANIAVDKA",
+    ),
+    "II_C": ExternalModule(
+        "II_C", "CD74 / invariant chain p31, UniProt P04441", "Mus musculus",
+        "p31 residues 102-215, i.e. everything C-terminal to CLIP",
+        "Carries the trimerisation region. The lumenal C-terminus is where a "
+        "tag can go, since the N-terminus cannot take one.",
+        "SMDNMLLGPVKNVTKYGNMTQDHVMHLLTRSGPLEYPQLKGTFPENLKHLKNSMDGVNWK"
+        "IFESWMKQWLLFEMSKNSLEEKKPTEAPPKVLTKMEDLSSGLGVTRQELGQVTL",
     ),
     "LC3B": ExternalModule(
-        "LC3B", "MAP1LC3B (LC3B)", "Mus musculus",
-        "residues 1-120, ending at the glycine that ATG4 exposes; nothing "
-        "may follow it",
-        "Autophagosome delivery. The C-terminal glycine must stay free for "
-        "lipidation, so this module is terminal by construction and cannot "
-        "carry a downstream tag or stop-adjacent element.",
+        "LC3B", "MAP1LC3B, UniProt Q9CQV6 (MLP3B_MOUSE)", "Mus musculus",
+        "residues 1-120, ending at the glycine ATG4 exposes",
+        "Autophagosome delivery. The propeptide TAMAV (121-125) is removed "
+        "here so the construct already presents the free C-terminal glycine; "
+        "nothing may follow it.",
+        "MPSEKTFKQRRSFEQRVEDVRLIREQHPTKIPVIIERYKGEKQLPVLDKTKFLVPDHVNM"
+        "SELIKIIRRRLQLNANQAFFLLVNGHSMVSVSTPISEVYESERDEDGFLYMVYASQETFG",
     ),
+}
+
+#: How many independent public mirrors each sequence was seen in, and what
+#: else corroborates it. This is the honest confidence, and it differs:
+#: H2-DMb1 came from one source and the gene is polymorphic between mouse
+#: strains, so it is the one to check before committing money to it.
+PROVENANCE: dict[str, str] = {
+    "LC3B": "6 independent repositories plus PDB 5WRD, all identical",
+    "II_N": "3 repositories; independently corroborated by CLIP and Ii "
+            "peptides eluted from mouse BMDC MHC II in a published "
+            "mass-spectrometry dataset (FLYQQQGRLDK, SGPLEYPQL, "
+            "KPVSQMRMATPLLMRPM all map into it)",
+    "II_C": "3 repositories; same corroboration as II_N",
+    "EA_CORE": "already in use in this project as part of module B",
+    "H2DMB_SP": "ONE source (UniRef90 P35737). H2-DMb1 is polymorphic "
+                "between strains and neighbouring records in the same search "
+                "were H2-DMb2, a different gene. VERIFY before ordering.",
+    "H2DMB_TMT": "ONE source. Same caveat as H2DMB_SP; one position in the "
+                 "tail (YTPL-S-GST here, YTPL-P-GST in H2-DMb2 and other "
+                 "species) differs between records.",
 }
 
 
@@ -137,7 +178,7 @@ PANEL: tuple[RoutingConstruct, ...] = (
         "partner, so this tests the targeting determinant, not the enzyme.",
     ),
     RoutingConstruct(
-        "R4", ("II_CLIP_SCAFFOLD",),
+        "R4", ("II_N", "EA_CORE", "II_C", "HA"),
         "invariant chain, epitope in the CLIP register",
         "Using the class II delivery system itself, rather than arriving in "
         "the same compartment and competing for loading, raises productive "

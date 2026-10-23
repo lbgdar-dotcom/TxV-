@@ -1,0 +1,46 @@
+LOCUS       R5                      513 bp ds-DNA     linear     23-OCT-2026
+DEFINITION  R5: macroautophagy: antigen into the autophagosome
+FEATURES             Location/Qualifiers
+     CDS             1..513
+                     /label="R5"
+                     /note="macroautophagy: antigen into
+                     the autophagosome"
+                     /translation="MAYPYDVPDYAGGGGSEEFAKFA
+                     SFEAQGALANIAVDKANLDVMKGGGGSMPSEKTFKQR
+                     RSFEQRVEDVRLIREQHPTKIPVIIERYKGEKQLPVL
+                     DKTKFLVPDHVNMSELIKIIRRRLQLNANQAFFLLVN
+                     GHSMVSVSTPISEVYESERDEDGFLYMVYASQETFG"
+     misc_feature    1..6
+                     /label="MA"
+                     /note="MA"
+     misc_feature    7..33
+                     /label="HA"
+                     /note="YPYDVPDYA"
+     misc_feature    34..48
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    49..135
+                     /label="B"
+                     /note="EEFAKFASFEAQGALANIAVDKANLDVMK"
+     misc_feature    136..150
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    151..510
+                     /label="LC3B"
+                     /note="MPSEKTFKQRRSFEQRVEDVRLIREQHPTK
+                     IPVIIERYKGEKQLPVLDKTKFLVPDHVNMSELIKII
+                     RRRLQLNANQAFFLLVNGHSMVSVSTPISEVYESERD
+                     EDGFLYMVYASQETFG"
+     misc_feature    511..513
+                     /label="stop"
+ORIGIN
+        1 atggcatacc catacgacgt gccagattac gccggaggcg gaggcagcga agagttcgca
+       61 aagttcgcca gcttcgaagc acagggagca cttgcaaaca ttgcagtgga taaggccaac
+      121 ctggacgtga tgaagggcgg aggcggatct atgccaagcg agaagacctt caagcagaga
+      181 aggagcttcg aacagagagt ggaagacgtg agactgatca gagaacagca cccaaccaag
+      241 atcccagtga tcattgagag gtacaaggga gagaagcagc tgccagtgct ggataagaca
+      301 aagtttctgg tgccagacca cgtgaacatg agcgagctga tcaagattat caggagaagg
+      361 ctgcagctga acgcaaacca ggcattcttt cttctggtga acggacacag catggtgtct
+      421 gtgagcacac caattagcga agtgtacgag agcgagagag atgaggacgg atttctgtac
+      481 atggtgtacg caagccagga gacattcggc tga
+//

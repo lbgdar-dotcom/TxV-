@@ -1,0 +1,47 @@
+LOCUS       R4                      675 bp ds-DNA     linear     23-OCT-2026
+DEFINITION  R4: invariant chain, epitope in the CLIP register
+FEATURES             Location/Qualifiers
+     CDS             1..675
+                     /label="R4"
+                     /note="invariant chain, epitope in
+                     the CLIP register"
+                     /translation="MDDQRDLISNHEQLPILGNRPRE
+                     PERCSRGALYTGVSVLVALLLAGQATTAYFLYQQQGR
+                     LDKLTITSQNLQLESLRMKLPKSAASFEAQGALANIA
+                     VDKASMDNMLLGPVKNVTKYGNMTQDHVMHLLTRSGP
+                     LEYPQLKGTFPENLKHLKNSMDGVNWKIFESWMKQWL
+                     LFEMSKNSLEEKKPTEAPPKVLTKMEDLSSGLGVTRQ
+                     ELGQVTLYPYDVPDYA"
+     misc_feature    1..252
+                     /label="II_N"
+                     /note="MDDQRDLISNHEQLPILGNRPREPERCSRG
+                     ALYTGVSVLVALLLAGQATTAYFLYQQQGRLDKLTIT
+                     SQNLQLESLRMKLPKSA"
+     misc_feature    253..303
+                     /label="EA_CORE"
+                     /note="ASFEAQGALANIAVDKA"
+     misc_feature    304..645
+                     /label="II_C"
+                     /note="SMDNMLLGPVKNVTKYGNMTQDHVMHLLTR
+                     SGPLEYPQLKGTFPENLKHLKNSMDGVNWKIFESWMK
+                     QWLLFEMSKNSLEEKKPTEAPPKVLTKMEDLSSGLGV
+                     TRQELGQVTL"
+     misc_feature    646..672
+                     /label="HA"
+                     /note="YPYDVPDYA"
+     misc_feature    673..675
+                     /label="stop"
+ORIGIN
+        1 atggacgatc agagagatct gatcagcaac cacgaacagc tgccaatcct gggaaataga
+       61 ccaagagagc cagagagatg tagcagagga gccctgtata caggagtgtc tgtgctggtt
+      121 gcactgcttc tggcaggaca ggcaacaact gcatatttcc tgtaccagca acagggcaga
+      181 ctggacaaac tgacaatcac aagccagaac ctgcagctgg aaagcctgag aatgaaactg
+      241 ccaaagagcg ccgccagctt tgaagcacag ggagcactgg caaatatcgc agtggataag
+      301 gccagcatgg acaacatgct gttgggacca gtgaagaacg tgaccaagta cggaaacatg
+      361 acacaggacc atgtgatgca cctgctcaca agatctggac cactggaata tccacagctg
+      421 aagggaacct tcccagagaa cctgaaacac ctgaagaaca gcatggacgg agtgaactgg
+      481 aagatcttcg aaagctggat gaagcagtgg ctcctgttcg aaatgagcaa gaacagcctg
+      541 gaagagaaga aacccacaga ggcacctcca aaagtgctga caaagatgga agacctgagc
+      601 tccggactgg gagttacaag acaggaactt ggacaggtga cactgtaccc atacgacgtg
+      661 ccagattacg cctga
+//
