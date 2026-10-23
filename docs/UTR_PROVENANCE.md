@@ -219,6 +219,57 @@ AES-mtRNR1 element as BNT162b2 manufactures it, which differs from the paper's
 own construct in three small ways: mtRNR1 trimmed 142 -> 139 nt, two C->U
 changes in the AES segment, and the XhoI/NheI cloning scars at the outer ends.
 
+## The TMSB10 alternative, evaluated
+
+A candidate pair raised for comparison, from two papers by what appears to be
+one group. Both UTRs come from **TMSB10** (thymosin beta-10, NM_021103.4), a
+very abundant human transcript -- the same reasoning that puts alpha-globin in
+BNT162b2. Not adopted; recorded so the comparison is not redone from scratch.
+
+The screen (MDPI *Vaccines*, Table 1) ranked UTRs from abundant human genes --
+TMSB10, ACTB, TMSB4X, B2M, HLA-DRA, HLA-DRB1, FTL, FTH1 and a designed "R27" --
+with a tPA-Gaussia luciferase reporter. The vaccine paper (*Sci Rep*, Table S1)
+then built SARS-CoV-2 candidates on the TMSB10 pair.
+
+**5' UTR, as actually built** (not as annotated): `AGGG` + the 78 nt TMSB10
+5' UTR + `GCCACC` = 88 nt. It begins `AGGG`, so the implied promoter is
+`TAATACGACTCACTATAAGGG`, which starts with this kit's minimum
+`TAATACGACTCACTATAAGG` -- **compatible with no modification at all**, unlike
+the BNT162b2 and mRNA-1273 leaders, which both need re-heading. It ends in the
+same `GCCACC` Kozak used here.
+
+**3' UTR, two versions.** The screen used the native 248 nt TMSB10 3' UTR; the
+vaccine paper cut it to 58 nt, keeping the native 18 nt head
+`GATCCTGGAGGATTTCCT`, the 8 nt tail `TCGTGGCA` and two short internal blocks,
+and replacing the rest. The short form has lost the `AATAAA`, which is inert in
+an IVT reaction. That a group holding the full native element chose to ship 12%
+of it is itself a data point about how much of it was earning its length.
+
+Measured head to head in P0 (mouse ORF, ViennaRNA):
+
+| 5' leader | AUG accessibility | cap-proximal MFE |
+|---|---|---|
+| ours, 47 nt | **0.529** | **-6.6** |
+| TMSB10 as used, 88 nt | 0.519 | -20.1 |
+
+Both clear the floors (0.30 and -25.0). Accessibility is a tie; ours carries a
+third of the cap-proximal structure. TMSB10 costs 6 CpGs (o/e 0.87) against
+zero. Swapping the 3' UTR moved nothing at the 5' end, as expected 600+ nt
+away -- and what a 3' UTR actually does, modulate decay and duration, ViennaRNA
+cannot score, so that half of the comparison is not decidable here.
+
+Length, on P0 (751 nt today): 5' +41, 3' -48 with the full form or -238 with
+the short one, so net **-7 nt** or **-197 nt**.
+
+Synthesis flags, native 248 nt form only: a 9 nt poly-C run at 152 and a BsaI
+site at 138. The 58 nt form has neither.
+
+**Not adopted.** The 3' UTR in use was selected in human dendritic cells,
+validated in BALB/c mice and ships in a licensed product; TMSB10's comes from a
+reporter screen whose comparator set did not include it. The TMSB10 5' UTR is a
+real candidate and the only one so far that needs no re-heading, but it does
+not beat the current leader on anything measurable here.
+
 ## What is pinned in the suite
 
 - `tests/test_ivt_unit.py::test_utr3_segment_decomposition` -- the 3' UTR's
