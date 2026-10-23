@@ -270,6 +270,42 @@ reporter screen whose comparator set did not include it. The TMSB10 5' UTR is a
 real candidate and the only one so far that needs no re-heading, but it does
 not beat the current leader on anything measurable here.
 
+## If the leader is switched to HBB
+
+Human beta-globin's 5' UTR, 50 nt, is
+`ACATTTGCTTCTGACACAACTGTGTTCACTAGCAACCTCAAACAGACACC` -- the leader Ma et al.
+2024 ranked first as IVT mRNA. Two things to get right if it is adopted.
+
+**It does not start `AG`.** It begins `AC`, so the `AGG` has to stay upstream of
+it. Kept, the transcript reads `AGGACATTTGCTT...` and the implied promoter is
+exactly the kit's minimum. Dropped, the transcript begins `AC` and the cap1
+analog cannot incorporate -- a silent, total failure, since transcription still
+works.
+
+**Its native end is already a Kozak**, so appending `GCCACC` is optional:
+`...ACAGACACC|ATG|G` puts a purine at -3 and G at +4, both satisfied.
+
+Appending it anyway is harmless but not free, and the obvious middle option is
+the worst of the three. Measured across all nine mouse constructs:
+
+| leader | nt | CpG | AUG accessibility | cap MFE |
+|---|---|---|---|---|
+| `AGG` + HBB + `GCCACC` + `GCCACC` | 65 | 2 | 0.511-0.555 | -14.0 |
+| `AGG` + HBB + `GCCACC` | 59 | 1 | **0.439-0.541** | -15.7 |
+| `AGG` + HBB (native Kozak) | 53 | **0** | **0.542-0.791** | -12.6 to -14.9 |
+
+Deleting one of a duplicated `GCCACC` -- the tidy-looking fix -- lowers start
+accessibility on every construct; deleting both raises it. The duplicate
+evidently breaks a hairpin the single copy forms. All three clear the 0.30 and
+-25.0 floors, the spread is small, and these are ViennaRNA numbers on
+unmodified RNA while the transcript is fully m1Psi-substituted, so this ranks
+options rather than measuring them. It is still a reason not to assume the
+tidy edit is the safe one.
+
+A duplicated Kozak is in itself benign: what would hurt is an upstream AUG, and
+`GCCACCGCCACC` contains none. Whatever is chosen has to go on all nine
+identically, or initiation context becomes a second variable alongside routing.
+
 ## What is pinned in the suite
 
 - `tests/test_ivt_unit.py::test_utr3_segment_decomposition` -- the 3' UTR's
