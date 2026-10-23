@@ -1,0 +1,31 @@
+LOCUS       R6                      237 bp ds-DNA     linear     23-OCT-2026
+DEFINITION  R6: secreted: signal peptide, no membrane anchor
+FEATURES             Location/Qualifiers
+     CDS             1..237
+                     /label="R6"
+                     /note="secreted: signal peptide, no
+                     membrane anchor"
+                     /translation="MACLGLRRYKAQLQLPSRTWPFV
+                     ALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEA
+                     QGALANIAVDKANLDVMK"
+     misc_feature    1..105
+                     /label="CTLA4_SP"
+                     /note="MACLGLRRYKAQLQLPSRTWPFVALLTLLF
+                     IPVFS"
+     misc_feature    106..132
+                     /label="HA"
+                     /note="YPYDVPDYA"
+     misc_feature    133..147
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    148..234
+                     /label="B"
+                     /note="EEFAKFASFEAQGALANIAVDKANLDVMK"
+     misc_feature    235..237
+                     /label="stop"
+ORIGIN
+        1 atggcatgcc tgggcctgag gagatataaa gcacaactgc agctgccaag cagaacctgg
+       61 ccatttgtgg cacttctgac actcctgttc atcccagtgt tcagctaccc atacgacgtg
+      121 ccagattacg ccggaggcgg aggcagcgaa gagttcgcaa agttcgccag cttcgaagca
+      181 cagggagcac ttgcaaacat tgcagtggat aaggccaacc tggacgtgat gaagtga
+//

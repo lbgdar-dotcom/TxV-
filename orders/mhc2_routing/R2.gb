@@ -1,0 +1,40 @@
+LOCUS       R2                      327 bp ds-DNA     linear     23-OCT-2026
+DEFINITION  R2: LAMP1: AP-3, direct TGN to lysosome
+FEATURES             Location/Qualifiers
+     CDS             1..327
+                     /label="R2"
+                     /note="LAMP1: AP-3, direct TGN to
+                     lysosome"
+                     /translation="MAAPGARRPLLLLLLAGLAHGAS
+                     AYPYDVPDYAGGGGSEEFAKFASFEAQGALANIAVDK
+                     ANLDVMKGGGGSMLIPIAVGGALAGLVLIVLIAYLIG
+                     RKRSHAGYQTI"
+     misc_feature    1..72
+                     /label="LAMP1_SP"
+                     /note="MAAPGARRPLLLLLLAGLAHGASA"
+     misc_feature    73..99
+                     /label="HA"
+                     /note="YPYDVPDYA"
+     misc_feature    100..114
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    115..201
+                     /label="B"
+                     /note="EEFAKFASFEAQGALANIAVDKANLDVMK"
+     misc_feature    202..216
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    217..324
+                     /label="LAMP1_TMT"
+                     /note="MLIPIAVGGALAGLVLIVLIAYLIGRKRSH
+                     AGYQTI"
+     misc_feature    325..327
+                     /label="stop"
+ORIGIN
+        1 atggcagccc caggagcaag aaggccactt ttgcttctgc ttctggcagg actggcacac
+       61 ggagcatctg catacccata cgacgtgcca gattacgccg gaggcggagg cagcgaagag
+      121 ttcgcaaagt tcgccagctt cgaagcacag ggagcacttg caaacattgc agtggataag
+      181 gccaacctgg acgtgatgaa gggcggaggc ggatctatgc tgatcccaat cgcagtggga
+      241 ggtgcactgg caggattggt gttgattgtg ctgattgcct acctgatcgg cagaaagaga
+      301 agccatgcag gataccagac aatctga
+//

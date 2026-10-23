@@ -1,0 +1,33 @@
+LOCUS       R0                      168 bp ds-DNA     linear     23-OCT-2026
+DEFINITION  R0: cytosolic
+FEATURES             Location/Qualifiers
+     CDS             1..168
+                     /label="R0"
+                     /note="cytosolic"
+                     /translation="MAYPYDVPDYAGGGGSEEFAKFA
+                     SFEAQGALANIAVDKANLDVMKGGGGSEEEEE"
+     misc_feature    1..6
+                     /label="MA"
+                     /note="MA"
+     misc_feature    7..33
+                     /label="HA"
+                     /note="YPYDVPDYA"
+     misc_feature    34..48
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    49..135
+                     /label="B"
+                     /note="EEFAKFASFEAQGALANIAVDKANLDVMK"
+     misc_feature    136..150
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    151..165
+                     /label="E5"
+                     /note="EEEEE"
+     misc_feature    166..168
+                     /label="stop"
+ORIGIN
+        1 atggcatacc catacgacgt gccagattac gccggaggcg gaggcagcga agagttcgca
+       61 aagttcgcca gcttcgaagc acagggagca cttgcaaaca ttgcagtgga taaggccaac
+      121 ctggacgtga tgaagggcgg aggcggatct gaggaggaag aggagtga
+//

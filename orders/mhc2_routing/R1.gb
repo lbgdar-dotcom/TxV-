@@ -1,0 +1,47 @@
+LOCUS       R1                      453 bp ds-DNA     linear     23-OCT-2026
+DEFINITION  R1: CTLA-4: secretory, to the surface, then AP-2 to the endosome
+FEATURES             Location/Qualifiers
+     CDS             1..453
+                     /label="R1"
+                     /note="CTLA-4: secretory, to the
+                     surface, then AP-2 to the endosome"
+                     /translation="MACLGLRRYKAQLQLPSRTWPFV
+                     ALLTLLFIPVFSYPYDVPDYAGGGGSEEFAKFASFEA
+                     QGALANIAVDKANLDVMKGGGGSFLLWILVAVSLGLF
+                     FYSFLVSAVSLSKMLKKRSPLTTGVYVKMPPTEPECE
+                     KQFQPYFIPINEEEEE"
+     misc_feature    1..105
+                     /label="CTLA4_SP"
+                     /note="MACLGLRRYKAQLQLPSRTWPFVALLTLLF
+                     IPVFS"
+     misc_feature    106..132
+                     /label="HA"
+                     /note="YPYDVPDYA"
+     misc_feature    133..147
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    148..234
+                     /label="B"
+                     /note="EEFAKFASFEAQGALANIAVDKANLDVMK"
+     misc_feature    235..249
+                     /label="L"
+                     /note="GGGGS"
+     misc_feature    250..435
+                     /label="CTLA4_TMT"
+                     /note="FLLWILVAVSLGLFFYSFLVSAVSLSKMLK
+                     KRSPLTTGVYVKMPPTEPECEKQFQPYFIPIN"
+     misc_feature    436..450
+                     /label="E5"
+                     /note="EEEEE"
+     misc_feature    451..453
+                     /label="stop"
+ORIGIN
+        1 atggcatgcc tgggcctgag gagatataaa gcacaactgc agctgccaag cagaacctgg
+       61 ccatttgtgg cacttctgac actcctgttc atcccagtgt tcagctaccc atacgacgtg
+      121 ccagattacg ccggaggcgg aggcagcgaa gagttcgcaa agttcgccag cttcgaagca
+      181 cagggagcac ttgcaaacat tgcagtggat aaggccaacc tggacgtgat gaagggcgga
+      241 ggcggatctt tcctgctctg gattctggtg gcagtgtctc tgggactgtt cttttacagc
+      301 tttctggtga gcgcagtgag cctgagcaaa atgctgaaga aaagaagccc actgaccaca
+      361 ggagtgtacg tgaagatgcc tccaacagaa ccagaatgcg agaagcagtt ccagccatac
+      421 ttcatcccca tcaacgagga ggaagaggag tga
+//
